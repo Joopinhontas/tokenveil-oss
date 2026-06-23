@@ -4,17 +4,17 @@
 
 <h1 align="center">TokenVeil</h1>
 
-**Status: Alpha (internal test build) — public showcase repository**
+**Status: Alpha (internal test build), public showcase repository**
 
 A self-hosted chat interface for Claude that automatically anonymizes sensitive data (PII, internal IPs, API keys/secrets, customer references, IBANs, credit card numbers...) before it reaches Claude, and transparently restores the real values in the response shown to the user. The real data never leaves your infrastructure.
 
-> **This is a showcase copy.** Everything here is real production code (auth, licensing system, frontend, Docker deployment) except `anon_engine.py` — the actual anonymization/detection engine — which is replaced by a stub matching its public interface. See [ARCHITECTURE.md](ARCHITECTURE.md) §4 for what it does without exposing how. Full source available under a commercial license: [marc.bourrel81@gmail.com](mailto:marc.bourrel81@gmail.com).
+> **This is a showcase copy.** Everything here is real production code (auth, licensing system, frontend, Docker deployment) except `anon_engine.py`, the actual anonymization/detection engine, which is replaced by a stub matching its public interface. See [ARCHITECTURE.md](ARCHITECTURE.md) §4 for what it does without exposing how. Full source available under a commercial license: [contact@tokenveil.eu](mailto:contact@tokenveil.eu).
 
 > Not affiliated with, endorsed by, or sponsored by Anthropic or Google. "Claude" is a trademark of Anthropic PBC, "Gemini" a trademark of Google LLC. This project is an independent client that uses these models through each user's own subscription/API access.
 
 ## License
 
-Source-available under the [Elastic License 2.0](LICENSE). You can read, audit, and self-host this code. You may **not**: offer it as a hosted/managed service to third parties, or circumvent/disable the license-key system. For a commercial deployment license, contact [marc.bourrel81@gmail.com](mailto:marc.bourrel81@gmail.com).
+Source-available under the [Elastic License 2.0](LICENSE). You can read, audit, and self-host this code. You may **not**: offer it as a hosted/managed service to third parties, or circumvent/disable the license-key system. For a commercial deployment license, contact [contact@tokenveil.eu](mailto:contact@tokenveil.eu).
 
 > 🇫🇷 Version française : [README.fr.md](README.fr.md)
 
@@ -22,9 +22,9 @@ Source-available under the [Elastic License 2.0](LICENSE). You can read, audit, 
 
 ## 1. The problem
 
-Teams paste real production data into AI chat tools every day — logs with internal IPs, leaked API keys, customer names, ticket references, financial data. That data is then sent to a third-party model provider, stored on their side, and potentially used for training or retained in logs.
+Teams paste real production data into AI chat tools every day: logs with internal IPs, leaked API keys, customer names, ticket references, financial data. That data is then sent to a third-party model provider, stored on their side, and potentially used for training or retained in logs.
 
-**TokenVeil** sits between your team and Claude: it strips out anything sensitive *before* the request leaves your server, and puts it back *after* the response comes in. From the user's point of view, nothing changes — they paste a real log, they get a real, actionable answer back. Claude itself only ever sees opaque placeholders like `<IP_ADDRESS_1>`, `<API_SECRET_2>`, `<CUSTOMER_REF_3>`.
+**TokenVeil** sits between your team and Claude: it strips out anything sensitive *before* the request leaves your server, and puts it back *after* the response comes in. From the user's point of view, nothing changes. They paste a real log, they get a real, actionable answer back. Claude itself only ever sees opaque placeholders like `<IP_ADDRESS_1>`, `<API_SECRET_2>`, `<CUSTOMER_REF_3>`.
 
 ## 2. How it works
 
@@ -46,11 +46,11 @@ flowchart LR
     style DB fill:#2b2924,color:#fff
 ```
 
-**Key point: the real values never cross the network boundary to Claude.** Tokenization happens server-side, in-process, before the outbound call. De-tokenization happens after the response is received, also in-process. Anthropic's API only ever sees step 5–7: tokenized text in, tokenized text out.
+**Key point: the real values never cross the network boundary to Claude.** Tokenization happens server-side, in-process, before the outbound call. De-tokenization happens after the response is received, also in-process. Anthropic's API only ever sees steps 5 to 7: tokenized text in, tokenized text out.
 
 ### Per-user Claude billing (no shared API key)
 
-Each user links **their own** Claude Pro/Max subscription via an in-app OAuth flow (Profile page → "Link my Claude account"). The backend drives `claude setup-token` (the official Claude Code CLI command) through a pseudo-terminal, captures the resulting long-lived OAuth token, and stores it Fernet-encrypted on disk, isolated per user (`CLAUDE_CONFIG_DIR` per username). Every prompt for that user is then executed via the Claude Code CLI authenticated with their own token — **billed against their personal subscription, not a shared, metered API key.**
+Each user links **their own** Claude Pro/Max subscription via an in-app OAuth flow (Profile page → "Link my Claude account"). The backend drives `claude setup-token` (the official Claude Code CLI command) through a pseudo-terminal, captures the resulting long-lived OAuth token, and stores it Fernet-encrypted on disk, isolated per user (`CLAUDE_CONFIG_DIR` per username). Every prompt for that user is then executed via the Claude Code CLI authenticated with their own token: **billed against their personal subscription, not a shared, metered API key.**
 
 ### What gets detected and anonymized
 
@@ -70,7 +70,7 @@ Detection combines:
 
 ### Live transparency
 
-The UI shows, in real time as the user types, exactly what would be sent to Claude in anonymized form (debounced preview). Every sent message also has a "Show what was sent to Claude" toggle revealing the actual tokenized payload that left the server — nothing is hidden from the end user about what anonymization is actually doing.
+The UI shows, in real time as the user types, exactly what would be sent to Claude in anonymized form (debounced preview). Every sent message also has a "Show what was sent to Claude" toggle revealing the actual tokenized payload that left the server. Nothing is hidden from the end user about what anonymization is actually doing.
 
 ## 3. Data at rest
 
@@ -124,7 +124,7 @@ uvicorn app:app --host 0.0.0.0 --port 8500
 
 Requirements in this case: `claude` (Claude Code CLI) installed and on `PATH` manually (the Docker image
 handles this automatically). Each user links their own subscription from the **Preferences** panel in
-the web UI — no API key needed for Claude; Gemini links via a personal API key (aistudio.google.com),
+the web UI. No API key needed for Claude; Gemini links via a personal API key (aistudio.google.com),
 free on Flash models.
 
 ## 6. Tech stack
@@ -148,4 +148,4 @@ This build validates the core mechanism end-to-end: real homelab logs (leaked AP
 
 ---
 
-*Internal alpha — built for evaluation, not yet hardened for production multi-tenant deployment.*
+*Internal alpha, built for evaluation, not yet hardened for production multi-tenant deployment.*

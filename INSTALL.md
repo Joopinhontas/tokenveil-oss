@@ -1,4 +1,4 @@
-# TokenVeil — Guide d'installation chez un client
+# TokenVeil : guide d'installation chez un client
 
 Ce document décrit le déploiement complet d'TokenVeil chez un client, via Docker. Il est pensé pour
 être suivi de bout en bout sans connaissance préalable du projet.
@@ -100,7 +100,7 @@ chunked_transfer_encoding off;
 proxy_read_timeout 300s;
 ```
 
-Sans ça, l'application reste fonctionnelle mais perd l'effet de streaming — pas un bug du logiciel, un
+Sans ça, l'application reste fonctionnelle mais perd l'effet de streaming. Pas un bug du logiciel, un
 comportement par défaut du proxy à désactiver explicitement.
 
 Forcer HTTPS (`Force SSL`) est fortement recommandé : les identifiants de connexion et le contenu des
@@ -122,7 +122,7 @@ git pull   # ou remplacement des fichiers
 docker compose up -d --build
 ```
 
-Le dossier `./data` n'est jamais touché par un rebuild — les comptes liés et l'historique survivent à la
+Le dossier `./data` n'est jamais touché par un rebuild : les comptes liés et l'historique survivent à la
 mise à jour.
 
 ## 9. Checklist sécurité avant mise en production
@@ -143,7 +143,7 @@ mise à jour.
 | Healthcheck reste `unhealthy` | Le serveur met du temps à charger les modèles NLP au premier démarrage | Attendre ~30-60s, revérifier avec `docker ps` |
 | Streaming pas fluide derrière un reverse proxy | Buffering proxy activé par défaut | Voir §7 |
 | Page "Congratulations" Nginx au lieu de l'app | Domaine pas associé au bon Proxy Host | Vérifier que le nom de domaine est bien dans les "Domain Names" du host visé |
-| Liaison Claude échoue | CLI `claude` indisponible | Vérifier `docker exec <conteneur> claude --version` — doit répondre une version |
+| Liaison Claude échoue | CLI `claude` indisponible | Vérifier `docker exec <conteneur> claude --version` (doit répondre une version) |
 | Un utilisateur ne voit pas le panneau Administration | Rôle non-admin | Promouvoir depuis Administration > Utilisateurs (par un admin existant) |
 
 ---
