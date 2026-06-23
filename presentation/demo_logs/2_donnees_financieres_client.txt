@@ -1,0 +1,6 @@
+[2026-06-19 10:02:44] INFO payment-export: génération export comptable mensuel
+ref=CUST-48213 iban=FR7630006000011234567890189 montant=1240.50EUR
+ref=CUST-48214 carte=4539 1488 0343 6467 montant=89.00EUR statut=refusé
+ref=TICKET-90213 client=Jean Dupont email=j.dupont@clientmail.com tel=06 12 34 56 78
+[2026-06-19 10:02:45] ERROR payment-export: échec d'écriture sur export-financier-2026-06.csv
+[2026-06-19 10:02:45] WARN payment-export: 2 lignes rejetées, voir export-financier-2026-06.errors.log

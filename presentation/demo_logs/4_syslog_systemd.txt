@@ -1,0 +1,6 @@
+2026-06-19T11:58:26.384487+02:00 srv-app-07 systemd[1]: backup-sync.service: Main process exited, code=exited, status=1/FAILURE
+2026-06-19T11:58:26.384537+02:00 srv-app-07 systemd[1]: backup-sync.service: Failed with result 'exit-code'.
+2026-06-19T11:58:36.616595+02:00 srv-app-07 systemd[1]: backup-sync.service: Scheduled restart job, restart counter is at 12.
+2026-06-19T11:58:36.634175+02:00 srv-app-07 systemd[1]: Started backup-sync.service - Synchronise les sauvegardes clients vers le stockage distant.
+2026-06-19T11:59:07.366574+02:00 srv-app-07 systemd[1]: backup-sync.service: rsync: connection unexpectedly closed, target=backup-vault.internal.corp user=svc-backup
+2026-06-19T12:00:06.138305+02:00 srv-app-07 systemd[1]: Finished sysstat-collect.service - system activity accounting tool.
