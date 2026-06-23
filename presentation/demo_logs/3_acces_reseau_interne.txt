@@ -1,0 +1,5 @@
+2026-06-19T08:31:12.442109+02:00 srv-auth-02.internal.corp sshd[22841]: Failed password for invalid user admin from 198.51.100.23 port 51422 ssh2
+2026-06-19T08:31:14.118832+02:00 srv-auth-02.internal.corp sshd[22841]: Failed password for root from 198.51.100.23 port 51430 ssh2
+2026-06-19T08:31:19.902213+02:00 srv-auth-02.internal.corp sshd[22845]: Accepted publickey for marc.lefevre from 192.168.10.45 port 60112 ssh2: RSA SHA256:Ab12Cd34
+2026-06-19T08:31:20.004112+02:00 srv-auth-02.internal.corp sudo: marc.lefevre : TTY=pts/3 ; PWD=/home/marc.lefevre ; USER=root ; COMMAND=/usr/bin/systemctl restart nginx
+device_mac=3C:E1:A1:4F:8B:90 hostname=laptop-mlefevre.internal.corp

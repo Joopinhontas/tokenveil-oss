@@ -1,0 +1,4355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TokenVeil</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js"></script>
+<style>
+  :root {
+    --bg: #faf9f5;
+    --bg-sidebar: #f4f1ea;
+    --surface: #ffffff;
+    --border: #e6e2d8;
+    --border-strong: #d8d3c4;
+    --text: #2b2924;
+    --text-dim: #79756a;
+    --text-faint: #9a9587;
+    --accent: #cb7c5c;
+    --accent-hover: #b96a4c;
+    --accent-soft: #f3e3da;
+    --user-bubble: #eee8dc;
+    --danger: #b3492f;
+    --focus-ring: #cb7c5c;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --code-bg: #232220;
+    --code-text: #f0eee8;
+    --shadow-input: 0 1px 3px rgba(43, 41, 36, 0.06), 0 1px 2px rgba(43, 41, 36, 0.04);
+    --scroll-thumb: #d8d3c4;
+    --scroll-thumb-hover: #c2bcab;
+  }
+  :root[data-theme="dark"] {
+    --bg: #232120;
+    --bg-sidebar: #1b1a18;
+    --surface: #2a2826;
+    --border: #3a3733;
+    --border-strong: #4a4640;
+    --text: #ece8e1;
+    --text-dim: #aba591;
+    --text-faint: #837c6c;
+    --accent: #d97757;
+    --accent-hover: #e8895f;
+    --accent-soft: #3d2f27;
+    --user-bubble: #34312c;
+    --danger: #e0664a;
+    --focus-ring: #d97757;
+    --code-bg: #181715;
+    --code-text: #ece8e1;
+    --shadow-input: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --scroll-thumb: #4a4640;
+    --scroll-thumb-hover: #5c574f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+  button { font-family: inherit; }
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  textarea:focus-visible, input:focus-visible { outline: none; }
+
+  /* ---------- Menus déroulants : look custom au lieu du select natif brut
+     (chevron générique, surbrillance bleue système). Le navigateur garde le
+     contrôle total sur le rendu de la liste ouverte (limitation native), mais
+     le champ fermé et la flèche suivent la charte du site. */
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23938c7f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 9px center;
+    background-size: 13px;
+    padding-right: 28px !important;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  select:hover { border-color: var(--accent); }
+  select:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  select option { background: var(--surface); color: var(--text); }
+
+  /* menu déroulant custom (remplace le <select> natif partout, voir
+     enhanceSelect()) : look identique au sélecteur de modèle Claude. */
+  .custom-select-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 8px 9px 8px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 150ms ease;
+  }
+  .custom-select-btn:hover { border-color: var(--accent); }
+  .custom-select-btn[aria-expanded="true"] { border-color: var(--accent); }
+  .custom-select-btn:disabled { opacity: 0.5; cursor: default; }
+  .custom-select-btn svg { width: 13px; height: 13px; flex-shrink: 0; color: var(--text-faint); transition: transform 150ms ease; }
+  .custom-select-btn[aria-expanded="true"] svg { transform: rotate(180deg); color: var(--accent); }
+  .custom-select-label { white-space: nowrap; }
+  .user-row .custom-select-btn { font-size: 12px; padding: 4px 6px 4px 8px; }
+  #admin-backend-row .custom-select-btn { width: 220px; }
+  #settings-add-row .custom-select-btn { flex: 1; min-width: 140px; }
+  #custom-select-menu {
+    position: fixed;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+    padding: 6px;
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  #custom-select-menu[hidden] { display: none; }
+  .custom-select-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 8px 10px;
+    font-size: 13px;
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .custom-select-option:hover { background: var(--accent-soft); }
+  .custom-select-option.selected { color: var(--accent); font-weight: 600; }
+
+  /* ---------- Scrollbars ---------- */
+  * { scrollbar-width: thin; scrollbar-color: var(--scroll-thumb) transparent; }
+  *::-webkit-scrollbar { width: 9px; height: 9px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--scroll-thumb);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  *::-webkit-scrollbar-thumb:hover { background-color: var(--scroll-thumb-hover); }
+  *::-webkit-scrollbar-corner { background: transparent; }
+
+  /* ---------- Sidebar ---------- */
+  #sidebar {
+    width: 272px;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  #brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 18px 16px 14px 16px;
+  }
+  #brand .wordmark { flex: 1; }
+  #theme-toggle-btn {
+    background: none;
+    border: 1px solid var(--border-strong);
+    color: var(--text-dim);
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background-color 150ms ease, border-color 150ms ease;
+  }
+  #theme-toggle-btn:hover { background: var(--surface); border-color: var(--accent); }
+  #theme-toggle-btn svg { width: 15px; height: 15px; }
+  #search-conv-btn {
+    background: none;
+    border: 1px solid var(--border-strong);
+    color: var(--text-dim);
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background-color 150ms ease, border-color 150ms ease;
+  }
+  #search-conv-btn:hover { background: var(--surface); border-color: var(--accent); }
+  #search-conv-btn svg { width: 15px; height: 15px; }
+
+  #search-overlay[hidden] { display: none; }
+  #search-overlay {
+    position: fixed; inset: 0; background: rgba(20, 18, 14, 0.45);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding-top: 14vh; z-index: 110;
+  }
+  #search-modal {
+    background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border);
+    width: min(560px, calc(100vw - 32px)); box-shadow: 0 16px 48px rgba(0,0,0,0.25);
+    max-height: 60vh; display: flex; flex-direction: column; overflow: hidden;
+  }
+  #search-input-row {
+    display: flex; align-items: center; gap: 10px; padding: 14px 16px;
+    border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  #search-input-row svg:first-child { width: 16px; height: 16px; color: var(--text-faint); flex-shrink: 0; }
+  #search-input {
+    flex: 1; background: none; border: none; color: var(--text); font-size: 14px;
+    font-family: inherit; outline: none;
+  }
+  #search-close-btn { background: none; border: none; cursor: pointer; color: var(--text-faint); padding: 4px; border-radius: 6px; flex-shrink: 0; }
+  #search-close-btn:hover { background: var(--accent-soft); color: var(--text-dim); }
+  #search-close-btn svg { width: 14px; height: 14px; }
+  #search-results { overflow-y: auto; padding: 6px; }
+  .search-result-row {
+    display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+    border-radius: var(--radius-sm); cursor: pointer; font-size: 13.5px; color: var(--text-dim);
+  }
+  .search-result-row svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--text-faint); }
+  .search-result-row .search-result-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+  .search-result-row .search-result-date { font-size: 11.5px; color: var(--text-faint); flex-shrink: 0; }
+  .search-result-row:hover, .search-result-row.highlighted { background: var(--accent-soft); }
+  .search-result-row.highlighted .search-result-title { color: var(--accent); }
+  #search-empty { padding: 24px 16px; text-align: center; font-size: 13px; color: var(--text-faint); }
+  #theme-toggle-btn .icon-dark { display: none; }
+  :root[data-theme="dark"] #theme-toggle-btn .icon-light { display: none; }
+  :root[data-theme="dark"] #theme-toggle-btn .icon-dark { display: block; }
+  #brand .mark {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  #brand .mark svg { width: 15px; height: 15px; color: #fff; }
+  #brand .wordmark {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 600;
+    font-size: 15.5px;
+    color: var(--text);
+    letter-spacing: 0.1px;
+  }
+  #brand .wordmark .sub {
+    display: block;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    font-size: 10.5px;
+    color: var(--text-faint);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+  #sidebar-header { padding: 4px 12px 12px 12px; }
+  #new-chat-btn {
+    width: 100%;
+    padding: 9px 12px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 150ms ease, border-color 150ms ease;
+  }
+  #new-chat-btn svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-dim); }
+  #new-chat-btn:hover { background: var(--accent-soft); border-color: var(--accent); }
+  #new-chat-btn:hover svg { color: var(--accent-hover); }
+
+  #conversations-label {
+    padding: 10px 16px 4px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  #conversations {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 8px 8px 8px;
+  }
+  #sidebar-footer { padding: 8px; border-top: 1px solid var(--border); }
+  #not-affiliated-disclaimer {
+    font-size: 10.5px; color: var(--text-faint); text-align: center;
+    margin: 8px 4px 2px 4px; line-height: 1.4;
+  }
+  #settings-btn, #admin-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    text-align: left;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+  #settings-btn svg, #admin-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+  #admin-btn[hidden] { display: none; }
+  #admin-btn:hover { background: var(--accent-soft); color: var(--accent-hover); }
+  #settings-btn:hover { background: var(--accent-soft); color: var(--accent-hover); }
+  #logout-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    text-align: left;
+    color: var(--text-faint);
+    font-size: 13px;
+  }
+  #logout-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+  #logout-btn:hover { background: var(--accent-soft); color: var(--danger); }
+  #profile-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    text-align: left;
+  }
+  #profile-btn:hover { background: var(--accent-soft); }
+  .profile-icon { width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; background: var(--surface); border: 1px solid var(--border-strong); display: flex; align-items: center; justify-content: center; color: var(--text-dim); }
+  .profile-icon svg { width: 16px; height: 16px; }
+  .profile-text { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+  #profile-username { font-size: 13px; font-weight: 600; color: var(--text); }
+  #profile-status { font-size: 11.5px; color: var(--text-faint); }
+  #profile-btn .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-faint); flex-shrink: 0; }
+  #profile-btn .dot.linked { background: #5a9c6a; }
+
+  #settings-overlay[hidden] { display: none; }
+  #settings-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 18, 14, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  #settings-modal {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    width: min(560px, calc(100vw - 32px));
+    max-height: min(640px, calc(100vh - 64px));
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+  }
+  #settings-modal-header, #admin-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  #settings-modal-header h2, #admin-modal-header h2 { font-size: 16px; margin: 0; }
+
+  #admin-overlay[hidden] { display: none; }
+  #admin-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 18, 14, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  #admin-modal {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    width: min(560px, calc(100vw - 32px));
+    max-height: min(680px, calc(100vh - 64px));
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+  }
+  .user-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+  }
+  .user-row .user-name { flex: 1; font-size: 13.5px; color: var(--text); font-weight: 600; }
+  #history-bulk-bar { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+  #history-select-all-label { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-dim); cursor: pointer; flex-shrink: 0; }
+  #history-bulk-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  #history-bulk-actions[hidden] { display: none; }
+  #history-bulk-actions .ghost-btn, #history-bulk-actions .danger-btn { padding: 6px 10px; font-size: 12px; }
+  #history-list { display: flex; flex-direction: column; gap: 6px; }
+  .history-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); font-size: 13px;
+  }
+  .history-row .history-star-btn {
+    background: none; border: none; cursor: pointer; color: var(--text-faint);
+    padding: 3px; border-radius: 6px; display: flex; flex-shrink: 0;
+  }
+  .history-row .history-star-btn svg { width: 14px; height: 14px; }
+  .history-row .history-star-btn:hover { color: var(--accent); background: var(--accent-soft); }
+  .history-row .history-star-btn.active { color: var(--accent); }
+  .history-row .history-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); cursor: pointer; }
+  .history-row .history-title-input {
+    flex: 1; min-width: 0; background: var(--surface); color: var(--text);
+    border: 1px solid var(--accent); border-radius: 4px; padding: 3px 6px; font-size: 13px; font-family: inherit;
+  }
+  .history-row .history-date { font-size: 11.5px; color: var(--text-faint); flex-shrink: 0; }
+  .history-row .history-icon-btn {
+    background: none; border: none; cursor: pointer; color: var(--text-faint);
+    padding: 3px; border-radius: 6px; display: flex; flex-shrink: 0;
+  }
+  .history-row .history-icon-btn svg { width: 14px; height: 14px; }
+  .history-row .history-icon-btn:hover { color: var(--text); background: var(--accent-soft); }
+  .history-row .history-icon-btn.danger:hover { color: var(--danger); }
+  .user-row select.role-select {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 4px 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .user-row .user-delete-btn { background: none; border: none; cursor: pointer; color: var(--text-faint); padding: 4px; border-radius: 6px; flex-shrink: 0; }
+  .user-row .user-delete-btn:hover { background: var(--accent-soft); color: #c0493f; }
+  .user-row .user-delete-btn svg { width: 14px; height: 14px; }
+  #admin-backend-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  #admin-backend-row label { font-size: 13px; color: var(--text-dim); font-weight: 600; }
+  #admin-auth-backend-select, #admin-ldap-form input {
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  #admin-ldap-form { display: flex; flex-direction: column; gap: 4px; }
+  #admin-ldap-form label { font-size: 11.5px; font-weight: 600; color: var(--text-faint); margin-top: 10px; }
+  #admin-ldap-form input { width: 100%; }
+  #ldap-ssl-toggle { display: flex; align-items: center; gap: 6px; flex-direction: row !important; margin-top: 12px !important; font-size: 12.5px !important; }
+  #admin-ldap-result { font-size: 12.5px; margin: 10px 0 0 0; }
+  #admin-ldap-result.ok { color: #4c9a5f; }
+  #admin-ldap-result.fail { color: var(--danger); }
+
+  #benchmark-input {
+    width: 100%;
+    min-height: 140px;
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    font-size: 12.5px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    color: var(--text);
+    resize: vertical;
+    margin-bottom: 10px;
+  }
+  #benchmark-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  #license-token-input {
+    width: 100%;
+    min-height: 70px;
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    font-size: 12.5px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    color: var(--text);
+    resize: vertical;
+    margin-bottom: 10px;
+  }
+  #license-token-input::placeholder { font-family: "Inter", -apple-system, sans-serif; color: var(--text-faint); }
+  #license-token-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  #benchmark-results[hidden] { display: none; }
+  #benchmark-results { margin-top: 16px; }
+  #benchmark-score-row, #fuzz-score-row { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+  #benchmark-score-circle, #fuzz-score-circle {
+    width: 64px; height: 64px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: #fff;
+    background: var(--text-faint);
+  }
+  #benchmark-score-circle.good, #fuzz-score-circle.good { background: #4c9a5f; }
+  #benchmark-score-circle.warn, #fuzz-score-circle.warn { background: #d9a13b; }
+  #benchmark-score-circle.bad, #fuzz-score-circle.bad { background: #c0493f; }
+  #benchmark-score-text, #fuzz-score-text { display: flex; flex-direction: column; gap: 2px; }
+  #benchmark-score-label, #fuzz-score-label { font-size: 14px; color: var(--text); }
+  #benchmark-score-sub, #fuzz-score-sub { font-size: 12px; color: var(--text-faint); }
+  #fuzz-section { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
+  #fuzz-controls { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  #fuzz-controls label { font-size: 12.5px; color: var(--text-dim); white-space: nowrap; }
+  #fuzz-n-input {
+    width: 100px;
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 7px 9px;
+    font-size: 13px;
+    color: var(--text);
+    -moz-appearance: textfield;
+  }
+  #fuzz-n-input::-webkit-outer-spin-button,
+  #fuzz-n-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  #fuzz-n-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  #fuzz-controls .primary-btn { width: auto; flex: 1; }
+  #fuzz-results[hidden] { display: none; }
+  #fuzz-results { margin-top: 16px; }
+  #fuzz-examples[hidden] { display: none; }
+  #benchmark-bars { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
+  .bench-bar-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .bench-bar-label { width: 140px; flex-shrink: 0; color: var(--text-dim); text-align: right; }
+  .bench-bar-track { flex: 1; height: 10px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+  .bench-bar-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width 300ms ease; }
+  .bench-bar-fill.has-leak { background: var(--danger); }
+  .bench-bar-count { width: 50px; flex-shrink: 0; color: var(--text-faint); font-size: 11px; }
+  #benchmark-leaks[hidden] { display: none; }
+  #benchmark-leaks { margin-bottom: 12px; }
+  .bench-leak-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 10px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); margin-bottom: 4px; font-size: 12px;
+  }
+  .bench-leak-row .leak-cat { font-weight: 700; color: var(--danger); flex-shrink: 0; }
+  .bench-leak-row .leak-line { color: var(--text-faint); flex-shrink: 0; }
+  .bench-leak-row .leak-preview { font-family: ui-monospace, monospace; color: var(--text-dim); }
+  #audit-log-list { display: flex; flex-direction: column; gap: 6px; }
+  .audit-row {
+    display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+    padding: 8px 10px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); font-size: 12.5px;
+  }
+  .audit-row .audit-user { font-weight: 700; color: var(--text); }
+  .audit-row .audit-time { color: var(--text-faint); font-size: 11.5px; }
+  .audit-row .audit-counts { display: flex; flex-wrap: wrap; gap: 6px; flex-basis: 100%; }
+  .audit-count-chip {
+    background: var(--accent-soft); color: var(--accent); border-radius: 999px;
+    padding: 2px 8px; font-size: 11px; font-weight: 600;
+  }
+  #settings-close-btn, #admin-close-btn { background: none; border: none; cursor: pointer; color: var(--text-dim); padding: 4px; border-radius: 6px; }
+  #settings-close-btn:hover, #admin-close-btn:hover { background: var(--accent-soft); color: var(--accent-hover); }
+  #settings-close-btn svg, #admin-close-btn svg { width: 18px; height: 18px; }
+  #settings-tabs, #admin-tabs { display: flex; gap: 4px; padding: 10px 18px 0 18px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .settings-tab-btn, .admin-tab-btn {
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-faint);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .settings-tab-btn:hover, .admin-tab-btn:hover { color: var(--text-dim); }
+  .settings-tab-btn.active, .admin-tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  #settings-modal-body, #admin-modal-body { padding: 18px; overflow-y: auto; }
+  #scan-script-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+    margin-bottom: 14px;
+  }
+  #scan-script-download svg { width: 14px; height: 14px; flex-shrink: 0; }
+  #auto-detect-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    font-size: 12.5px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    color: var(--text);
+    resize: vertical;
+    margin-bottom: 10px;
+  }
+  #auto-detect-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  #auto-detect-list { display: flex; flex-direction: column; gap: 5px; margin: 14px 0; max-height: 280px; overflow-y: auto; }
+  .candidate-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  .candidate-row .term-text { flex: 1; font-size: 13px; font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; color: var(--text); }
+  .candidate-row .term-source { font-size: 10.5px; color: var(--text-faint); flex-shrink: 0; }
+  .settings-hint { font-size: 13px; color: var(--text-dim); line-height: 1.5; margin: 0 0 16px 0; }
+  .settings-hint strong, .settings-steps strong { color: var(--text); font-weight: 600; }
+  .settings-steps { margin: 0 0 16px 0; padding-left: 20px; font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+  .settings-steps li { margin-bottom: 4px; }
+  .settings-steps code {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  .cmd-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: var(--code-bg);
+    border-radius: var(--radius-sm);
+    padding: 6px 6px 6px 12px;
+    margin-top: 6px;
+  }
+  .cmd-row code { background: none; padding: 0; }
+  .cmd-copy-btn {
+    background: none;
+    border: none;
+    color: var(--code-text);
+    opacity: 0.7;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    display: flex;
+    transition: opacity 120ms ease, background-color 120ms ease, color 120ms ease;
+  }
+  .cmd-copy-btn svg { width: 14px; height: 14px; }
+  .cmd-copy-btn:hover { opacity: 1; background: rgba(255,255,255,0.08); }
+  .cmd-copy-btn.copied { color: #8fc97a; opacity: 1; }
+  #settings-add-row, #admin-add-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  #settings-term-input, #settings-label-input, #admin-user-input, #admin-pass-input, #admin-role-input {
+    flex: 1;
+    min-width: 140px;
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 9px 10px;
+    font-size: 13.5px;
+    color: var(--text);
+  }
+  #settings-term-input:focus, #settings-label-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  #settings-regex-toggle { display: flex; align-items: center; gap: 5px; font-size: 12.5px; color: var(--text-dim); white-space: nowrap; }
+  #settings-list { display: flex; flex-direction: column; gap: 6px; }
+  #settings-admin-bar[hidden] { display: none; }
+  #settings-admin-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  #settings-select-all-label { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-dim); white-space: nowrap; }
+  #settings-bulk-actions[hidden] { display: none; }
+  #settings-bulk-actions { display: flex; gap: 6px; }
+  #settings-bulk-actions .ghost-btn, #terms-import-btn, #terms-export-btn { width: auto; padding: 6px 10px; font-size: 12px; }
+  #settings-admin-bar-spacer { flex: 1; }
+  .term-row .term-checkbox { flex-shrink: 0; }
+  .term-row .term-creator { font-size: 10.5px; color: var(--text-faint); flex-shrink: 0; white-space: nowrap; }
+  .term-row .term-deploy-btn {
+    background: none; border: none; cursor: pointer; color: var(--text-faint);
+    padding: 4px; border-radius: 6px; flex-shrink: 0; display: flex;
+  }
+  .term-row .term-deploy-btn:hover { background: var(--accent-soft); color: var(--accent); }
+  .term-row .term-deploy-btn svg { width: 14px; height: 14px; }
+  .term-row[data-private="1"] { border-color: var(--accent); border-style: dashed; }
+  #deploy-menu {
+    position: fixed;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+    padding: 6px;
+    z-index: 200;
+    min-width: 220px;
+  }
+  #deploy-menu[hidden] { display: none; }
+  #deploy-menu button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 8px 10px;
+    font-size: 12.5px;
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+  #deploy-menu button:hover { background: var(--accent-soft); }
+  #deploy-menu .deploy-section-label { font-size: 10.5px; color: var(--text-faint); padding: 6px 10px 2px 10px; text-transform: uppercase; }
+  .term-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  .term-row .term-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 2px 7px;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .term-row .term-text { flex: 1; font-size: 13.5px; color: var(--text); font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; word-break: break-all; }
+  .term-row .term-regex-badge { font-size: 10px; color: var(--text-faint); flex-shrink: 0; }
+  .term-row .term-delete-btn { background: none; border: none; cursor: pointer; color: var(--text-faint); padding: 4px; border-radius: 6px; flex-shrink: 0; }
+  .term-row .term-delete-btn:hover { background: var(--accent-soft); color: #c0493f; }
+  .term-row .term-delete-btn svg { width: 14px; height: 14px; }
+  .term-row .term-lock-btn { background: none; border: none; cursor: pointer; color: var(--text-faint); padding: 4px; border-radius: 6px; flex-shrink: 0; }
+  .term-row .term-lock-btn:hover { background: var(--accent-soft); color: var(--accent); }
+  .term-row .term-lock-btn svg, .term-row .term-lock-static svg { width: 14px; height: 14px; }
+  .term-row .term-lock-static { color: var(--accent); flex-shrink: 0; display: flex; }
+  #settings-empty { font-size: 13px; color: var(--text-faint); padding: 12px 0; text-align: center; }
+
+  #profile-overlay[hidden] { display: none; }
+  #profile-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 18, 14, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  #profile-modal {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    width: min(680px, calc(100vw - 32px));
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+  }
+  #profile-modal-layout { display: flex; min-height: 460px; }
+  #profile-nav {
+    width: 190px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+    padding: 14px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .profile-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+  }
+  .profile-nav-btn:hover { background: var(--accent-soft); }
+  .profile-nav-btn.active { background: var(--accent-soft); color: var(--accent); }
+  .profile-nav-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .profile-tab-panel[hidden] { display: none; }
+  .pref-section { margin-bottom: 24px; }
+  .pref-section h3 {
+    font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--text-faint); margin: 0 0 14px 0; font-weight: 700;
+  }
+  .pref-field { display: block; margin-bottom: 14px; }
+  .pref-field-label { display: block; font-size: 12.5px; color: var(--text-dim); margin-bottom: 6px; font-weight: 600; }
+  #pref-display-name-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+  }
+  #pref-display-name-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  #pref-avatar-row { display: flex; align-items: center; gap: 16px; margin-bottom: 4px; }
+  #pref-avatar-btn {
+    width: 56px; height: 56px; border-radius: 50%;
+    border: 2px solid var(--border-strong); cursor: pointer;
+    padding: 0; background: none; flex-shrink: 0;
+  }
+  #pref-avatar-btn:hover { border-color: var(--accent); }
+  #pref-avatar-preview {
+    width: 100%; height: 100%; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: #fff;
+  }
+  #pref-avatar-picker[hidden] { display: none; }
+  #pref-avatar-picker { margin-top: 12px; }
+  #pref-avatar-colors { display: flex; gap: 8px; flex-wrap: wrap; }
+  .avatar-color-swatch {
+    width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; padding: 0;
+  }
+  .avatar-color-swatch.selected { border-color: var(--text); }
+  .pref-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 0;
+    border-bottom: 1px solid var(--border); flex-wrap: wrap;
+  }
+  .pref-section .pref-row:last-child { border-bottom: none; }
+  .pref-row-label { font-weight: 600; font-size: 13px; color: var(--text); flex-shrink: 0; }
+  .pref-row-hint { font-size: 11.5px; color: var(--text-faint); flex-basis: 100%; }
+  .pref-switch { position: relative; display: inline-block; width: 36px; height: 20px; flex-shrink: 0; margin-left: auto; }
+  .pref-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .pref-switch-track {
+    position: absolute; inset: 0; background: var(--border-strong);
+    border-radius: 999px; transition: background-color 150ms ease; cursor: pointer;
+  }
+  .pref-switch-track::before {
+    content: ""; position: absolute; width: 16px; height: 16px; left: 2px; top: 2px;
+    background: #fff; border-radius: 50%; transition: transform 150ms ease;
+  }
+  .pref-switch input:checked + .pref-switch-track { background: var(--accent); }
+  .pref-switch input:checked + .pref-switch-track::before { transform: translateX(16px); }
+  #pref-theme-segmented {
+    display: flex; gap: 2px; background: var(--bg); border: 1px solid var(--border-strong);
+    border-radius: 999px; padding: 2px; margin-left: auto;
+  }
+  #pref-theme-segmented button {
+    border: none; background: none; padding: 5px 12px; border-radius: 999px;
+    font-size: 12px; cursor: pointer; color: var(--text-dim); font-family: inherit;
+  }
+  #pref-theme-segmented button.active { background: var(--accent); color: #fff; }
+  body.compact-mode .msg-row { margin-bottom: 14px; gap: 9px; }
+  body.compact-mode .avatar { width: 22px; height: 22px; margin-top: 0; }
+  body.compact-mode .msg-row.user .msg-content { padding: 7px 11px; }
+  body.compact-mode .msg-content { line-height: 1.4; }
+  #profile-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  #profile-modal-header h2 { font-size: 16px; margin: 0; }
+  #profile-close-btn { background: none; border: none; cursor: pointer; color: var(--text-dim); padding: 4px; border-radius: 6px; }
+  #profile-close-btn:hover { background: var(--accent-soft); color: var(--accent-hover); }
+  #profile-close-btn svg { width: 18px; height: 18px; }
+  #profile-modal-body { padding: 18px; font-size: 13.5px; color: var(--text-dim); line-height: 1.5; flex: 1; max-height: 70vh; overflow-y: auto; }
+  #profile-modal-body p { margin: 0 0 10px 0; }
+  #profile-modal-username { color: var(--text); }
+  .ai-account-section-title {
+    font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--text-faint); font-weight: 700; margin: 22px 0 12px 0;
+  }
+  .ai-account-section-title:first-child { margin-top: 0; }
+  #gemini-link-status { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 13px; color: var(--text-dim); }
+  #gemini-link-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-faint); flex-shrink: 0; }
+  #gemini-link-status .dot.linked { background: #5a9c6a; }
+  #gemini-link-form { display: flex; gap: 8px; margin-bottom: 10px; }
+  #gemini-api-key-input {
+    flex: 1; padding: 9px 10px; border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm); background: var(--bg); color: var(--text); font-size: 13px;
+  }
+  #gemini-api-key-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  #gemini-link-form .primary-btn { width: auto; flex-shrink: 0; }
+  .primary-btn, .ghost-btn, .danger-btn {
+    border-radius: var(--radius-sm);
+    padding: 9px 14px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .primary-btn { background: var(--accent); color: #fff; width: 100%; }
+  .primary-btn:hover { background: var(--accent-hover); }
+  .ghost-btn { background: transparent; color: var(--text-dim); border-color: var(--border-strong); }
+  .ghost-btn:hover { background: var(--accent-soft); }
+  .danger-btn { background: transparent; color: var(--danger); border-color: var(--border-strong); width: 100%; margin-top: 8px; }
+  .danger-btn:hover { background: var(--accent-soft); }
+  #profile-auth-link {
+    display: block;
+    word-break: break-all;
+    background: var(--accent-soft);
+    color: var(--accent-hover);
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+  #profile-code-input {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13.5px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+  }
+  #profile-code-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .profile-actions { display: flex; gap: 8px; }
+  .profile-actions .primary-btn, .profile-actions .ghost-btn { width: auto; flex: 1; }
+  .error-text { color: var(--danger); font-size: 12.5px; margin-top: 4px; }
+  .warning-text { color: var(--accent); font-weight: 600; }
+  .license-info-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px;
+    font-size: 13px; line-height: 1.5;
+  }
+  .license-info-grid strong { font-size: 11.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+  #profile-auth-info {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    font-size: 12.5px;
+  }
+  #profile-auth-info .row { display: flex; justify-content: space-between; padding: 2px 0; }
+  #profile-auth-info .row span:first-child { color: var(--text-faint); }
+  #profile-auth-info .row span:last-child { color: var(--text); font-weight: 600; }
+  #profile-auth-info a { color: var(--accent); text-decoration: none; font-size: 12px; display: inline-block; margin-top: 6px; }
+  #profile-auth-info a:hover { text-decoration: underline; }
+  .settings-hint a { color: var(--accent); text-decoration: none; }
+  .settings-hint a:hover { text-decoration: underline; }
+  #profile-step-success { text-align: center; padding: 8px 0 4px; }
+  #profile-success-icon {
+    width: 52px; height: 52px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: #5a9c6a22;
+    color: #5a9c6a;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #profile-success-icon svg { width: 26px; height: 26px; }
+  #profile-success-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  #profile-step-success p:nth-of-type(2) { margin-bottom: 16px; }
+  .conv-item {
+    padding: 9px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    margin-bottom: 2px;
+    font-size: 13.5px;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: background-color 120ms ease;
+  }
+  .conv-item span.title { overflow: hidden; text-overflow: ellipsis; flex: 1; }
+  .conv-item .conv-star-icon { width: 12px; height: 12px; color: var(--accent); flex-shrink: 0; }
+  .conv-item:hover { background: var(--accent-soft); }
+  .conv-item.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+  .conv-item .conv-menu-btn {
+    opacity: 0;
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 6px;
+    display: flex;
+    flex-shrink: 0;
+    transition: opacity 120ms ease, color 120ms ease, background-color 120ms ease;
+  }
+  .conv-item .conv-menu-btn svg { width: 14px; height: 14px; }
+  .conv-item:hover .conv-menu-btn, .conv-item .conv-menu-btn.menu-open { opacity: 1; }
+  .conv-item .conv-menu-btn:hover { color: var(--text); background: var(--accent-soft); }
+  .conv-item .title-input {
+    flex: 1; min-width: 0; background: var(--bg); color: var(--text);
+    border: 1px solid var(--accent); border-radius: 4px; padding: 1px 4px;
+    font-size: 13.5px; font-family: inherit;
+  }
+  #conv-context-menu {
+    position: fixed; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-md); box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+    padding: 6px; z-index: 300; display: flex; flex-direction: column; gap: 1px;
+    min-width: 190px;
+  }
+  #conv-context-menu[hidden] { display: none; }
+  .conv-menu-option {
+    display: flex; align-items: center; gap: 9px; width: 100%; text-align: left;
+    background: none; border: none; padding: 8px 10px; font-size: 13px;
+    color: var(--text); border-radius: var(--radius-sm); cursor: pointer; font-family: inherit;
+  }
+  .conv-menu-option svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .conv-menu-option:hover { background: var(--accent-soft); }
+  .conv-menu-option.danger { color: var(--danger); }
+  .conv-menu-separator { height: 1px; background: var(--border); margin: 4px 2px; }
+
+  /* ---------- Main / chat ---------- */
+  #main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  #messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px 24px 16px 24px;
+  }
+  .msg-row {
+    max-width: 680px;
+    margin: 0 auto 28px auto;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+  .avatar.assistant { background: var(--accent); }
+  .avatar.assistant svg { width: 14px; height: 14px; color: #fff; }
+  .avatar.user { background: var(--border-strong); }
+  .avatar.user svg { width: 13px; height: 13px; color: var(--text-dim); }
+
+  .msg-row.user { flex-direction: row-reverse; }
+  .msg-content-wrap { min-width: 0; max-width: 540px; display: flex; flex-direction: column; }
+  .msg-row.user .msg-content-wrap { align-items: flex-end; }
+  .msg-row.user .msg-content {
+    background: var(--user-bubble);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+  }
+  .msg-row.assistant .msg-content { padding-top: 3px; }
+
+  .role-line {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-faint);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .role-line .lock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: var(--accent-hover);
+    background: var(--accent-soft);
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-size: 10.5px;
+    font-weight: 600;
+  }
+  .role-line .lock-badge svg { width: 10px; height: 10px; }
+
+  .body { font-size: 15.5px; line-height: 1.65; color: var(--text); }
+  .body p { margin: 0 0 12px 0; }
+  .body p:last-child { margin-bottom: 0; }
+  .body ul, .body ol { margin: 0 0 12px 0; padding-left: 22px; }
+  .body li { margin-bottom: 3px; }
+  .body code {
+    font-family: "SF Mono", Consolas, Menlo, monospace;
+    font-size: 13px;
+    background: var(--accent-soft);
+    padding: 2px 5px;
+    border-radius: 4px;
+  }
+
+  /* ---------- Code blocks : header + bouton copier + coloration ---------- */
+  .code-block {
+    margin: 0 0 14px 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid #38352f;
+    background: var(--code-bg);
+  }
+  .code-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 8px 7px 14px;
+    background: #1c1b18;
+    border-bottom: 1px solid #38352f;
+  }
+  .code-lang {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #948e7e;
+    font-weight: 600;
+  }
+  .copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    color: #b3ad9e;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 4px 9px;
+    border-radius: 6px;
+    transition: background-color 120ms ease, color 120ms ease;
+  }
+  .copy-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .copy-btn:hover { background: #2c2a26; color: #f0eee8; }
+  .copy-btn.copied { color: #8fc97a; }
+  .copy-btn.copy-failed { color: #e08a7d; }
+  .body pre {
+    background: none;
+    border-radius: 0;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    scrollbar-width: thin;
+    scrollbar-color: #4a463f transparent;
+  }
+  .body pre::-webkit-scrollbar { height: 7px; }
+  .body pre::-webkit-scrollbar-track { background: transparent; }
+  .body pre::-webkit-scrollbar-thumb { background: #4a463f; border-radius: 4px; }
+  .body pre code { background: none; padding: 0; color: var(--code-text); font-size: inherit; }
+
+  /* palette de tokens proche de claude.ai (s'applique sur fond code sombre,
+     constant dans les deux thèmes) */
+  .token.comment { color: #8a8475; font-style: italic; }
+  .token.string, .token.attr-value { color: #a8c97f; }
+  .token.keyword, .token.selector, .token.important { color: var(--accent); font-weight: 600; }
+  .token.function, .token.class-name { color: #7fb3d9; }
+  .token.number, .token.boolean, .token.constant { color: #d9a66c; }
+  .token.operator, .token.punctuation, .token.entity { color: #a39c8a; }
+  .token.builtin, .token.tag, .token.property { color: #e0c46c; }
+  .token.variable { color: #e0c4a6; }
+  .body table { border-collapse: collapse; margin-bottom: 12px; width: 100%; font-size: 14px; }
+  .body th, .body td { border: 1px solid var(--border-strong); padding: 6px 10px; text-align: left; }
+  .body th { background: var(--bg-sidebar); font-weight: 600; }
+  .body blockquote {
+    border-left: 3px solid var(--accent);
+    margin: 0 0 12px 0;
+    padding-left: 12px;
+    color: var(--text-dim);
+  }
+  .body a { color: var(--accent); text-decoration: underline; text-decoration-color: var(--accent-soft); text-underline-offset: 2px; }
+  .body a:hover { color: var(--accent-hover); text-decoration-color: var(--accent-hover); }
+  .body h1, .body h2, .body h3 { margin: 18px 0 8px 0; line-height: 1.3; }
+  .body h1:first-child, .body h2:first-child, .body h3:first-child { margin-top: 0; }
+  .body strong { font-weight: 600; }
+  .body hr { border: none; border-top: 1px solid var(--border-strong); margin: 16px 0; }
+
+  .typing-dots { display: inline-flex; gap: 4px; padding: 4px 0; }
+  .typing-dots span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--text-faint);
+    animation: typing-bounce 1.1s infinite ease-in-out;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes typing-bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .typing-dots span { animation: none; opacity: 0.8; }
+  }
+
+  #empty-state {
+    margin: auto;
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 14.5px;
+    max-width: 720px;
+    padding: 0 24px;
+  }
+  #empty-state .greeting {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0 auto 16px auto;
+  }
+  #empty-state .greeting svg {
+    width: 34px; height: 34px; color: var(--accent); flex-shrink: 0;
+    transition: transform 250ms ease-out, color 250ms ease-out;
+  }
+  #empty-state .greeting:hover svg { transform: scale(1.12) rotate(-6deg); color: var(--accent-hover); }
+  #empty-state .howto-title {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 34px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.2;
+  }
+  #empty-state .howto-title em { color: var(--accent); font-style: italic; }
+  #empty-state .lead { font-size: 15px; color: var(--text-faint); margin-bottom: 34px; }
+
+  #howto-steps {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    text-align: left;
+  }
+  .howto-step {
+    flex: 1;
+    min-width: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px 16px;
+    box-shadow: var(--shadow-input);
+  }
+  .howto-step .icon {
+    width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 14px auto;
+  }
+  .howto-step .icon svg { width: 18px; height: 18px; }
+  .howto-step .title { font-size: 13.5px; font-weight: 700; color: var(--text); text-align: center; margin-bottom: 6px; }
+  .howto-step .txt { font-size: 12.5px; color: var(--text-dim); line-height: 1.5; text-align: center; }
+  .howto-arrow {
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    width: 36px;
+    color: var(--accent);
+    opacity: 0.7;
+  }
+  .howto-arrow svg { width: 20px; height: 20px; }
+  .howto-note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    max-width: 100%;
+    margin: 22px auto 0 auto;
+    padding: 8px 14px;
+    background: var(--accent-soft);
+    border-radius: 999px;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-align: left;
+  }
+  .howto-note svg { width: 15px; height: 15px; color: var(--accent); flex-shrink: 0; }
+  @media (max-width: 720px) {
+    #howto-steps { flex-direction: column; gap: 14px; }
+    .howto-arrow { width: auto; transform: rotate(90deg); padding: 2px 0; }
+  }
+
+  /* ---------- Input area ---------- */
+  #input-area {
+    padding: 12px 24px 20px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  #input-shell {
+    width: 100%;
+    max-width: 680px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-input);
+    transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+    padding: 6px 6px 6px 16px;
+  }
+  #input-shell.focused { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  #input-wrap { display: flex; align-items: flex-end; gap: 8px; }
+  #msg-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    padding: 10px 0;
+    font-size: 15px;
+    resize: none;
+    max-height: 200px;
+    font-family: inherit;
+    line-height: 1.5;
+  }
+  #msg-input::placeholder { color: var(--text-faint); }
+  #msg-input:focus { outline: none; }
+  #send-btn {
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    border-radius: 10px;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    margin-bottom: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 150ms ease, transform 100ms ease;
+  }
+  #send-btn svg { width: 16px; height: 16px; }
+  #send-btn:hover:not(:disabled) { background: var(--accent-hover); }
+  #send-btn:active:not(:disabled) { transform: scale(0.94); }
+  #send-btn:disabled { opacity: 0.4; cursor: default; }
+
+  #input-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 4px 4px 4px;
+  }
+  #input-toolbar-left { display: flex; align-items: center; gap: 6px; }
+  #show-preview-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    color: var(--text-dim);
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+  #show-preview-btn svg { width: 13px; height: 13px; }
+  #show-preview-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  #show-preview-btn:disabled { opacity: 0.4; cursor: default; }
+  #anon-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    color: var(--text-dim);
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 5px 10px 5px 8px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+  #anon-toggle-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+  #anon-toggle-btn:hover { border-color: var(--accent); }
+  #anon-toggle-btn[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  #model-select-wrap { position: relative; }
+  #model-select-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    color: var(--text-dim);
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 5px 9px 5px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 150ms ease;
+  }
+  #model-select-btn:hover { border-color: var(--accent); }
+  #model-select-btn svg { width: 13px; height: 13px; flex-shrink: 0; transition: transform 150ms ease; }
+  #model-select-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+  #model-select-menu[hidden] { display: none; }
+  #model-select-menu {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    right: 0;
+    width: 240px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    z-index: 50;
+  }
+  .model-option {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    width: 100%;
+    background: none;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 7px 10px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .model-option:hover { background: var(--accent-soft); }
+  .model-option .model-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .model-option .model-desc { font-size: 11.5px; color: var(--text-faint); }
+  .model-option.selected .model-name { color: var(--accent); }
+  .model-group-label {
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--text-faint); font-weight: 700; padding: 6px 10px 3px 10px;
+  }
+  .model-group-separator { height: 1px; background: var(--border); margin: 4px 6px; }
+  #input-hint {
+    font-size: 11.5px;
+    color: var(--text-faint);
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  /* ---------- Aperçu anonymisation temps réel ---------- */
+  #anon-preview {
+    width: 100%;
+    max-width: 680px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md, 10px);
+    background: var(--surface);
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 200ms ease, opacity 150ms ease;
+  }
+  #anon-preview.open { max-height: 160px; opacity: 1; }
+  #anon-preview.expanded.open { max-height: 460px; }
+  #anon-preview-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 8px 7px 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border-strong);
+  }
+  #anon-preview-head svg:first-child { width: 12px; height: 12px; color: var(--accent); flex-shrink: 0; }
+  #anon-preview-title { flex: 1; }
+  #anon-preview-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+  #anon-preview-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-faint);
+    padding: 4px;
+    border-radius: 6px;
+    display: flex;
+  }
+  #anon-preview-actions button svg { width: 13px; height: 13px; }
+  #anon-preview-actions button:hover { background: var(--accent-soft); color: var(--accent); }
+  #anon-preview-actions button.copied { color: #8fc97a; }
+  #anon-preview-expand-btn[aria-pressed="true"] { color: var(--accent); background: var(--accent-soft); }
+  #anon-preview-body {
+    padding: 10px 12px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--text-dim);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 122px;
+    overflow-y: auto;
+    transition: max-height 200ms ease;
+  }
+  #anon-preview.expanded #anon-preview-body { max-height: 422px; }
+  #anon-preview-body .tok {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 4px;
+    padding: 0 3px;
+    font-weight: 600;
+  }
+  .reveal-anon-btn {
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font-size: 11px;
+    cursor: pointer;
+    padding: 2px 0;
+    margin-top: 2px;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: color 150ms ease, text-decoration-color 150ms ease;
+  }
+  .reveal-anon-btn:hover { color: var(--accent); text-decoration-color: var(--accent); }
+  .msg-actions {
+    display: flex;
+    gap: 2px;
+    margin-top: 3px;
+    opacity: 0;
+    transition: opacity 120ms ease;
+  }
+  .msg-row:hover .msg-actions,
+  .msg-row:focus-within .msg-actions { opacity: 1; }
+  body.compact-mode .msg-actions { margin-top: 1px; }
+  .msg-action-btn {
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    display: flex;
+  }
+  .msg-action-btn svg { width: 13px; height: 13px; }
+  .msg-action-btn:hover { background: var(--accent-soft); color: var(--accent); }
+  .msg-action-btn.copied { color: #5a9c6a; }
+  .anon-revealed {
+    margin-top: 6px;
+    padding: 8px 10px;
+    background: var(--accent-soft);
+    border-radius: 8px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--text);
+  }
+  .anon-revealed .tok { color: var(--accent); font-weight: 600; }
+</style>
+</head>
+<body>
+  <nav id="sidebar" aria-label="Conversations">
+    <div id="brand">
+      <span class="mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4 4 12l6 8"/><path d="M14 4l6 8-6 8"/></g><rect x="9.5" y="10.6" width="5" height="2.8" rx="1.4" fill="currentColor" stroke="none"/></svg>
+      </span>
+      <span class="wordmark">TokenVeil<span class="sub">multi-IA</span></span>
+      <button id="search-conv-btn" type="button" aria-label="Rechercher dans les conversations" title="Rechercher (Ctrl+K)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      </button>
+      <button id="theme-toggle-btn" type="button" aria-label="Changer de thème">
+        <svg class="icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg class="icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+    <div id="sidebar-header">
+      <button id="new-chat-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Nouvelle conversation
+      </button>
+    </div>
+    <div id="conversations-label">Historique</div>
+    <div id="conversations"></div>
+    <div id="sidebar-footer">
+      <button id="admin-btn" type="button" title="Administration" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6l-8-4Z"/></svg>
+        <span>Administration</span>
+      </button>
+      <button id="settings-btn" type="button" title="Réglages d'anonymisation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Mots-clés à anonymiser</span>
+      </button>
+      <button id="profile-btn" type="button">
+        <span class="profile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+        <span class="profile-text">
+          <span id="profile-username">Profil</span>
+          <span id="profile-status">Compte Claude non lié</span>
+        </span>
+        <span id="profile-dot" class="dot" aria-hidden="true"></span>
+      </button>
+      <button id="logout-btn" type="button" title="Déconnexion">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+        <span>Déconnexion</span>
+      </button>
+      <p id="not-affiliated-disclaimer">Non affilié à Anthropic ou Google. "Claude" est une marque d'Anthropic PBC, "Gemini" une marque de Google LLC.</p>
+    </div>
+  </nav>
+
+  <div id="search-overlay" hidden>
+    <div id="search-modal" role="dialog" aria-modal="true" aria-label="Rechercher dans les conversations">
+      <div id="search-input-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="search-input" type="text" placeholder="Rechercher dans les conversations…" autocomplete="off" />
+        <button id="search-close-btn" type="button" aria-label="Fermer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="search-results"></div>
+    </div>
+  </div>
+
+  <div id="profile-overlay" hidden>
+    <div id="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+      <div id="profile-modal-header">
+        <h2 id="profile-modal-title">Préférences</h2>
+        <button id="profile-close-btn" type="button" aria-label="Fermer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="profile-modal-layout">
+        <div id="profile-nav">
+          <button class="profile-nav-btn active" type="button" data-profile-tab="general">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Général
+          </button>
+          <button class="profile-nav-btn" type="button" data-profile-tab="history">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
+            Historique
+          </button>
+          <button class="profile-nav-btn" type="button" data-profile-tab="account">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3M3 21l2.5-2.5M9 15l-2 2-3-3 6-6 3 3-1.5 1.5"/></svg>
+            Comptes IA
+          </button>
+        </div>
+        <div id="profile-modal-body">
+          <div id="profile-tab-general" class="profile-tab-panel">
+            <div class="pref-section">
+              <h3>Profil</h3>
+              <div id="pref-avatar-row">
+                <button id="pref-avatar-btn" type="button" aria-label="Changer l'avatar">
+                  <span id="pref-avatar-preview"></span>
+                </button>
+                <label class="pref-field" style="flex:1; margin-bottom:0;">
+                  <span class="pref-field-label">Nom d'affichage</span>
+                  <input id="pref-display-name-input" type="text" maxlength="40" placeholder="Ton nom" autocomplete="off" />
+                </label>
+              </div>
+              <div id="pref-avatar-picker" hidden>
+                <div id="pref-avatar-colors"></div>
+              </div>
+            </div>
+
+            <div class="pref-section">
+              <h3>Apparence</h3>
+              <div class="pref-row">
+                <span class="pref-row-label">Thème</span>
+                <div id="pref-theme-segmented" class="segmented">
+                  <button type="button" data-theme-choice="system">Système</button>
+                  <button type="button" data-theme-choice="light">Clair</button>
+                  <button type="button" data-theme-choice="dark">Sombre</button>
+                </div>
+              </div>
+              <div class="pref-row">
+                <span class="pref-row-label">Mode compact</span>
+                <span class="pref-row-hint">Messages plus rapprochés, pour voir plus de conversation à l'écran.</span>
+                <label class="pref-switch">
+                  <input id="pref-compact-toggle" type="checkbox" />
+                  <span class="pref-switch-track"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="pref-section">
+              <h3>Comportement</h3>
+              <div class="pref-row">
+                <span class="pref-row-label">Aperçu automatique</span>
+                <span class="pref-row-hint">Affiche l'anonymisation en temps réel pendant la frappe. Toujours accessible via l'œil sinon.</span>
+                <label class="pref-switch">
+                  <input id="pref-auto-preview-toggle" type="checkbox" />
+                  <span class="pref-switch-track"></span>
+                </label>
+              </div>
+              <div class="pref-row">
+                <span class="pref-row-label">"Message sensible" activé par défaut</span>
+                <span class="pref-row-hint">Désactive si tes messages n'ont en général rien à cacher. Reste modifiable à tout moment sous le champ de saisie.</span>
+                <label class="pref-switch">
+                  <input id="pref-anonymize-default-toggle" type="checkbox" />
+                  <span class="pref-switch-track"></span>
+                </label>
+              </div>
+            </div>
+            <p id="pref-error" class="error-text" hidden></p>
+          </div>
+
+          <div id="profile-tab-history" class="profile-tab-panel" hidden>
+            <p class="settings-hint">Gère toutes tes conversations d'un coup : sélection multiple pour supprimer, mettre en favoris ou retirer des favoris en masse.</p>
+            <div id="history-bulk-bar">
+              <label id="history-select-all-label">
+                <input id="history-select-all" type="checkbox" /> Tout sélectionner
+              </label>
+              <div id="history-bulk-actions" hidden>
+                <button id="history-bulk-favorite-btn" type="button" class="ghost-btn">Ajouter aux favoris</button>
+                <button id="history-bulk-unfavorite-btn" type="button" class="ghost-btn">Retirer des favoris</button>
+                <button id="history-bulk-delete-btn" type="button" class="danger-btn" style="width:auto; margin-top:0;">Supprimer la sélection</button>
+              </div>
+            </div>
+            <p id="history-error" class="error-text" hidden></p>
+            <div id="history-list"></div>
+          </div>
+
+          <div id="profile-tab-account" class="profile-tab-panel" hidden>
+            <h3 class="ai-account-section-title">Claude</h3>
+            <div id="profile-step-status">
+              <p>Connecté en tant que <strong id="profile-modal-username"></strong>.</p>
+              <p id="profile-link-state">Vérification du lien Claude…</p>
+              <div id="profile-auth-info" hidden></div>
+              <button id="profile-link-btn" type="button" class="primary-btn">Lier mon compte Claude Pro/Max</button>
+              <button id="profile-status-start-btn" type="button" class="primary-btn" hidden>Commencer à discuter</button>
+              <button id="profile-unlink-btn" type="button" class="danger-btn" hidden>Délier mon compte</button>
+            </div>
+            <div id="profile-step-url" hidden>
+              <p>Ouvre ce lien, connecte-toi avec ton compte Claude Pro ou Max, puis autorise l'accès :</p>
+              <a id="profile-auth-link" target="_blank" rel="noopener"></a>
+              <p>Une fois autorisé, colle ici le code affiché :</p>
+              <input id="profile-code-input" type="text" placeholder="Code de validation" autocomplete="off" />
+              <div class="profile-actions">
+                <button id="profile-submit-code-btn" type="button" class="primary-btn">Valider</button>
+                <button id="profile-cancel-link-btn" type="button" class="ghost-btn">Annuler</button>
+              </div>
+            </div>
+            <div id="profile-step-success" hidden>
+              <div id="profile-success-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              </div>
+              <p id="profile-success-title">Compte lié avec succès</p>
+              <p>Tes messages passent désormais par ton abonnement Claude Pro/Max, sans clé API facturée.</p>
+              <button id="profile-start-btn" type="button" class="primary-btn">Commencer à discuter</button>
+            </div>
+            <p id="profile-error" class="error-text" hidden></p>
+
+            <h3 class="ai-account-section-title">Gemini</h3>
+            <div id="gemini-link-status">
+              <span id="gemini-status-dot" class="dot" aria-hidden="true"></span>
+              <span id="gemini-status-text">Vérification du lien Gemini…</span>
+            </div>
+
+            <div id="gemini-step-apikey">
+              <p class="settings-hint" style="margin-bottom:10px;">
+                Colle une clé API générée sur
+                <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com</a>
+                (connexion avec ton compte Google). Gratuit sur les modèles Flash, sans carte bancaire ; Gemini 2.5 Pro
+                nécessite la facturation activée côté Google (pas évitable depuis l'app).
+              </p>
+              <div id="gemini-link-form">
+                <input id="gemini-api-key-input" type="password" placeholder="Clé API Gemini" autocomplete="off" />
+                <button id="gemini-link-btn" type="button" class="primary-btn">Lier ma clé Gemini</button>
+              </div>
+            </div>
+
+            <button id="gemini-unlink-btn" type="button" class="danger-btn" hidden>Délier mon compte Gemini</button>
+            <p id="gemini-error" class="error-text" hidden></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="settings-overlay" hidden>
+    <div id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+      <div id="settings-modal-header">
+        <h2 id="settings-modal-title">Mots-clés à anonymiser</h2>
+        <button id="settings-close-btn" type="button" aria-label="Fermer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="settings-tabs">
+        <button class="settings-tab-btn active" type="button" data-tab="manual">Mots-clés</button>
+        <button class="settings-tab-btn" type="button" data-tab="auto">Auto-détection</button>
+      </div>
+      <div id="settings-modal-body">
+        <div id="settings-tab-manual" class="settings-tab-panel">
+          <p class="settings-hint">Ajoute tes mots-clés internes (codenames, noms de projets...) : ils seront <strong>toujours remplacés par un token</strong> avant d'arriver chez l'IA.</p>
+          <div id="settings-add-row">
+            <input id="settings-term-input" type="text" placeholder="Ex : Projet Phoenix" autocomplete="off" />
+            <input id="settings-label-input" type="text" placeholder="Étiquette (optionnel)" autocomplete="off" />
+            <label id="settings-regex-toggle">
+              <input id="settings-regex-checkbox" type="checkbox" /> Regex
+            </label>
+            <button id="settings-add-btn" type="button" class="primary-btn">Ajouter</button>
+          </div>
+          <p id="settings-error" class="error-text" hidden></p>
+          <div id="settings-admin-bar" hidden>
+            <label id="settings-select-all-label">
+              <input id="settings-select-all" type="checkbox" /> Tout sélectionner
+            </label>
+            <div id="settings-bulk-actions" hidden>
+              <button id="bulk-lock-btn" type="button" class="ghost-btn">Verrouiller la sélection</button>
+              <button id="bulk-unlock-btn" type="button" class="ghost-btn">Déverrouiller la sélection</button>
+            </div>
+            <div id="settings-admin-bar-spacer"></div>
+            <button id="terms-import-btn" type="button" class="ghost-btn">Importer</button>
+            <input id="terms-import-file" type="file" accept="application/json" hidden />
+            <button id="terms-export-btn" type="button" class="ghost-btn">Exporter (JSON)</button>
+          </div>
+          <div id="settings-list"></div>
+        </div>
+        <div id="settings-tab-auto" class="settings-tab-panel" hidden>
+          <ol class="settings-steps">
+            <li><strong>Télécharge</strong> le script ci-dessous.</li>
+            <li>
+              <strong>Lance-le</strong> sur le serveur à protéger (pas celui de la webapp) :
+              <div class="cmd-row">
+                <code>python3 scan_infra.py</code>
+                <button class="cmd-copy-btn" type="button" data-cmd="python3 scan_infra.py" aria-label="Copier la commande">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+            </li>
+            <li><strong>Colle son résultat</strong> ici, ci-dessous.</li>
+          </ol>
+          <a id="scan-script-download" class="ghost-btn" href="/api/scan-script" download="scan_infra.py">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Télécharger le script (scan_infra.py)
+          </a>
+          <textarea id="auto-detect-input" rows="5" placeholder='{"candidates": [...]}'></textarea>
+          <div class="profile-actions">
+            <button id="auto-detect-analyze-btn" type="button" class="primary-btn">Analyser</button>
+          </div>
+          <p id="auto-detect-error" class="error-text" hidden></p>
+          <div id="auto-detect-results" hidden>
+            <div id="auto-detect-list"></div>
+            <div class="profile-actions">
+              <button id="auto-detect-add-btn" type="button" class="primary-btn">Ajouter la sélection</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="admin-overlay" hidden>
+    <div id="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-modal-title">
+      <div id="admin-modal-header">
+        <h2 id="admin-modal-title">Administration</h2>
+        <button id="admin-close-btn" type="button" aria-label="Fermer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="admin-tabs">
+        <button class="admin-tab-btn active" type="button" data-admin-tab="users">Utilisateurs</button>
+        <button class="admin-tab-btn" type="button" data-admin-tab="ldap">LDAP</button>
+        <button class="admin-tab-btn" type="button" data-admin-tab="benchmark">Benchmark</button>
+        <button class="admin-tab-btn" type="button" data-admin-tab="audit">Journal d'audit</button>
+        <button class="admin-tab-btn" type="button" data-admin-tab="license">Licence</button>
+      </div>
+      <div id="admin-modal-body">
+        <div id="admin-tab-users" class="admin-tab-panel">
+          <p class="settings-hint">Crée des comptes locaux et choisis qui a accès à l'administration.</p>
+          <div id="admin-add-row">
+            <input id="admin-user-input" type="text" placeholder="Identifiant" autocomplete="off" />
+            <input id="admin-pass-input" type="password" placeholder="Mot de passe" autocomplete="off" />
+            <select id="admin-role-input">
+              <option value="user">Utilisateur</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button id="admin-add-user-btn" type="button" class="primary-btn">Créer</button>
+          </div>
+          <p id="admin-users-error" class="error-text" hidden></p>
+          <div id="admin-users-list"></div>
+        </div>
+        <div id="admin-tab-ldap" class="admin-tab-panel" hidden>
+          <p class="settings-hint">Configurable ici, ou via les mêmes variables dans le fichier <code>.env</code> — l'UI prend le pas si les deux sont définis.</p>
+          <div id="admin-backend-row">
+            <label>Méthode de connexion :</label>
+            <select id="admin-auth-backend-select">
+              <option value="local">Comptes locaux</option>
+              <option value="ldap">LDAP / Active Directory</option>
+            </select>
+          </div>
+          <div id="admin-ldap-form">
+            <label>Serveur (ldap:// ou ldaps://)</label>
+            <input id="ldap-server" type="text" placeholder="ldap://ldap.example.com:389" autocomplete="off" />
+            <label>Base DN</label>
+            <input id="ldap-base-dn" type="text" placeholder="ou=people,dc=example,dc=com" autocomplete="off" />
+            <label>Filtre de recherche</label>
+            <input id="ldap-search-filter" type="text" placeholder="(uid={username})" autocomplete="off" />
+            <label>DN du compte de service (vide = recherche anonyme)</label>
+            <input id="ldap-bind-dn" type="text" placeholder="cn=service-account,dc=example,dc=com" autocomplete="off" />
+            <label>Mot de passe du compte de service</label>
+            <input id="ldap-bind-password" type="password" placeholder="••••••••" autocomplete="off" />
+            <label>Template de DN direct (optionnel, saute la recherche)</label>
+            <input id="ldap-user-dn-template" type="text" placeholder="uid={username},ou=people,dc=example,dc=com" autocomplete="off" />
+            <label>Groupe requis (optionnel)</label>
+            <input id="ldap-require-group" type="text" placeholder="cn=claude-proxy-users,ou=groups,dc=example,dc=com" autocomplete="off" />
+            <label id="ldap-ssl-toggle"><input id="ldap-use-ssl" type="checkbox" /> Connexion SSL (ldaps://)</label>
+          </div>
+          <p id="admin-ldap-error" class="error-text" hidden></p>
+          <p id="admin-ldap-result" hidden></p>
+          <div class="profile-actions">
+            <button id="admin-ldap-test-btn" type="button" class="ghost-btn">Tester la connexion</button>
+            <button id="admin-ldap-save-btn" type="button" class="primary-btn">Enregistrer</button>
+          </div>
+        </div>
+        <div id="admin-tab-benchmark" class="admin-tab-panel" hidden>
+          <p class="settings-hint">Colle de vrais logs. Un scanner externe repère ce qui ressemble à une donnée sensible, puis vérifie si elle a vraiment disparu. Un score mesuré, pas une estimation.</p>
+          <textarea id="benchmark-input" rows="7" placeholder="Colle tes logs ici..."></textarea>
+          <div class="profile-actions">
+            <button id="benchmark-run-btn" type="button" class="primary-btn">Analyser</button>
+          </div>
+          <p id="benchmark-error" class="error-text" hidden></p>
+          <div id="benchmark-results" hidden>
+            <div id="benchmark-score-row">
+              <div id="benchmark-score-circle"><span id="benchmark-score-value">—</span></div>
+              <div id="benchmark-score-text">
+                <strong id="benchmark-score-label">—</strong>
+                <span id="benchmark-score-sub">—</span>
+              </div>
+            </div>
+            <div id="benchmark-bars"></div>
+            <div id="benchmark-leaks" hidden>
+              <p class="settings-hint" style="margin-bottom:8px;">Fuites détectées (aperçu masqué, pas la vraie valeur) :</p>
+              <div id="benchmark-leaks-list"></div>
+            </div>
+            <div id="benchmark-candidates" hidden>
+              <p class="settings-hint" style="margin-bottom:8px;">
+                Candidats à vérifier à l'œil (détecteur volontairement large, beaucoup de faux positifs possibles —
+                <strong>pas compté dans le score</strong>, juste un coup de pouce sur le gap noms-en-texte-libre) :
+              </p>
+              <div id="benchmark-candidates-list"></div>
+            </div>
+            <div class="profile-actions">
+              <button id="benchmark-copy-report-btn" type="button" class="ghost-btn">Copier le rapport pour Claude</button>
+            </div>
+          </div>
+
+          <div id="fuzz-section">
+            <p class="settings-hint">
+              <strong>Fuzzing aléatoire</strong> : génère des lignes synthétiques avec données placées au hasard,
+              seed différente à chaque clic. Personne ne connaît les cas à l'avance — la mesure honnête, pas le
+              score "vendeur" sur des cas déjà connus.
+            </p>
+            <div id="fuzz-controls">
+              <label for="fuzz-n-input">Nombre de lignes</label>
+              <input id="fuzz-n-input" type="number" min="100" max="20000" step="100" value="2000" />
+              <button id="fuzz-run-btn" type="button" class="primary-btn">Lancer le fuzzing</button>
+            </div>
+            <p id="fuzz-error" class="error-text" hidden></p>
+            <div id="fuzz-results" hidden>
+              <div id="fuzz-score-row">
+                <div id="fuzz-score-circle"><span id="fuzz-score-value">—</span></div>
+                <div id="fuzz-score-text">
+                  <strong id="fuzz-score-label">—</strong>
+                  <span id="fuzz-score-sub">—</span>
+                </div>
+              </div>
+              <div id="fuzz-examples" hidden>
+                <p class="settings-hint" style="margin-bottom:8px;">Exemples de fuites (données 100% synthétiques, aperçu masqué) :</p>
+                <div id="fuzz-examples-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="admin-tab-audit" class="admin-tab-panel" hidden>
+          <p class="settings-hint">
+            Une ligne par message anonymisé : qui, quand, combien de données par catégorie.
+            <strong>Jamais la valeur réelle ni le contenu du message</strong> — uniquement les compteurs,
+            pour prouver que l'anonymisation a eu lieu sans recréer un risque dans le journal lui-même.
+          </p>
+          <p id="audit-error" class="error-text" hidden></p>
+          <div id="audit-log-list"></div>
+        </div>
+
+        <div id="admin-tab-license" class="admin-tab-panel" hidden>
+          <p class="settings-hint">Statut de la licence TokenVeil de cette instance.</p>
+          <div id="license-status-box"></div>
+          <p class="settings-hint" style="margin-top:18px;">Renouveler ou remplacer la licence (colle le nouveau token reçu du fournisseur) :</p>
+          <textarea id="license-token-input" rows="3" placeholder="Token de licence (.lic)"></textarea>
+          <p id="license-error" class="error-text" hidden></p>
+          <div class="profile-actions">
+            <button id="license-install-btn" type="button" class="primary-btn">Installer</button>
+          </div>
+          <p class="settings-hint" style="margin-top:22px;">
+            Migration vers un nouveau serveur : retire la licence d'ici proprement avant de l'installer
+            ailleurs. Le license_id reste valable, mais ton fournisseur doit débloquer le rattachement
+            (reset-instance) côté serveur de licences pour que la nouvelle instance soit acceptée.
+          </p>
+          <div class="profile-actions">
+            <button id="license-revoke-btn" type="button" class="ghost-btn" style="color: var(--danger);">Retirer la licence de cette instance</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main id="main">
+    <div id="messages">
+      <div id="empty-state">
+        <div class="greeting">
+          <svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4 4 12l6 8"/><path d="M14 4l6 8-6 8"/></g><rect x="9.5" y="10.6" width="5" height="2.8" rx="1.4" fill="currentColor" stroke="none"/></svg>
+          <p class="howto-title">Bienvenue sur TokenVeil</p>
+        </div>
+        <p class="lead">Trois étapes, et tu peux coller n'importe quel log sans rien exposer.</p>
+        <div id="howto-steps">
+          <div class="howto-step">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
+            <p class="title">Lie ton compte IA</p>
+            <p class="txt">Dans <strong>Préférences &gt; Comptes IA</strong>, connecte le ou les comptes IA de ton choix. Une seule fois, ensuite c'est réglé.</p>
+          </div>
+          <div class="howto-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+          <div class="howto-step">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+            <p class="title">Active "Message sensible"</p>
+            <p class="txt">Elle est activée par défaut. Décoche-la sous le champ de saisie seulement si ton message ne contient rien de sensible.</p>
+          </div>
+          <div class="howto-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+          <div class="howto-step">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+            <p class="title">Pose ta question</p>
+            <p class="txt">L'IA ne voit jamais la vraie donnée. Elle revient automatiquement dans sa réponse.</p>
+          </div>
+        </div>
+        <p class="howto-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>
+          Désactive "Message sensible" quand ton message n'a rien à cacher : tu retrouves l'IA choisie sans aucun filtre.
+        </p>
+      </div>
+    </div>
+    <div id="input-area">
+      <div id="anon-preview">
+        <div id="anon-preview-head">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M2.5 12S5.5 5 12 5s9.5 7 9.5 7-3 7-9.5 7-9.5-7-9.5-7Z"/></svg>
+          <span id="anon-preview-title">Aperçu envoyé à Claude (anonymisé en temps réel)</span>
+          <div id="anon-preview-actions">
+            <button id="anon-preview-copy-btn" type="button" aria-label="Copier l'aperçu">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+            <button id="anon-preview-expand-btn" type="button" aria-label="Agrandir" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/></svg>
+            </button>
+            <button id="anon-preview-close-btn" type="button" aria-label="Fermer l'aperçu">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+        <div id="anon-preview-body"></div>
+      </div>
+      <div id="input-shell">
+        <div id="input-wrap">
+          <textarea id="msg-input" rows="1" placeholder="Écris à Claude..." aria-label="Message"></textarea>
+          <button id="send-btn" type="button" aria-label="Envoyer le message" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          </button>
+        </div>
+        <div id="input-toolbar">
+          <div id="input-toolbar-left">
+            <button id="anon-toggle-btn" type="button" aria-pressed="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+              <span id="anon-toggle-label">Message sensible</span>
+            </button>
+            <button id="show-preview-btn" type="button" aria-label="Voir l'aperçu anonymisé" title="Voir l'aperçu anonymisé" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S5.5 5 12 5s9.5 7 9.5 7-3 7-9.5 7-9.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div id="model-select-wrap">
+            <button id="model-select-btn" type="button" aria-expanded="false">
+              <span id="model-select-label">Sonnet 4.6</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div id="model-select-menu" hidden>
+              <div class="model-group-label">Claude</div>
+              <button class="model-option" type="button" data-provider="claude" data-model="claude-opus-4-8" data-label="Opus 4.8">
+                <span class="model-name">Opus 4.8</span>
+                <span class="model-desc">Pour les raisonnements complexes</span>
+              </button>
+              <button class="model-option" type="button" data-provider="claude" data-model="claude-sonnet-4-6" data-label="Sonnet 4.6">
+                <span class="model-name">Sonnet 4.6</span>
+                <span class="model-desc">Le plus efficace au quotidien</span>
+              </button>
+              <button class="model-option" type="button" data-provider="claude" data-model="claude-haiku-4-5-20251001" data-label="Haiku 4.5">
+                <span class="model-name">Haiku 4.5</span>
+                <span class="model-desc">Le plus rapide</span>
+              </button>
+              <div class="model-group-separator"></div>
+              <div class="model-group-label">Gemini</div>
+              <button class="model-option" type="button" data-provider="gemini" data-model="gemini-2.5-flash" data-label="Gemini 2.5 Flash">
+                <span class="model-name">Gemini 2.5 Flash</span>
+                <span class="model-desc">Gratuit · rapide</span>
+              </button>
+              <button class="model-option" type="button" data-provider="gemini" data-model="gemini-2.5-flash-lite" data-label="Gemini 2.5 Flash-Lite">
+                <span class="model-name">Gemini 2.5 Flash-Lite</span>
+                <span class="model-desc">Gratuit · le plus rapide</span>
+              </button>
+              <button class="model-option" type="button" data-provider="gemini" data-model="gemini-2.5-pro" data-label="Gemini 2.5 Pro">
+                <span class="model-name">Gemini 2.5 Pro</span>
+                <span class="model-desc">Nécessite facturation activée (plus gratuit)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="input-hint">Anonymisation activée par défaut. Désactive "Message sensible" si tu n'en as pas besoin.</div>
+    </div>
+  </main>
+
+<script>
+(function initTheme() {
+  const saved = localStorage.getItem("theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const theme = saved || (prefersDark ? "dark" : "light");
+  if (theme === "dark") document.documentElement.setAttribute("data-theme", "dark");
+})();
+
+let currentConvId = null;
+let userPrefs = {};
+let autoPreviewEnabled = true;
+// hydratation immédiate depuis le cache local : évite le flash au refresh
+// ("Profil" / pas de prénom / panel admin absent le temps que /api/account
+// réponde). La vraie valeur arrive ensuite via refreshProfileStatus() et ne
+// fait que confirmer/corriger silencieusement, sans à-coup visible.
+let currentUsername = localStorage.getItem("cached_username") || "";
+let currentUserRole = localStorage.getItem("cached_role") || "user";
+if (currentUsername) {
+  document.getElementById("profile-username").textContent = currentUsername;
+  document.getElementById("admin-btn").hidden = currentUserRole !== "admin";
+  showHowto();
+}
+
+const ICONS = {
+  user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  assistant: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>',
+  copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>',
+  starFilled: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>',
+  pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>',
+  dots: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>',
+  retry: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.36M21 12a9 9 0 0 1-15.5 6.36"/><path d="M21 3v6h-6M3 21v-6h6"/></svg>',
+};
+
+async function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (err) {
+      // clipboard API peut échouer silencieusement hors contexte sécurisé
+      // (HTTP, focus perdu, permission refusée) : on retente avec le fallback
+    }
+  }
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch (err) {
+    return false;
+  }
+}
+
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".cmd-copy-btn");
+  if (!btn) return;
+  copyToClipboard(btn.dataset.cmd).then((ok) => {
+    btn.classList.toggle("copied", ok);
+    setTimeout(() => btn.classList.remove("copied"), 1400);
+  });
+});
+
+function enhanceCodeBlocks(container) {
+  container.querySelectorAll("pre > code").forEach((codeEl) => {
+    const preEl = codeEl.parentElement;
+    if (preEl.parentElement && preEl.parentElement.classList.contains("code-block")) return;
+    const langMatch = codeEl.className.match(/language-(\w+)/);
+    const lang = langMatch ? langMatch[1] : "text";
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "code-block";
+    const header = document.createElement("div");
+    header.className = "code-block-header";
+    header.innerHTML = `<span class="code-lang">${escapeHtml(lang)}</span><button class="copy-btn" type="button">${ICONS.copy}<span>Copier</span></button>`;
+
+    preEl.replaceWith(wrapper);
+    wrapper.appendChild(header);
+    wrapper.appendChild(preEl);
+
+    header.querySelector(".copy-btn").addEventListener("click", () => {
+      copyToClipboard(codeEl.textContent).then((ok) => {
+        const btn = header.querySelector(".copy-btn");
+        btn.classList.add(ok ? "copied" : "copy-failed");
+        btn.innerHTML = ok
+          ? `${ICONS.check}<span>Copié</span>`
+          : `${ICONS.copy}<span>Échec — copie manuelle</span>`;
+        setTimeout(() => {
+          btn.classList.remove("copied", "copy-failed");
+          btn.innerHTML = `${ICONS.copy}<span>Copier</span>`;
+        }, 1800);
+      });
+    });
+  });
+  if (window.Prism) Prism.highlightAllUnder(container);
+}
+
+async function api(path, options = {}) {
+  const res = await fetch(path, options);
+  if (res.status === 401) {
+    localStorage.removeItem("cached_username");
+    localStorage.removeItem("cached_role");
+    window.location.href = "/login.html";
+    throw new Error("unauthorized");
+  }
+  if (!res.ok) {
+    const body = await res.text();
+    try {
+      let detail = JSON.parse(body).detail || body;
+      // erreurs de validation FastAPI (422) : detail est une liste d'objets
+      // {msg, loc, ...}, pas une string — sans ça, new Error(array) donne
+      // "[object Object]" au lieu d'un message lisible.
+      if (Array.isArray(detail)) {
+        detail = detail.map((d) => (typeof d === "string" ? d : d.msg || JSON.stringify(d))).join(", ");
+      } else if (typeof detail === "object") {
+        detail = detail.msg || JSON.stringify(detail);
+      }
+      throw new Error(detail);
+    } catch (e) {
+      throw e instanceof Error && e.message !== body ? e : new Error(body);
+    }
+  }
+  return res.status === 204 ? null : res.json();
+}
+
+const convContextMenu = document.createElement("div");
+convContextMenu.id = "conv-context-menu";
+convContextMenu.hidden = true;
+document.body.appendChild(convContextMenu);
+let convMenuOpenBtn = null;
+
+function closeConvMenu() {
+  convContextMenu.hidden = true;
+  if (convMenuOpenBtn) convMenuOpenBtn.classList.remove("menu-open");
+  convMenuOpenBtn = null;
+}
+
+document.addEventListener("click", (e) => {
+  if (!convContextMenu.hidden && !e.target.closest("#conv-context-menu") && !e.target.closest(".conv-menu-btn")) {
+    closeConvMenu();
+  }
+});
+
+function startRenameConversation(item, c) {
+  const titleSpan = item.querySelector(".title");
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "title-input";
+  input.value = c.title;
+  titleSpan.replaceWith(input);
+  input.focus();
+  input.select();
+  const commit = async () => {
+    const val = input.value.trim();
+    if (val && val !== c.title) {
+      await api(`/api/conversations/${c.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: val }),
+      });
+    }
+    loadConversations();
+  };
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); commit(); }
+    if (e.key === "Escape") { e.preventDefault(); loadConversations(); }
+  });
+  input.addEventListener("blur", commit);
+}
+
+function openConvMenu(btn, item, c) {
+  if (convMenuOpenBtn === btn) { closeConvMenu(); return; }
+  closeConvMenu();
+  convMenuOpenBtn = btn;
+  btn.classList.add("menu-open");
+  convContextMenu.innerHTML = `
+    <button type="button" class="conv-menu-option" data-action="favorite">
+      ${c.favorite ? ICONS.starFilled : ICONS.star}
+      <span>${c.favorite ? "Retirer des favoris" : "Ajouter aux favoris"}</span>
+    </button>
+    <button type="button" class="conv-menu-option" data-action="rename">${ICONS.pencil}<span>Renommer</span></button>
+    <div class="conv-menu-separator"></div>
+    <button type="button" class="conv-menu-option danger" data-action="delete">${ICONS.trash}<span>Supprimer</span></button>
+  `;
+  convContextMenu.querySelector('[data-action="favorite"]').onclick = async () => {
+    closeConvMenu();
+    await api(`/api/conversations/${c.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ favorite: !c.favorite }),
+    });
+    loadConversations();
+  };
+  convContextMenu.querySelector('[data-action="rename"]').onclick = () => {
+    closeConvMenu();
+    startRenameConversation(item, c);
+  };
+  convContextMenu.querySelector('[data-action="delete"]').onclick = async () => {
+    closeConvMenu();
+    if (confirm("Supprimer cette conversation ?")) {
+      await api(`/api/conversations/${c.id}`, { method: "DELETE" });
+      if (currentConvId === c.id) { currentConvId = null; renderMessages([]); }
+      loadConversations();
+    }
+  };
+  const rect = btn.getBoundingClientRect();
+  convContextMenu.style.left = `${Math.min(rect.left, window.innerWidth - 210)}px`;
+  convContextMenu.style.top = `${rect.bottom + 4}px`;
+  convContextMenu.hidden = false;
+}
+
+async function loadConversations() {
+  const convs = await api("/api/conversations");
+  const list = document.getElementById("conversations");
+  list.innerHTML = "";
+  for (const c of convs) {
+    const item = document.createElement("div");
+    item.className = "conv-item" + (c.id === currentConvId ? " active" : "");
+    item.innerHTML = `${c.favorite ? `<span class="conv-star-icon" aria-hidden="true">${ICONS.starFilled}</span>` : ""}<span class="title">${escapeHtml(c.title)}</span><button class="conv-menu-btn" aria-label="Options de la conversation">${ICONS.dots}</button>`;
+    item.querySelector(".title").onclick = () => openConversation(c.id);
+    item.querySelector(".conv-menu-btn").onclick = (e) => {
+      e.stopPropagation();
+      openConvMenu(e.currentTarget, item, c);
+    };
+    list.appendChild(item);
+  }
+}
+
+function escapeHtml(s) {
+  const d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// --- Recherche dans les conversations (Ctrl+K) ---
+const searchOverlay = document.getElementById("search-overlay");
+const searchInput = document.getElementById("search-input");
+const searchResults = document.getElementById("search-results");
+let searchConvCache = [];
+let searchHighlightIndex = -1;
+
+function relativeDateLabel(ts) {
+  const diffDays = Math.floor((Date.now() / 1000 - ts) / 86400);
+  if (diffDays <= 0) return "Aujourd'hui";
+  if (diffDays === 1) return "Hier";
+  if (diffDays < 7) return "Cette semaine";
+  if (diffDays < 14) return "Semaine dernière";
+  if (diffDays < 60) return "Mois dernier";
+  return "Plus ancien";
+}
+
+async function createConversationFromSearch(query) {
+  const conv = await api("/api/conversations", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: query || "Nouvelle conversation" }),
+  });
+  await loadConversations();
+  await openConversation(conv.id);
+  closeSearchOverlay();
+  if (query) {
+    const msgInput = document.getElementById("msg-input");
+    msgInput.value = query;
+    msgInput.dispatchEvent(new Event("input"));
+    msgInput.focus();
+  }
+}
+
+function renderSearchResults(items, query) {
+  searchHighlightIndex = items.length > 0 ? 0 : -1;
+  if (items.length === 0) {
+    searchResults.innerHTML = `
+      <div class="search-result-row highlighted" id="search-create-new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        <span class="search-result-title">${query ? `Nouvelle discussion : "${escapeHtml(query)}"` : "Nouvelle discussion"}</span>
+      </div>`;
+    document.getElementById("search-create-new").onclick = () => createConversationFromSearch(query);
+    return;
+  }
+  searchResults.innerHTML = items.map((c, i) => `
+    <div class="search-result-row${i === 0 ? " highlighted" : ""}" data-id="${c.id}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="search-result-title">${escapeHtml(c.title)}</span>
+      <span class="search-result-date">${relativeDateLabel(c.created_at)}</span>
+    </div>`).join("");
+  searchResults.querySelectorAll(".search-result-row").forEach((row) => {
+    row.onclick = () => { openConversation(Number(row.dataset.id)); closeSearchOverlay(); };
+  });
+}
+
+function filterSearchResults() {
+  const q = searchInput.value.trim().toLowerCase();
+  const filtered = q ? searchConvCache.filter((c) => c.title.toLowerCase().includes(q)) : searchConvCache;
+  renderSearchResults(filtered, searchInput.value.trim());
+}
+
+async function openSearchOverlay() {
+  searchOverlay.hidden = false;
+  searchInput.value = "";
+  searchInput.focus();
+  searchResults.innerHTML = `<div id="search-empty">Chargement…</div>`;
+  try {
+    searchConvCache = await api("/api/conversations");
+    renderSearchResults(searchConvCache);
+  } catch (err) {
+    searchResults.innerHTML = `<div id="search-empty">${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function closeSearchOverlay() {
+  searchOverlay.hidden = true;
+}
+
+document.getElementById("search-conv-btn").onclick = openSearchOverlay;
+document.getElementById("search-close-btn").onclick = closeSearchOverlay;
+searchOverlay.addEventListener("click", (e) => { if (e.target === searchOverlay) closeSearchOverlay(); });
+searchInput.addEventListener("input", filterSearchResults);
+
+searchInput.addEventListener("keydown", (e) => {
+  const rows = [...searchResults.querySelectorAll(".search-result-row")];
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    if (rows.length === 0) return;
+    searchHighlightIndex = (searchHighlightIndex + 1) % rows.length;
+    rows.forEach((r, i) => r.classList.toggle("highlighted", i === searchHighlightIndex));
+    rows[searchHighlightIndex].scrollIntoView({ block: "nearest" });
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    if (rows.length === 0) return;
+    searchHighlightIndex = (searchHighlightIndex - 1 + rows.length) % rows.length;
+    rows.forEach((r, i) => r.classList.toggle("highlighted", i === searchHighlightIndex));
+    rows[searchHighlightIndex].scrollIntoView({ block: "nearest" });
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    if (rows[searchHighlightIndex]) rows[searchHighlightIndex].click();
+  } else if (e.key === "Escape") {
+    e.preventDefault();
+    closeSearchOverlay();
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+    e.preventDefault();
+    openSearchOverlay();
+  }
+});
+
+function renderMarkdown(s) {
+  const raw = marked.parse(s, { breaks: true });
+  return DOMPurify.sanitize(raw);
+}
+
+function highlightTokens(s) {
+  return escapeHtml(s).replace(/&lt;([A-Z_]+_\d+)&gt;/g, '<span class="tok">&lt;$1&gt;</span>');
+}
+
+const PROVIDER_LABELS = { claude: "Claude", gemini: "Gemini" };
+// texte brut/anonymisé de chaque message utilisateur, hors du DOM (le body
+// affiché est rendu en markdown) : sert au renvoi et aux copies de la barre
+// d'actions au survol.
+const msgRawText = new WeakMap();
+
+function messageRowHtml(role, contentHtml, anonymizedRaw, provider) {
+  const isUser = role === "user";
+  const providerLabel = PROVIDER_LABELS[provider] || PROVIDER_LABELS[selectedProvider] || "Claude";
+  const label = isUser ? "Toi" : providerLabel;
+  const isRevealable = anonymizedRaw && anonymizedRaw !== true;
+  const showLock = !!anonymizedRaw;
+  const lockBadge = showLock
+    ? `<span class="lock-badge">${ICONS.lock}Anonymisé</span>`
+    : "";
+  const preposition = isUser ? "à" : "par";
+  const revealBtn = isRevealable
+    ? `<button class="reveal-anon-btn" type="button" aria-expanded="false" data-provider-label="${escapeHtml(providerLabel)}" data-preposition="${preposition}">Voir la version envoyée ${preposition} ${escapeHtml(providerLabel)}</button>
+       <div class="anon-revealed" hidden>${highlightTokens(anonymizedRaw)}</div>`
+    : "";
+  const actionsBar = isUser
+    ? `<div class="msg-actions">
+         <button class="msg-action-btn msg-resend-btn" type="button" title="Renvoyer">${ICONS.retry}</button>
+         <button class="msg-action-btn msg-copy-raw-btn" type="button" title="Copier le message">${ICONS.copy}</button>
+         ${isRevealable ? `<button class="msg-action-btn msg-copy-anon-btn" type="button" title="Copier la version anonymisée">${ICONS.lock}</button>` : ""}
+       </div>`
+    : `<div class="msg-actions">
+         <button class="msg-action-btn msg-copy-md-btn" type="button" title="Copier (markdown)">${ICONS.copy}</button>
+         ${isRevealable ? `<button class="msg-action-btn msg-copy-anon-btn" type="button" title="Copier la version anonymisée">${ICONS.lock}</button>` : ""}
+       </div>`;
+  return `
+    <div class="msg-row ${role}">
+      <span class="avatar ${role}" aria-hidden="true">${isUser ? ICONS.user : ICONS.assistant}</span>
+      <div class="msg-content-wrap">
+        <div class="msg-content">
+          <div class="role-line">${label}${lockBadge}</div>
+          <div class="body">${contentHtml}</div>
+          ${revealBtn}
+        </div>
+        ${actionsBar}
+      </div>
+    </div>`;
+}
+
+// heuristique d'affichage UNIQUEMENT cosmétique (le message d'accueil) : si
+// l'identifiant contient deux mots ("Marc Dupont" ou "Dupont Marc"), on
+// affiche celui qui n'est pas un nom de famille français courant. Aucun
+// rapport avec l'anonymisation réelle (anon_engine.py) — ici une erreur ne
+// fait que mal afficher un prénom, elle ne fait fuiter aucune donnée.
+const _COMMON_FR_SURNAMES = new Set([
+  "dupont", "bernard", "robert", "martin", "petit", "lefevre", "durand",
+  "moreau", "richard", "simon", "laurent", "michel", "garcia", "david",
+]);
+function displayFirstName(username) {
+  const parts = username.trim().split(/\s+/).filter(Boolean);
+  if (parts.length < 2) return parts[0] || "";
+  const candidates = parts.filter((p) => !_COMMON_FR_SURNAMES.has(p.toLowerCase()));
+  const pick = candidates.length === 1 ? candidates[0] : parts[0];
+  return pick;
+}
+function capitalize(s) {
+  return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : s;
+}
+
+function howtoHtml() {
+  const displayName = (userPrefs && userPrefs.display_name) || capitalize(displayFirstName(currentUsername));
+  const hello = displayName
+    ? `Bienvenue <em>${escapeHtml(displayName)}</em> sur TokenVeil`
+    : "Bienvenue sur TokenVeil";
+  return `<div id="empty-state">
+    <div class="greeting">
+      <svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4 4 12l6 8"/><path d="M14 4l6 8-6 8"/></g><rect x="9.5" y="10.6" width="5" height="2.8" rx="1.4" fill="currentColor" stroke="none"/></svg>
+      <p class="howto-title">${hello}</p>
+    </div>
+    <p class="lead">Trois étapes, et tu peux coller n'importe quel log sans rien exposer.</p>
+    <div id="howto-steps">
+      <div class="howto-step">
+        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
+        <p class="title">Lie ton compte IA</p>
+        <p class="txt">Dans <strong>Préférences &gt; Comptes IA</strong>, connecte le ou les comptes IA de ton choix. Une seule fois, ensuite c'est réglé.</p>
+      </div>
+      <div class="howto-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="howto-step">
+        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+        <p class="title">Active "Message sensible"</p>
+        <p class="txt">Elle est activée par défaut. Décoche-la sous le champ de saisie seulement si ton message ne contient rien de sensible.</p>
+      </div>
+      <div class="howto-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="howto-step">
+        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+        <p class="title">Pose ta question</p>
+        <p class="txt">L'IA ne voit jamais la vraie donnée. Elle revient automatiquement dans sa réponse.</p>
+      </div>
+    </div>
+    <p class="howto-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>
+      Désactive "Message sensible" quand ton message n'a rien à cacher : tu retrouves l'IA choisie sans aucun filtre.
+    </p>
+  </div>`;
+}
+
+function showHowto() {
+  document.getElementById("messages").innerHTML = howtoHtml();
+}
+
+function renderMessages(messages) {
+  const box = document.getElementById("messages");
+  if (!messages.length) {
+    showHowto();
+    return;
+  }
+  box.innerHTML = messages.map(m => {
+    const anon = m.anonymized_content && m.anonymized_content !== m.content ? m.anonymized_content : null;
+    return messageRowHtml(m.role, renderMarkdown(m.content), anon, m.provider);
+  }).join("");
+  messages.forEach((m, i) => {
+    const anon = m.anonymized_content && m.anonymized_content !== m.content ? m.anonymized_content : null;
+    msgRawText.set(box.children[i], { raw: m.content, anonymized: anon });
+  });
+  enhanceCodeBlocks(box);
+  box.scrollTop = box.scrollHeight;
+}
+
+document.getElementById("messages").addEventListener("click", (e) => {
+  const btn = e.target.closest(".reveal-anon-btn");
+  if (!btn) return;
+  const panel = btn.nextElementSibling;
+  const open = panel.hidden;
+  panel.hidden = !open;
+  btn.setAttribute("aria-expanded", String(open));
+  const providerLabel = btn.dataset.providerLabel || "Claude";
+  const preposition = btn.dataset.preposition || "par";
+  btn.textContent = open ? `Masquer la version envoyée ${preposition} ${providerLabel}` : `Voir la version envoyée ${preposition} ${providerLabel}`;
+});
+
+function flashCopied(btn, icon) {
+  const original = btn.innerHTML;
+  btn.innerHTML = ICONS.check;
+  btn.classList.add("copied");
+  setTimeout(() => { btn.innerHTML = original; btn.classList.remove("copied"); }, 1300);
+}
+
+document.getElementById("messages").addEventListener("click", async (e) => {
+  const resendBtn = e.target.closest(".msg-resend-btn");
+  if (resendBtn) {
+    const row = resendBtn.closest(".msg-row");
+    const data = msgRawText.get(row);
+    if (!data) return;
+    input.value = data.raw;
+    input.dispatchEvent(new Event("input"));
+    await sendMessage();
+    return;
+  }
+  const copyRawBtn = e.target.closest(".msg-copy-raw-btn");
+  if (copyRawBtn) {
+    const row = copyRawBtn.closest(".msg-row");
+    const data = msgRawText.get(row);
+    if (!data) return;
+    copyToClipboard(data.raw).then((ok) => { if (ok) flashCopied(copyRawBtn); });
+    return;
+  }
+  const copyAnonBtn = e.target.closest(".msg-copy-anon-btn");
+  if (copyAnonBtn) {
+    const row = copyAnonBtn.closest(".msg-row");
+    const data = msgRawText.get(row);
+    if (!data || !data.anonymized) return;
+    copyToClipboard(data.anonymized).then((ok) => { if (ok) flashCopied(copyAnonBtn); });
+    return;
+  }
+  const copyMdBtn = e.target.closest(".msg-copy-md-btn");
+  if (copyMdBtn) {
+    const row = copyMdBtn.closest(".msg-row");
+    const data = msgRawText.get(row);
+    if (!data) return;
+    copyToClipboard(data.raw).then((ok) => { if (ok) flashCopied(copyMdBtn); });
+  }
+});
+
+async function openConversation(id) {
+  currentConvId = id;
+  const messages = await api(`/api/conversations/${id}/messages`);
+  renderMessages(messages);
+  loadConversations();
+}
+
+document.getElementById("new-chat-btn").onclick = async () => {
+  const conv = await api("/api/conversations", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: "Nouvelle conversation" }),
+  });
+  await loadConversations();
+  await openConversation(conv.id);
+};
+
+const input = document.getElementById("msg-input");
+const sendBtn = document.getElementById("send-btn");
+const inputShell = document.getElementById("input-shell");
+const anonToggleBtn = document.getElementById("anon-toggle-btn");
+const anonPreview = document.getElementById("anon-preview");
+const anonPreviewBody = document.getElementById("anon-preview-body");
+let anonymizeActive = true;
+let previewDebounce = null;
+let previewRequestId = 0;
+
+anonToggleBtn.onclick = () => {
+  anonymizeActive = !anonymizeActive;
+  anonToggleBtn.setAttribute("aria-pressed", String(anonymizeActive));
+  schedulePreview();
+  updateShowPreviewBtn();
+};
+
+const showPreviewBtn = document.getElementById("show-preview-btn");
+function updateShowPreviewBtn() {
+  showPreviewBtn.disabled = !anonymizeActive || input.value.trim().length === 0;
+}
+showPreviewBtn.onclick = showPreviewNow;
+
+const anonPreviewExpandBtn = document.getElementById("anon-preview-expand-btn");
+let previewExpanded = localStorage.getItem("anon_preview_expanded") === "true";
+function applyPreviewExpanded() {
+  anonPreview.classList.toggle("expanded", previewExpanded);
+  anonPreviewExpandBtn.setAttribute("aria-pressed", String(previewExpanded));
+}
+applyPreviewExpanded();
+anonPreviewExpandBtn.onclick = () => {
+  previewExpanded = !previewExpanded;
+  localStorage.setItem("anon_preview_expanded", String(previewExpanded));
+  applyPreviewExpanded();
+};
+
+const anonPreviewCopyBtn = document.getElementById("anon-preview-copy-btn");
+const anonPreviewCopyIcon = anonPreviewCopyBtn.innerHTML;
+anonPreviewCopyBtn.onclick = (e) => {
+  const btn = e.currentTarget;
+  copyToClipboard(anonPreviewBody.textContent).then((ok) => {
+    btn.classList.toggle("copied", ok);
+    if (ok) btn.innerHTML = ICONS.check;
+    setTimeout(() => {
+      btn.classList.remove("copied");
+      btn.innerHTML = anonPreviewCopyIcon;
+    }, 1400);
+  });
+};
+
+document.getElementById("anon-preview-close-btn").onclick = () => {
+  previewRequestId++; // invalide tout résultat de preview en vol (debounce ou fetch déjà parti)
+  clearTimeout(previewDebounce);
+  anonPreview.classList.remove("open");
+};
+
+// --- Sélecteur de modèle Claude ---
+const modelSelectBtn = document.getElementById("model-select-btn");
+const modelSelectLabel = document.getElementById("model-select-label");
+const modelSelectMenu = document.getElementById("model-select-menu");
+let selectedModel = localStorage.getItem("claude_model") || "claude-sonnet-4-6";
+let selectedProvider = localStorage.getItem("ai_provider") || "claude";
+
+function applySelectedModel() {
+  document.querySelectorAll(".model-option").forEach((opt) => {
+    const isSel = opt.dataset.model === selectedModel && opt.dataset.provider === selectedProvider;
+    opt.classList.toggle("selected", isSel);
+    if (isSel) modelSelectLabel.textContent = opt.dataset.label;
+  });
+  const providerLabel = PROVIDER_LABELS[selectedProvider] || "Claude";
+  document.getElementById("msg-input").placeholder = `Écris à ${providerLabel}...`;
+  document.getElementById("anon-preview-title").textContent = `Aperçu envoyé à ${providerLabel} (anonymisé en temps réel)`;
+}
+applySelectedModel();
+
+modelSelectBtn.onclick = () => {
+  const open = modelSelectMenu.hidden;
+  modelSelectMenu.hidden = !open;
+  modelSelectBtn.setAttribute("aria-expanded", String(open));
+};
+
+document.querySelectorAll(".model-option").forEach((opt) => {
+  opt.onclick = () => {
+    selectedModel = opt.dataset.model;
+    selectedProvider = opt.dataset.provider;
+    localStorage.setItem("claude_model", selectedModel);
+    localStorage.setItem("ai_provider", selectedProvider);
+    applySelectedModel();
+    modelSelectMenu.hidden = true;
+    modelSelectBtn.setAttribute("aria-expanded", "false");
+  };
+});
+
+document.addEventListener("click", (e) => {
+  if (!modelSelectMenu.hidden && !e.target.closest("#model-select-wrap")) {
+    modelSelectMenu.hidden = true;
+    modelSelectBtn.setAttribute("aria-expanded", "false");
+  }
+});
+
+async function fetchAndShowPreview(text, requestId) {
+  try {
+    const res = await api(`/api/conversations/${currentConvId || 0}/anonymize-preview`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: text }),
+    });
+    // le message a pu être envoyé (ou l'aperçu fermé) pendant l'attente
+    // de cette réponse réseau : un résultat périmé ne doit jamais réafficher
+    // l'aperçu après coup (c'était le bug : aperçu figé après envoi rapide).
+    if (requestId !== previewRequestId) return;
+    anonPreviewBody.innerHTML = highlightTokens(res.anonymized);
+    anonPreview.classList.add("open");
+  } catch (err) {
+    // pas bloquant : l'aperçu est un bonus de transparence, pas une étape critique
+  }
+}
+
+function showPreviewNow() {
+  const text = input.value.trim();
+  if (!anonymizeActive || !text) return;
+  if (anonPreview.classList.contains("open")) {
+    previewRequestId++; // invalide tout fetch en vol, sinon il réaffiche au retour
+    clearTimeout(previewDebounce);
+    anonPreview.classList.remove("open");
+    return;
+  }
+  clearTimeout(previewDebounce);
+  previewRequestId++;
+  fetchAndShowPreview(text, previewRequestId);
+}
+
+function schedulePreview() {
+  clearTimeout(previewDebounce);
+  previewRequestId++; // invalide toute requête déjà en vol depuis le tour précédent
+  const requestId = previewRequestId;
+  const text = input.value.trim();
+  if (!anonymizeActive || !text || !autoPreviewEnabled) {
+    anonPreview.classList.remove("open");
+    return;
+  }
+  previewDebounce = setTimeout(() => {
+    fetchAndShowPreview(text, requestId);
+  }, 350);
+}
+
+input.addEventListener("input", () => {
+  input.style.height = "auto";
+  input.style.height = Math.min(input.scrollHeight, 200) + "px";
+  sendBtn.disabled = input.value.trim().length === 0;
+  schedulePreview();
+  updateShowPreviewBtn();
+});
+
+input.addEventListener("focus", () => inputShell.classList.add("focused"));
+input.addEventListener("blur", () => inputShell.classList.remove("focused"));
+
+input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+sendBtn.onclick = sendMessage;
+
+async function sendMessage() {
+  const text = input.value.trim();
+  if (!text) return;
+  const anonymize = anonymizeActive;
+  if (!currentConvId) {
+    const conv = await api("/api/conversations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: "Nouvelle conversation" }),
+    });
+    currentConvId = conv.id;
+  }
+  input.value = "";
+  input.style.height = "auto";
+  sendBtn.disabled = true;
+  previewRequestId++; // invalide tout aperçu en vol (debounce ou fetch déjà parti)
+  clearTimeout(previewDebounce);
+  anonPreview.classList.remove("open");
+  updateShowPreviewBtn();
+
+  const box = document.getElementById("messages");
+  if (box.querySelector("#empty-state")) box.innerHTML = "";
+  box.insertAdjacentHTML("beforeend", messageRowHtml("user", renderMarkdown(text), anonymize));
+  const userRow = box.lastElementChild;
+  msgRawText.set(userRow, { raw: text, anonymized: null });
+  enhanceCodeBlocks(userRow);
+  box.insertAdjacentHTML("beforeend", messageRowHtml("assistant", '<div class="typing-dots"><span></span><span></span><span></span></div>', null, selectedProvider));
+  const thinkingRow = box.lastElementChild;
+  box.scrollTop = box.scrollHeight;
+
+  function isNearBottom() {
+    return box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+  }
+
+  try {
+    const res = await fetch(`/api/conversations/${currentConvId}/messages/stream`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: text, anonymize, provider: selectedProvider, model: selectedModel }),
+    });
+    if (res.status === 401) { window.location.href = "/login.html"; return; }
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || `Erreur ${res.status}`);
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    const bodyEl = thinkingRow.querySelector(".body");
+    let buffer = "";
+    let started = false;
+    let finalPayload = null;
+
+    // révélation caractère par caractère, découplée de la taille réelle des
+    // chunks réseau (Claude/Gemini envoient parfois une phrase entière d'un
+    // coup) : un fil d'animation lit dans `targetText` à vitesse constante
+    // pour un rendu fluide façon Gemini, au lieu d'un "à-coup" par paquet.
+    let targetText = "";
+    let revealedLength = 0;
+    let animRunning = false;
+
+    function tick() {
+      if (revealedLength < targetText.length) {
+        const backlog = targetText.length - revealedLength;
+        const stickToBottom = isNearBottom();
+        revealedLength = Math.min(targetText.length, revealedLength + Math.max(2, Math.ceil(backlog / 12)));
+        bodyEl.innerHTML = renderMarkdown(targetText.slice(0, revealedLength));
+        if (stickToBottom) box.scrollTop = box.scrollHeight;
+        requestAnimationFrame(tick);
+      } else {
+        animRunning = false;
+      }
+    }
+    function ensureAnim() {
+      if (!animRunning) { animRunning = true; requestAnimationFrame(tick); }
+    }
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n\n");
+      buffer = lines.pop(); // dernier fragment incomplet, conservé pour la suite
+      for (const line of lines) {
+        if (!line.startsWith("data: ")) continue;
+        const payload = JSON.parse(line.slice(6));
+        if (payload.error) throw new Error(payload.error);
+        if (payload.done) { finalPayload = payload; continue; }
+        if (!started) { bodyEl.innerHTML = ""; started = true; }
+        targetText = payload.text;
+        ensureAnim();
+      }
+    }
+
+    // laisse l'animation terminer de révéler ce qui reste avant le rendu final
+    while (revealedLength < targetText.length) await new Promise((r) => setTimeout(r, 16));
+
+    if (finalPayload) {
+      bodyEl.innerHTML = renderMarkdown(finalPayload.text);
+      enhanceCodeBlocks(thinkingRow);
+      msgRawText.set(thinkingRow, { raw: finalPayload.text, anonymized: anonymize ? finalPayload.text_anonymized : null });
+      if (anonymize) {
+        addRevealPanel(userRow, finalPayload.user_message_anonymized, selectedProvider);
+        addRevealPanel(thinkingRow, finalPayload.text_anonymized, selectedProvider);
+        msgRawText.set(userRow, { raw: text, anonymized: finalPayload.user_message_anonymized });
+      }
+    }
+  } catch (err) {
+    thinkingRow.querySelector(".body").innerHTML = `Erreur : ${escapeHtml(err.message)}`;
+  } finally {
+    const stayBottom = isNearBottom();
+    loadConversations();
+    if (stayBottom) box.scrollTop = box.scrollHeight;
+  }
+}
+
+function addRevealPanel(row, anonymizedRaw, provider) {
+  if (!anonymizedRaw) return;
+  const content = row.querySelector(".msg-content");
+  if (content.querySelector(".reveal-anon-btn")) return;
+  const providerLabel = PROVIDER_LABELS[provider] || PROVIDER_LABELS[selectedProvider] || "Claude";
+  const preposition = row.classList.contains("user") ? "à" : "par";
+  content.insertAdjacentHTML(
+    "beforeend",
+    `<button class="reveal-anon-btn" type="button" aria-expanded="false" data-provider-label="${escapeHtml(providerLabel)}" data-preposition="${preposition}">Voir la version envoyée ${preposition} ${escapeHtml(providerLabel)}</button>
+     <div class="anon-revealed" hidden>${highlightTokens(anonymizedRaw)}</div>`
+  );
+}
+
+document.getElementById("theme-toggle-btn").onclick = () => {
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  if (isDark) {
+    document.documentElement.removeAttribute("data-theme");
+    localStorage.setItem("theme", "light");
+  } else {
+    document.documentElement.setAttribute("data-theme", "dark");
+    localStorage.setItem("theme", "dark");
+  }
+};
+
+// --- Profil / liaison compte Claude Pro-Max ---
+const profileOverlay = document.getElementById("profile-overlay");
+const profileLinkState = document.getElementById("profile-link-state");
+const profileLinkBtn = document.getElementById("profile-link-btn");
+const profileUnlinkBtn = document.getElementById("profile-unlink-btn");
+const profileStepStatus = document.getElementById("profile-step-status");
+const profileStepUrl = document.getElementById("profile-step-url");
+const profileStepSuccess = document.getElementById("profile-step-success");
+const profileAuthLink = document.getElementById("profile-auth-link");
+const profileCodeInput = document.getElementById("profile-code-input");
+const profileError = document.getElementById("profile-error");
+
+function showProfileError(msg) {
+  profileError.textContent = msg;
+  profileError.hidden = false;
+}
+function clearProfileError() {
+  profileError.hidden = true;
+  profileError.textContent = "";
+}
+
+async function refreshProfileStatus() {
+  const status = await api("/api/account");
+  currentUsername = status.username;
+  currentUserRole = status.role || "user";
+  localStorage.setItem("cached_username", currentUsername);
+  localStorage.setItem("cached_role", currentUserRole);
+  document.getElementById("admin-btn").hidden = currentUserRole !== "admin";
+  if (!currentConvId) showHowto();
+  document.getElementById("profile-username").textContent = status.username;
+  document.getElementById("profile-modal-username").textContent = status.username;
+  const dot = document.getElementById("profile-dot");
+  if (status.linked) {
+    document.getElementById("profile-status").textContent = "Compte Claude lié";
+    dot.classList.add("linked");
+    profileLinkState.textContent = "Ton compte Claude Pro/Max est lié. Les messages passent par ton abonnement, pas par une clé API facturée.";
+    profileLinkBtn.hidden = true;
+    document.getElementById("profile-status-start-btn").hidden = false;
+    profileUnlinkBtn.hidden = false;
+    const authInfo = document.getElementById("profile-auth-info");
+    const methodLabel = status.auth_method === "oauth_token" ? "Abonnement Claude (OAuth)" : (status.auth_method || "Inconnu");
+    const providerLabel = status.api_provider === "firstParty" ? "Anthropic (direct)" : (status.api_provider || "Inconnu");
+    authInfo.innerHTML = `
+      <div class="row"><span>Méthode d'authentification</span><span>${escapeHtml(methodLabel)}</span></div>
+      <div class="row"><span>Fournisseur</span><span>${escapeHtml(providerLabel)}</span></div>
+      <a href="https://claude.ai/settings/usage" target="_blank" rel="noopener">Voir le détail d'usage sur claude.ai →</a>`;
+    authInfo.hidden = false;
+  } else {
+    document.getElementById("profile-status").textContent = "Compte Claude non lié";
+    dot.classList.remove("linked");
+    profileLinkState.textContent = "Lie ton compte Claude Pro ou Max pour pouvoir prompter.";
+    profileLinkBtn.hidden = false;
+    document.getElementById("profile-status-start-btn").hidden = true;
+    profileUnlinkBtn.hidden = true;
+    document.getElementById("profile-auth-info").hidden = true;
+  }
+
+  const geminiDot = document.getElementById("gemini-status-dot");
+  const geminiText = document.getElementById("gemini-status-text");
+  if (status.gemini_linked) {
+    geminiDot.classList.add("linked");
+    geminiText.textContent = "Clé API Gemini liée.";
+    document.getElementById("gemini-unlink-btn").hidden = false;
+  } else {
+    geminiDot.classList.remove("linked");
+    geminiText.textContent = "Aucun compte Gemini lié.";
+    document.getElementById("gemini-unlink-btn").hidden = true;
+  }
+  return status;
+}
+
+function openProfileModal() {
+  profileStepStatus.hidden = false;
+  profileStepUrl.hidden = true;
+  profileStepSuccess.hidden = true;
+  clearProfileError();
+  profileCodeInput.value = "";
+  profileOverlay.hidden = false;
+  refreshProfileStatus().catch((e) => showProfileError(e.message));
+}
+
+async function closeProfileModal() {
+  if (!profileStepUrl.hidden) {
+    try { await api("/api/account/link/cancel", { method: "POST" }); } catch (e) {}
+  }
+  profileOverlay.hidden = true;
+}
+
+document.getElementById("profile-btn").onclick = openProfileModal;
+document.getElementById("profile-close-btn").onclick = closeProfileModal;
+profileOverlay.addEventListener("click", (e) => { if (e.target === profileOverlay) closeProfileModal(); });
+
+document.querySelectorAll(".profile-nav-btn").forEach((btn) => {
+  btn.onclick = () => {
+    document.querySelectorAll(".profile-nav-btn").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".profile-tab-panel").forEach((p) => { p.hidden = true; });
+    btn.classList.add("active");
+    document.getElementById(`profile-tab-${btn.dataset.profileTab}`).hidden = false;
+    if (btn.dataset.profileTab === "history") loadHistoryTab();
+  };
+});
+
+// --- Historique des conversations (Préférences) : gestion en masse ---
+let historySelected = new Set();
+
+function updateHistoryBulkBar() {
+  const bar = document.getElementById("history-bulk-actions");
+  bar.hidden = historySelected.size === 0;
+  document.getElementById("history-select-all").checked =
+    historySelected.size > 0 && historySelected.size === document.querySelectorAll(".history-row").length;
+}
+
+async function loadHistoryTab() {
+  const errEl = document.getElementById("history-error");
+  const listEl = document.getElementById("history-list");
+  errEl.hidden = true;
+  historySelected.clear();
+  listEl.innerHTML = "<p class=\"settings-hint\">Chargement…</p>";
+  try {
+    const convs = await api("/api/conversations");
+    if (convs.length === 0) {
+      listEl.innerHTML = "<p class=\"settings-hint\">Aucune conversation pour l'instant.</p>";
+      updateHistoryBulkBar();
+      return;
+    }
+    listEl.innerHTML = convs.map((c) => {
+      const date = new Date(c.created_at * 1000).toLocaleDateString("fr-FR");
+      return `<div class="history-row" data-id="${c.id}">
+        <input type="checkbox" class="history-checkbox" />
+        <button type="button" class="history-star-btn${c.favorite ? " active" : ""}" aria-label="Favori">
+          ${c.favorite ? ICONS.starFilled : ICONS.star}
+        </button>
+        <span class="history-title">${escapeHtml(c.title)}</span>
+        <span class="history-date">${date}</span>
+        <button type="button" class="history-icon-btn" aria-label="Renommer">${ICONS.pencil}</button>
+        <button type="button" class="history-icon-btn danger" aria-label="Supprimer">${ICONS.trash}</button>
+      </div>`;
+    }).join("");
+
+    listEl.querySelectorAll(".history-row").forEach((row) => {
+      const id = Number(row.dataset.id);
+      const checkbox = row.querySelector(".history-checkbox");
+      checkbox.onchange = () => {
+        if (checkbox.checked) historySelected.add(id); else historySelected.delete(id);
+        updateHistoryBulkBar();
+      };
+      row.querySelector(".history-star-btn").onclick = async () => {
+        const isFav = row.querySelector(".history-star-btn").classList.contains("active");
+        await api(`/api/conversations/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ favorite: !isFav }),
+        });
+        loadHistoryTab();
+        loadConversations();
+      };
+      row.querySelector('[aria-label="Renommer"]').onclick = () => {
+        const titleSpan = row.querySelector(".history-title");
+        const current = titleSpan.textContent;
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "history-title-input";
+        input.value = current;
+        titleSpan.replaceWith(input);
+        input.focus();
+        input.select();
+        const commit = async () => {
+          const val = input.value.trim();
+          if (val && val !== current) {
+            await api(`/api/conversations/${id}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ title: val }),
+            });
+            loadConversations();
+          }
+          loadHistoryTab();
+        };
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") { e.preventDefault(); commit(); }
+          if (e.key === "Escape") { e.preventDefault(); loadHistoryTab(); }
+        });
+        input.addEventListener("blur", commit);
+      };
+      row.querySelector('[aria-label="Supprimer"]').onclick = async () => {
+        if (!confirm("Supprimer cette conversation ?")) return;
+        await api(`/api/conversations/${id}`, { method: "DELETE" });
+        if (currentConvId === id) { currentConvId = null; renderMessages([]); }
+        loadHistoryTab();
+        loadConversations();
+      };
+    });
+    updateHistoryBulkBar();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.hidden = false;
+    listEl.innerHTML = "";
+  }
+}
+
+document.getElementById("history-select-all").onchange = (e) => {
+  const rows = document.querySelectorAll(".history-row");
+  historySelected.clear();
+  rows.forEach((row) => {
+    const checkbox = row.querySelector(".history-checkbox");
+    checkbox.checked = e.target.checked;
+    if (e.target.checked) historySelected.add(Number(row.dataset.id));
+  });
+  updateHistoryBulkBar();
+};
+
+document.getElementById("history-bulk-delete-btn").onclick = async () => {
+  if (historySelected.size === 0) return;
+  if (!confirm(`Supprimer ${historySelected.size} conversation(s) ? Action irréversible.`)) return;
+  await Promise.all([...historySelected].map((id) => {
+    if (currentConvId === id) { currentConvId = null; renderMessages([]); }
+    return api(`/api/conversations/${id}`, { method: "DELETE" });
+  }));
+  loadHistoryTab();
+  loadConversations();
+};
+
+document.getElementById("history-bulk-favorite-btn").onclick = async () => {
+  if (historySelected.size === 0) return;
+  await Promise.all([...historySelected].map((id) => api(`/api/conversations/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ favorite: true }),
+  })));
+  loadHistoryTab();
+  loadConversations();
+};
+
+document.getElementById("history-bulk-unfavorite-btn").onclick = async () => {
+  if (historySelected.size === 0) return;
+  await Promise.all([...historySelected].map((id) => api(`/api/conversations/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ favorite: false }),
+  })));
+  loadHistoryTab();
+  loadConversations();
+};
+
+// --- Préférences (Général) : avatar, nom d'affichage, thème, comportement ---
+const AVATAR_PALETTE = ["#c0493f", "#d9a13b", "#4c9a5f", "#3f7fbf", "#7d5fc4", "#c45fa0", "#5a9c6a", "#8a7f6d"];
+
+function avatarInitial() {
+  const name = userPrefs.display_name || currentUsername || "?";
+  return name.trim().charAt(0).toUpperCase() || "?";
+}
+
+function applyAvatarEverywhere() {
+  const color = userPrefs.avatar_color || AVATAR_PALETTE[0];
+  const initial = avatarInitial();
+  document.getElementById("pref-avatar-preview").textContent = initial;
+  document.getElementById("pref-avatar-preview").style.background = color;
+  const headerIcon = document.querySelector("#profile-btn .profile-icon");
+  if (headerIcon) {
+    headerIcon.innerHTML = initial;
+    headerIcon.style.background = color;
+    headerIcon.style.color = "#fff";
+    headerIcon.style.display = "flex";
+    headerIcon.style.alignItems = "center";
+    headerIcon.style.justifyContent = "center";
+    headerIcon.style.fontWeight = "700";
+    headerIcon.style.fontSize = "13px";
+  }
+}
+
+function buildAvatarPicker() {
+  const colorsBox = document.getElementById("pref-avatar-colors");
+  colorsBox.innerHTML = AVATAR_PALETTE.map((c) => `
+    <button type="button" class="avatar-color-swatch${c === (userPrefs.avatar_color || AVATAR_PALETTE[0]) ? " selected" : ""}"
+      style="background:${c}" data-color="${c}" aria-label="Couleur ${c}"></button>`).join("");
+  colorsBox.querySelectorAll(".avatar-color-swatch").forEach((sw) => {
+    sw.onclick = async () => {
+      userPrefs.avatar_color = sw.dataset.color;
+      applyAvatarEverywhere();
+      buildAvatarPicker();
+      await savePreferences({ avatar_color: sw.dataset.color });
+    };
+  });
+}
+
+document.getElementById("pref-avatar-btn").onclick = () => {
+  const picker = document.getElementById("pref-avatar-picker");
+  picker.hidden = !picker.hidden;
+};
+
+let displayNameDebounce = null;
+const prefDisplayNameInput = document.getElementById("pref-display-name-input");
+prefDisplayNameInput.addEventListener("input", () => {
+  clearTimeout(displayNameDebounce);
+  displayNameDebounce = setTimeout(async () => {
+    const val = prefDisplayNameInput.value.trim();
+    userPrefs.display_name = val;
+    applyAvatarEverywhere();
+    if (!currentConvId) showHowto();
+    await savePreferences({ display_name: val });
+  }, 500);
+});
+
+function updateThemeSegmented() {
+  const choice = localStorage.getItem("theme") || "system";
+  document.querySelectorAll("#pref-theme-segmented button").forEach((b) => {
+    b.classList.toggle("active", b.dataset.themeChoice === choice);
+  });
+}
+
+function applyTheme(choice) {
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  if (choice === "dark" || (choice === "system" && prefersDark)) {
+    document.documentElement.setAttribute("data-theme", "dark");
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+  }
+}
+
+async function setThemeChoice(choice) {
+  if (choice === "system") localStorage.removeItem("theme");
+  else localStorage.setItem("theme", choice);
+  applyTheme(choice);
+  updateThemeSegmented();
+  await savePreferences({ theme: choice });
+}
+
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+  if ((localStorage.getItem("theme") || "system") === "system") applyTheme("system");
+});
+
+document.querySelectorAll("#pref-theme-segmented button").forEach((btn) => {
+  btn.onclick = () => setThemeChoice(btn.dataset.themeChoice);
+});
+
+const prefCompactToggle = document.getElementById("pref-compact-toggle");
+prefCompactToggle.onchange = async () => {
+  document.body.classList.toggle("compact-mode", prefCompactToggle.checked);
+  await savePreferences({ compact_mode: prefCompactToggle.checked });
+};
+
+const prefAutoPreviewToggle = document.getElementById("pref-auto-preview-toggle");
+prefAutoPreviewToggle.onchange = async () => {
+  autoPreviewEnabled = prefAutoPreviewToggle.checked;
+  await savePreferences({ auto_preview: autoPreviewEnabled });
+};
+
+const prefAnonymizeDefaultToggle = document.getElementById("pref-anonymize-default-toggle");
+prefAnonymizeDefaultToggle.onchange = async () => {
+  anonymizeActive = prefAnonymizeDefaultToggle.checked;
+  anonToggleBtn.setAttribute("aria-pressed", String(anonymizeActive));
+  schedulePreview();
+  updateShowPreviewBtn();
+  await savePreferences({ anonymize_default: anonymizeActive });
+};
+
+async function savePreferences(partial) {
+  try {
+    await api("/api/preferences", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(partial),
+    });
+    document.getElementById("pref-error").hidden = true;
+  } catch (err) {
+    const errEl = document.getElementById("pref-error");
+    errEl.textContent = err.message;
+    errEl.hidden = false;
+  }
+}
+
+async function loadPreferences() {
+  try {
+    userPrefs = await api("/api/preferences");
+  } catch (err) {
+    userPrefs = {};
+  }
+  prefDisplayNameInput.value = userPrefs.display_name || "";
+  applyAvatarEverywhere();
+  buildAvatarPicker();
+  updateThemeSegmented();
+  const compact = userPrefs.compact_mode === "true";
+  prefCompactToggle.checked = compact;
+  document.body.classList.toggle("compact-mode", compact);
+  autoPreviewEnabled = userPrefs.auto_preview !== "false"; // activé par défaut
+  prefAutoPreviewToggle.checked = autoPreviewEnabled;
+  anonymizeActive = userPrefs.anonymize_default !== "false"; // activé par défaut
+  prefAnonymizeDefaultToggle.checked = anonymizeActive;
+  anonToggleBtn.setAttribute("aria-pressed", String(anonymizeActive));
+  if (!currentConvId) showHowto();
+}
+
+// --- Réglages / mots-clés custom à anonymiser ---
+const settingsOverlay = document.getElementById("settings-overlay");
+const settingsList = document.getElementById("settings-list");
+const settingsTermInput = document.getElementById("settings-term-input");
+const settingsLabelInput = document.getElementById("settings-label-input");
+const settingsRegexCheckbox = document.getElementById("settings-regex-checkbox");
+const settingsError = document.getElementById("settings-error");
+
+function showSettingsError(msg) {
+  settingsError.textContent = msg;
+  settingsError.hidden = false;
+}
+function clearSettingsError() {
+  settingsError.hidden = true;
+}
+
+const LOCK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+const UNLOCK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V9a4 4 0 0 1 7.4-2"/></svg>';
+
+const DEPLOY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg>';
+let _lastCustomTerms = [];
+
+function termRowHtml(t) {
+  const isAdmin = currentUserRole === "admin";
+  const canDelete = isAdmin || !t.locked;
+  const isPrivate = !!t.scope_username;
+  const lockBtn = isAdmin
+    ? `<button class="term-lock-btn" type="button" aria-label="${t.locked ? "Déverrouiller" : "Verrouiller"}" title="${t.locked ? "Déverrouiller" : "Verrouiller"}">${t.locked ? LOCK_ICON : UNLOCK_ICON}</button>`
+    : (t.locked ? `<span class="term-lock-static" title="Verrouillé par un administrateur">${LOCK_ICON}</span>` : "");
+  const checkbox = isAdmin ? `<input type="checkbox" class="term-checkbox" />` : "";
+  const creator = isAdmin && t.created_by
+    ? `<span class="term-creator" title="Ajouté par ${escapeHtml(t.created_by)}">${escapeHtml(t.created_by)}${isPrivate ? ` · privé (${escapeHtml(t.scope_username)})` : ""}</span>`
+    : "";
+  const deployBtn = isAdmin
+    ? `<button class="term-deploy-btn" type="button" aria-label="Déployer" title="Déployer">${DEPLOY_ICON}</button>`
+    : "";
+  return `
+    <div class="term-row" data-id="${t.id}" data-locked="${t.locked ? 1 : 0}" data-private="${isPrivate ? 1 : 0}" data-creator="${escapeHtml(t.created_by || "")}">
+      ${checkbox}
+      <span class="term-label">${escapeHtml(t.label)}</span>
+      <span class="term-text">${escapeHtml(t.term)}</span>
+      ${t.is_regex ? '<span class="term-regex-badge">regex</span>' : ""}
+      ${creator}
+      ${deployBtn}
+      ${lockBtn}
+      <button class="term-delete-btn" type="button" aria-label="Supprimer" ${canDelete ? "" : 'disabled style="opacity:.3;cursor:default"'}>${ICONS.trash}</button>
+    </div>`;
+}
+
+async function refreshCustomTerms() {
+  const terms = await api("/api/custom-terms");
+  _lastCustomTerms = terms;
+  settingsList.innerHTML = terms.length
+    ? terms.map(termRowHtml).join("")
+    : `<div id="settings-empty">Aucun mot-clé custom pour l'instant.</div>`;
+  const adminBar = document.getElementById("settings-admin-bar");
+  adminBar.hidden = currentUserRole !== "admin";
+  document.getElementById("settings-select-all").checked = false;
+  updateBulkActionsVisibility();
+}
+
+function updateBulkActionsVisibility() {
+  const checked = settingsList.querySelectorAll(".term-checkbox:checked").length;
+  document.getElementById("settings-bulk-actions").hidden = checked === 0;
+}
+
+settingsList.addEventListener("change", (e) => {
+  if (e.target.classList.contains("term-checkbox")) updateBulkActionsVisibility();
+});
+
+settingsList.addEventListener("click", async (e) => {
+  const deployBtn = e.target.closest(".term-deploy-btn");
+  if (deployBtn) {
+    openDeployMenu(deployBtn, deployBtn.closest(".term-row"));
+    return;
+  }
+  const lockBtn = e.target.closest(".term-lock-btn");
+  if (lockBtn) {
+    const row = lockBtn.closest(".term-row");
+    const locked = row.dataset.locked === "1";
+    try {
+      await api(`/api/custom-terms/${row.dataset.id}/${locked ? "unlock" : "lock"}`, { method: "POST" });
+      await refreshCustomTerms();
+    } catch (err) {
+      showSettingsError(err.message);
+    }
+    return;
+  }
+  const btn = e.target.closest(".term-delete-btn");
+  if (!btn || btn.disabled) return;
+  const row = btn.closest(".term-row");
+  try {
+    await api(`/api/custom-terms/${row.dataset.id}`, { method: "DELETE" });
+    await refreshCustomTerms();
+  } catch (err) {
+    showSettingsError(err.message);
+  }
+});
+
+document.getElementById("settings-add-btn").onclick = async () => {
+  const term = settingsTermInput.value.trim();
+  if (!term) { showSettingsError("Le terme ne peut pas être vide."); return; }
+  clearSettingsError();
+  try {
+    await api("/api/custom-terms", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        term,
+        label: settingsLabelInput.value.trim() || "CUSTOM_TERM",
+        is_regex: settingsRegexCheckbox.checked,
+      }),
+    });
+    settingsTermInput.value = "";
+    settingsLabelInput.value = "";
+    settingsRegexCheckbox.checked = false;
+    await refreshCustomTerms();
+    settingsTermInput.focus();
+  } catch (err) {
+    showSettingsError(err.message);
+  }
+};
+
+settingsTermInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") document.getElementById("settings-add-btn").click();
+});
+
+// --- Sélection multiple (admin) ---
+document.getElementById("settings-select-all").onchange = (e) => {
+  settingsList.querySelectorAll(".term-checkbox").forEach((cb) => { cb.checked = e.target.checked; });
+  updateBulkActionsVisibility();
+};
+
+async function bulkSetLocked(locked) {
+  const ids = [...settingsList.querySelectorAll(".term-checkbox:checked")]
+    .map((cb) => Number(cb.closest(".term-row").dataset.id));
+  if (!ids.length) return;
+  try {
+    await api("/api/custom-terms/bulk-lock", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids, locked }),
+    });
+    await refreshCustomTerms();
+  } catch (err) {
+    showSettingsError(err.message);
+  }
+}
+document.getElementById("bulk-lock-btn").onclick = () => bulkSetLocked(true);
+document.getElementById("bulk-unlock-btn").onclick = () => bulkSetLocked(false);
+
+// --- Export / import JSON (admin) ---
+document.getElementById("terms-export-btn").onclick = () => {
+  const blob = new Blob([JSON.stringify(_lastCustomTerms, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `mots-cles-tokenveil-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+const termsImportFile = document.getElementById("terms-import-file");
+document.getElementById("terms-import-btn").onclick = () => termsImportFile.click();
+termsImportFile.addEventListener("change", async () => {
+  const file = termsImportFile.files[0];
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    const terms = (Array.isArray(data) ? data : data.terms || []).map((t) => ({
+      term: t.term, is_regex: !!t.is_regex, label: t.label || "CUSTOM_TERM",
+      locked: !!t.locked, scope_username: t.scope_username || null,
+    }));
+    const res = await api("/api/custom-terms/import", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ terms }),
+    });
+    await refreshCustomTerms();
+    settingsError.style.color = "var(--accent)";
+    settingsError.textContent = `${res.imported} terme(s) importé(s)${res.skipped ? `, ${res.skipped} ignoré(s)` : ""}.`;
+    settingsError.hidden = false;
+    setTimeout(() => { settingsError.style.color = ""; }, 3000);
+  } catch (err) {
+    showSettingsError("Fichier invalide : " + err.message);
+  } finally {
+    termsImportFile.value = "";
+  }
+});
+
+// --- Déploiement (admin) ---
+const deployMenu = document.createElement("div");
+deployMenu.id = "deploy-menu";
+deployMenu.hidden = true;
+document.body.appendChild(deployMenu);
+
+async function openDeployMenu(btn, row) {
+  const creator = row.dataset.creator;
+  let usersHtml = "";
+  try {
+    const users = await api("/api/admin/users");
+    usersHtml = users
+      .filter((u) => u.username !== creator)
+      .map((u) => `<button data-scope="${escapeHtml(u.username)}">${escapeHtml(u.username)}</button>`)
+      .join("");
+  } catch (e) {}
+  deployMenu.innerHTML = `
+    <button data-scope="all">Pour tout le monde</button>
+    ${creator ? `<button data-scope="creator">Uniquement à ${escapeHtml(creator)} (créateur)</button>` : ""}
+    ${usersHtml ? `<div class="deploy-section-label">Ou à un utilisateur précis</div>${usersHtml}` : ""}
+  `;
+  const rect = btn.getBoundingClientRect();
+  deployMenu.style.top = `${rect.bottom + 6}px`;
+  deployMenu.style.left = `${Math.max(8, rect.right - 220)}px`;
+  deployMenu.hidden = false;
+  deployMenu.dataset.termId = row.dataset.id;
+}
+
+deployMenu.addEventListener("click", async (e) => {
+  const btn = e.target.closest("button[data-scope]");
+  if (!btn) return;
+  const termId = deployMenu.dataset.termId;
+  deployMenu.hidden = true;
+  try {
+    await api(`/api/custom-terms/${termId}/deploy`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ scope: btn.dataset.scope }),
+    });
+    await refreshCustomTerms();
+  } catch (err) {
+    showSettingsError(err.message);
+  }
+});
+
+document.addEventListener("click", (e) => {
+  if (!deployMenu.hidden && !e.target.closest("#deploy-menu") && !e.target.closest(".term-deploy-btn")) {
+    deployMenu.hidden = true;
+  }
+});
+
+function openSettingsModal() {
+  clearSettingsError();
+  const autoTabBtn = document.querySelector('.settings-tab-btn[data-tab="auto"]');
+  const isAdmin = currentUserRole === "admin";
+  autoTabBtn.hidden = !isAdmin;
+  // l'onglet auto-détection est réservé aux admins : si un non-admin l'avait
+  // laissé actif (rôle changé entre deux ouvertures), on retombe sur Mots-clés
+  document.querySelector('.settings-tab-btn[data-tab="manual"]').click();
+  settingsOverlay.hidden = false;
+  refreshCustomTerms().catch((e) => showSettingsError(e.message));
+}
+function closeSettingsModal() {
+  settingsOverlay.hidden = true;
+}
+document.getElementById("logout-btn").onclick = async () => {
+  try { await fetch("/api/logout", { method: "POST" }); } catch (e) {}
+  localStorage.removeItem("cached_username");
+  localStorage.removeItem("cached_role");
+  window.location.href = "/login.html";
+};
+
+document.getElementById("settings-btn").onclick = openSettingsModal;
+document.getElementById("settings-close-btn").onclick = closeSettingsModal;
+settingsOverlay.addEventListener("click", (e) => { if (e.target === settingsOverlay) closeSettingsModal(); });
+
+// --- Administration : utilisateurs locaux + config LDAP ---
+const adminOverlay = document.getElementById("admin-overlay");
+const adminUsersList = document.getElementById("admin-users-list");
+const adminUsersError = document.getElementById("admin-users-error");
+const adminLdapError = document.getElementById("admin-ldap-error");
+const adminLdapResult = document.getElementById("admin-ldap-result");
+
+function userRowHtml(u) {
+  const isMe = u.username === currentUsername;
+  return `
+    <div class="user-row" data-username="${escapeHtml(u.username)}">
+      <span class="user-name">${escapeHtml(u.username)}</span>
+      <select class="role-select" ${isMe ? "disabled" : ""}>
+        <option value="user" ${u.role === "user" ? "selected" : ""}>Utilisateur</option>
+        <option value="admin" ${u.role === "admin" ? "selected" : ""}>Admin</option>
+      </select>
+      <button class="user-delete-btn" type="button" aria-label="Supprimer" ${isMe ? "disabled style=\"opacity:.3;cursor:default\"" : ""}>${ICONS.trash}</button>
+    </div>`;
+}
+
+async function refreshAdminUsers() {
+  const users = await api("/api/admin/users");
+  adminUsersList.innerHTML = users.map(userRowHtml).join("");
+  enhanceAllSelects(adminUsersList);
+}
+
+adminUsersList.addEventListener("change", async (e) => {
+  const select = e.target.closest(".role-select");
+  if (!select) return;
+  const row = select.closest(".user-row");
+  try {
+    await api(`/api/admin/users/${row.dataset.username}/role`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role: select.value }),
+    });
+  } catch (err) {
+    adminUsersError.textContent = err.message;
+    adminUsersError.hidden = false;
+    await refreshAdminUsers();
+  }
+});
+
+adminUsersList.addEventListener("click", async (e) => {
+  const btn = e.target.closest(".user-delete-btn");
+  if (!btn || btn.disabled) return;
+  const row = btn.closest(".user-row");
+  if (!confirm(`Supprimer le compte "${row.dataset.username}" ?`)) return;
+  try {
+    await api(`/api/admin/users/${row.dataset.username}`, { method: "DELETE" });
+    await refreshAdminUsers();
+  } catch (err) {
+    adminUsersError.textContent = err.message;
+    adminUsersError.hidden = false;
+  }
+});
+
+document.getElementById("admin-add-user-btn").onclick = async () => {
+  const username = document.getElementById("admin-user-input").value.trim();
+  const password = document.getElementById("admin-pass-input").value;
+  const role = document.getElementById("admin-role-input").value;
+  adminUsersError.hidden = true;
+  if (!username || !password) {
+    adminUsersError.textContent = "Identifiant et mot de passe requis.";
+    adminUsersError.hidden = false;
+    return;
+  }
+  try {
+    await api("/api/admin/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password, role }),
+    });
+    document.getElementById("admin-user-input").value = "";
+    document.getElementById("admin-pass-input").value = "";
+    await refreshAdminUsers();
+  } catch (err) {
+    adminUsersError.textContent = err.message;
+    adminUsersError.hidden = false;
+  }
+};
+
+const ldapFieldIds = {
+  LDAP_SERVER: "ldap-server",
+  LDAP_BASE_DN: "ldap-base-dn",
+  LDAP_SEARCH_FILTER: "ldap-search-filter",
+  LDAP_BIND_DN: "ldap-bind-dn",
+  LDAP_BIND_PASSWORD: "ldap-bind-password",
+  LDAP_USER_DN_TEMPLATE: "ldap-user-dn-template",
+  LDAP_REQUIRE_GROUP_DN: "ldap-require-group",
+};
+
+function collectLdapForm() {
+  const out = {};
+  for (const [key, id] of Object.entries(ldapFieldIds)) {
+    out[key] = document.getElementById(id).value.trim();
+  }
+  out.LDAP_USE_SSL = document.getElementById("ldap-use-ssl").checked ? "true" : "false";
+  return out;
+}
+
+async function refreshAdminLdap() {
+  const backend = await api("/api/admin/auth-backend");
+  const backendSelect = document.getElementById("admin-auth-backend-select");
+  backendSelect.value = backend.backend;
+  backendSelect.dispatchEvent(new Event("change"));
+  const cfg = await api("/api/admin/ldap-config");
+  for (const [key, id] of Object.entries(ldapFieldIds)) {
+    document.getElementById(id).value = cfg[key] || "";
+  }
+  document.getElementById("ldap-use-ssl").checked = String(cfg.LDAP_USE_SSL).toLowerCase() === "true";
+}
+
+document.getElementById("admin-auth-backend-select").onchange = async (e) => {
+  try {
+    await api("/api/admin/auth-backend", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ backend: e.target.value }),
+    });
+  } catch (err) {
+    adminLdapError.textContent = err.message;
+    adminLdapError.hidden = false;
+  }
+};
+
+document.getElementById("admin-ldap-save-btn").onclick = async () => {
+  adminLdapError.hidden = true;
+  try {
+    await api("/api/admin/ldap-config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(collectLdapForm()),
+    });
+    adminLdapResult.textContent = "Configuration enregistrée.";
+    adminLdapResult.className = "ok";
+    adminLdapResult.hidden = false;
+  } catch (err) {
+    adminLdapError.textContent = err.message;
+    adminLdapError.hidden = false;
+  }
+};
+
+document.getElementById("admin-ldap-test-btn").onclick = async () => {
+  adminLdapError.hidden = true;
+  adminLdapResult.hidden = true;
+  try {
+    const res = await api("/api/admin/ldap-config/test", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(collectLdapForm()),
+    });
+    adminLdapResult.textContent = res.ok ? "Connexion réussie." : `Échec : ${res.error}`;
+    adminLdapResult.className = res.ok ? "ok" : "fail";
+    adminLdapResult.hidden = false;
+  } catch (err) {
+    adminLdapError.textContent = err.message;
+    adminLdapError.hidden = false;
+  }
+};
+
+function openAdminModal() {
+  adminUsersError.hidden = true;
+  adminLdapError.hidden = true;
+  adminLdapResult.hidden = true;
+  adminOverlay.hidden = false;
+  refreshAdminUsers().catch((e) => { adminUsersError.textContent = e.message; adminUsersError.hidden = false; });
+  refreshAdminLdap().catch((e) => { adminLdapError.textContent = e.message; adminLdapError.hidden = false; }).finally(() => enhanceAllSelects());
+  enhanceAllSelects();
+}
+function closeAdminModal() {
+  adminOverlay.hidden = true;
+}
+document.getElementById("admin-btn").onclick = openAdminModal;
+document.getElementById("admin-close-btn").onclick = closeAdminModal;
+adminOverlay.addEventListener("click", (e) => { if (e.target === adminOverlay) closeAdminModal(); });
+
+document.querySelectorAll(".admin-tab-btn").forEach((btn) => {
+  btn.onclick = () => {
+    document.querySelectorAll(".admin-tab-btn").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".admin-tab-panel").forEach((p) => { p.hidden = true; });
+    btn.classList.add("active");
+    document.getElementById(`admin-tab-${btn.dataset.adminTab}`).hidden = false;
+    if (btn.dataset.adminTab === "audit") loadAuditLog();
+    if (btn.dataset.adminTab === "license") loadLicenseStatus();
+  };
+});
+
+function formatDaysUntil(isoDate) {
+  const days = Math.ceil((new Date(isoDate) - new Date()) / (1000 * 60 * 60 * 24));
+  if (days < 0) return `expirée depuis ${Math.abs(days)} jour(s)`;
+  if (days === 0) return "expire aujourd'hui";
+  return `${days} jour(s) restant(s)`;
+}
+
+async function loadLicenseStatus() {
+  const box = document.getElementById("license-status-box");
+  box.innerHTML = "<p class=\"settings-hint\">Chargement…</p>";
+  try {
+    const s = await api("/api/admin/license");
+    if (!s.license_id) {
+      box.innerHTML = `<p class="error-text">Aucune licence installée ou licence invalide${s.error ? ` (${escapeHtml(s.error)})` : ""}.</p>`;
+      return;
+    }
+    const daysLeft = formatDaysUntil(s.expires_at);
+    const expiringSoon = (new Date(s.expires_at) - new Date()) < 1000 * 60 * 60 * 24 * 30;
+    const phoneHomeLabel = {
+      ok: "OK", not_checked: "pas encore vérifié", revoked: "révoquée",
+      instance_mismatch: "alerte : utilisée depuis une autre instance", expired: "expirée",
+    }[s.phone_home_status] || s.phone_home_status;
+    box.innerHTML = `
+      <div class="license-info-grid">
+        <div><strong>Client</strong><br/>${escapeHtml(s.customer || "—")}</div>
+        <div><strong>Licence</strong><br/>${escapeHtml(s.license_id)}</div>
+        <div><strong>Sièges</strong><br/>${s.seats_used} / ${s.max_seats}</div>
+        <div><strong>Expiration</strong><br/>${escapeHtml(s.expires_at)}<br/>
+          <span class="${s.valid ? (expiringSoon ? "warning-text" : "") : "error-text"}">${daysLeft}</span></div>
+        <div><strong>Vérification réseau</strong><br/>${escapeHtml(phoneHomeLabel)}</div>
+        <div><strong>Statut global</strong><br/>
+          <span class="${s.valid ? "" : "error-text"}">${s.valid ? "✓ valide" : "✗ invalide / bloquée"}</span></div>
+      </div>
+      ${expiringSoon && s.valid ? `<p class="warning-text" style="margin-top:10px;">Expire dans moins de 30 jours — contacte ton fournisseur pour renouveler à temps.</p>` : ""}
+    `;
+  } catch (e) {
+    box.innerHTML = `<p class="error-text">${escapeHtml(e.message)}</p>`;
+  }
+}
+
+document.getElementById("license-install-btn").onclick = async () => {
+  const errEl = document.getElementById("license-error");
+  errEl.hidden = true;
+  const token = document.getElementById("license-token-input").value.trim();
+  if (!token) { errEl.textContent = "Colle un token de licence."; errEl.hidden = false; return; }
+  try {
+    await api("/api/admin/license", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    });
+    document.getElementById("license-token-input").value = "";
+    await loadLicenseStatus();
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.hidden = false;
+  }
+};
+
+document.getElementById("license-revoke-btn").onclick = async () => {
+  if (!confirm(
+    "Retirer la licence de cette instance ?\n\n" +
+    "L'application repassera en délai de grâce de 15 jours puis sera bloquée " +
+    "tant qu'aucune licence valide n'est réinstallée. À faire seulement si tu " +
+    "migres vers un nouveau serveur — contacte ton fournisseur pour qu'il " +
+    "débloque la licence pour la nouvelle instance."
+  )) return;
+  const errEl = document.getElementById("license-error");
+  errEl.hidden = true;
+  try {
+    await api("/api/admin/license", { method: "DELETE" });
+    await loadLicenseStatus();
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.hidden = false;
+  }
+};
+
+async function loadAuditLog() {
+  const listEl = document.getElementById("audit-log-list");
+  const errEl = document.getElementById("audit-error");
+  errEl.hidden = true;
+  listEl.innerHTML = "<p class=\"settings-hint\">Chargement…</p>";
+  try {
+    const events = await api("/api/admin/audit-log?limit=200");
+    if (events.length === 0) {
+      listEl.innerHTML = "<p class=\"settings-hint\">Aucun événement pour l'instant.</p>";
+      return;
+    }
+    listEl.innerHTML = events.map((ev) => {
+      const date = new Date(ev.created_at * 1000).toLocaleString("fr-FR");
+      const chips = Object.entries(ev.entity_counts)
+        .map(([cat, n]) => `<span class="audit-count-chip">${escapeHtml(cat)} ×${n}</span>`)
+        .join("");
+      return `<div class="audit-row">
+        <span class="audit-user">${escapeHtml(ev.username)}</span>
+        <span class="audit-time">${date}</span>
+        <span>${ev.total_replaced} donnée(s) remplacée(s)${ev.conversation_id ? ` · conversation #${ev.conversation_id}` : ""}</span>
+        <div class="audit-counts">${chips}</div>
+      </div>`;
+    }).join("");
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.hidden = false;
+    listEl.innerHTML = "";
+  }
+}
+
+// --- Benchmark anonymisation (admin) ---
+const CATEGORY_LABELS = {
+  IP_ADDRESS: "IP (v4)", IPV6: "IP (v6)", EMAIL: "Email", MAC_ADDRESS: "MAC",
+  PHONE: "Téléphone", IBAN_SHAPE: "IBAN", CREDIT_CARD_SHAPE: "Carte bancaire",
+  JWT_SHAPE: "JWT", HIGH_ENTROPY_TOKEN: "Secret haute-entropie",
+};
+let _lastBenchmarkReport = null;
+
+// --- Menus déroulants custom : le <select> natif ouvert est rendu par l'OS
+// (surbrillance bleue système), aucun CSS ne peut le restyler — même
+// approche que le sélecteur de modèle (Opus/Sonnet/Haiku) déjà fait à la
+// main. On garde le <select> d'origine caché (display:none) comme source de
+// vérité pour .value/.onchange, et on pilote dessus avec un bouton + popover.
+const _customSelectMenu = document.createElement("div");
+_customSelectMenu.id = "custom-select-menu";
+_customSelectMenu.hidden = true;
+document.body.appendChild(_customSelectMenu);
+let _customSelectActive = null;
+
+function enhanceSelect(selectEl) {
+  if (!selectEl || selectEl.dataset.enhanced) return;
+  selectEl.dataset.enhanced = "1";
+  selectEl.style.display = "none";
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "custom-select-btn";
+  if (selectEl.disabled) btn.disabled = true;
+  btn.innerHTML = `<span class="custom-select-label"></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+  selectEl.insertAdjacentElement("afterend", btn);
+
+  function syncLabel() {
+    const opt = selectEl.options[selectEl.selectedIndex];
+    btn.querySelector(".custom-select-label").textContent = opt ? opt.textContent : "";
+  }
+  syncLabel();
+
+  btn.onclick = () => {
+    if (btn.disabled) return;
+    _customSelectMenu.innerHTML = "";
+    [...selectEl.options].forEach((opt) => {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "custom-select-option" + (opt.value === selectEl.value ? " selected" : "");
+      item.textContent = opt.textContent;
+      item.onclick = () => {
+        if (selectEl.value !== opt.value) {
+          selectEl.value = opt.value;
+          selectEl.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+        syncLabel();
+        _customSelectMenu.hidden = true;
+        btn.setAttribute("aria-expanded", "false");
+      };
+      _customSelectMenu.appendChild(item);
+    });
+    const rect = btn.getBoundingClientRect();
+    _customSelectMenu.style.minWidth = `${rect.width}px`;
+    _customSelectMenu.style.left = `${rect.left}px`;
+    _customSelectMenu.style.top = `${rect.bottom + 4}px`;
+    _customSelectMenu.hidden = false;
+    btn.setAttribute("aria-expanded", "true");
+    _customSelectActive = btn;
+  };
+
+  // re-synchronise le bouton si .value est changé par du JS ailleurs
+  selectEl.addEventListener("change", syncLabel);
+}
+
+document.addEventListener("click", (e) => {
+  if (!_customSelectMenu.hidden && _customSelectActive !== e.target && !e.target.closest("#custom-select-menu")) {
+    _customSelectMenu.hidden = true;
+    if (_customSelectActive) _customSelectActive.setAttribute("aria-expanded", "false");
+  }
+});
+
+function enhanceAllSelects(root = document) {
+  root.querySelectorAll("select:not([data-enhanced])").forEach(enhanceSelect);
+}
+
+function benchScoreClass(pct) {
+  if (pct >= 95) return "good";
+  if (pct >= 80) return "warn";
+  return "bad";
+}
+
+document.getElementById("fuzz-run-btn").onclick = async () => {
+  const n = Number(document.getElementById("fuzz-n-input").value) || 2000;
+  const errEl = document.getElementById("fuzz-error");
+  const btn = document.getElementById("fuzz-run-btn");
+  errEl.hidden = true;
+  btn.disabled = true;
+  btn.textContent = "Fuzzing en cours…";
+  try {
+    const r = await api("/api/admin/fuzz", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ n }),
+    });
+    const coverage = Math.round((100 - r.leak_rate) * 10) / 10;
+    document.getElementById("fuzz-results").hidden = false;
+    const circle = document.getElementById("fuzz-score-circle");
+    circle.className = benchScoreClass(coverage);
+    document.getElementById("fuzz-score-value").textContent = `${coverage}%`;
+    document.getElementById("fuzz-score-label").textContent =
+      r.total_leaked === 0 ? "Aucune fuite sur l'échantillon" : `${r.total_leaked} fuite(s) sur ${r.total_sensitive}`;
+    document.getElementById("fuzz-score-sub").textContent =
+      `${r.n} lignes générées aléatoirement · seed ${r.seed} · sur-anonymisation ${r.over_redaction_rate}%`;
+
+    const examplesBox = document.getElementById("fuzz-examples");
+    examplesBox.hidden = !r.leak_examples || r.leak_examples.length === 0;
+    document.getElementById("fuzz-examples-list").innerHTML = (r.leak_examples || []).map((ex) => `
+      <div class="bench-leak-row">
+        <span class="leak-preview">${escapeHtml(ex.value_preview)}</span>
+        <span class="leak-line" style="flex:1; text-align:left;">${escapeHtml(ex.line)}</span>
+      </div>`).join("");
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Lancer le fuzzing";
+  }
+};
+
+function renderBenchmarkResults(report) {
+  _lastBenchmarkReport = report;
+  document.getElementById("benchmark-results").hidden = false;
+
+  const circle = document.getElementById("benchmark-score-circle");
+  circle.className = benchScoreClass(report.coverage_pct);
+  document.getElementById("benchmark-score-value").textContent = `${report.coverage_pct}%`;
+  document.getElementById("benchmark-score-label").textContent =
+    report.total_leaked === 0 ? "Aucune fuite détectée" : `${report.total_leaked} fuite(s) détectée(s)`;
+  document.getElementById("benchmark-score-sub").textContent =
+    `${report.total_found} donnée(s) sensible(s) repérée(s) dans le texte original`;
+
+  const bars = document.getElementById("benchmark-bars");
+  const maxFound = Math.max(1, ...Object.values(report.by_category).map((c) => c.found));
+  bars.innerHTML = Object.entries(report.by_category)
+    .filter(([, c]) => c.found > 0)
+    .map(([cat, c]) => {
+      const pct = Math.round(100 * c.found / maxFound);
+      return `
+        <div class="bench-bar-row">
+          <span class="bench-bar-label">${escapeHtml(CATEGORY_LABELS[cat] || cat)}</span>
+          <div class="bench-bar-track"><div class="bench-bar-fill ${c.leaked ? "has-leak" : ""}" style="width:${pct}%"></div></div>
+          <span class="bench-bar-count">${c.found - c.leaked}/${c.found}</span>
+        </div>`;
+    }).join("") || `<p class="settings-hint">Aucune donnée sensible détectée dans ce texte.</p>`;
+
+  const leaksBox = document.getElementById("benchmark-leaks");
+  leaksBox.hidden = report.leaks.length === 0;
+  document.getElementById("benchmark-leaks-list").innerHTML = report.leaks.map((l) => `
+    <div class="bench-leak-row">
+      <span class="leak-cat">${escapeHtml(CATEGORY_LABELS[l.category] || l.category)}</span>
+      <span class="leak-line">ligne ${l.line}</span>
+      <span class="leak-preview">${escapeHtml(l.preview)}</span>
+    </div>`).join("");
+
+  const candidatesBox = document.getElementById("benchmark-candidates");
+  const candidates = report.name_candidates || [];
+  candidatesBox.hidden = candidates.length === 0;
+  document.getElementById("benchmark-candidates-list").innerHTML = candidates.map((c) => `
+    <div class="bench-leak-row">
+      <span class="leak-line">ligne ${c.line}</span>
+      <span class="leak-preview">${escapeHtml(c.preview)}</span>
+    </div>`).join("");
+}
+
+document.getElementById("benchmark-run-btn").onclick = async () => {
+  const text = document.getElementById("benchmark-input").value;
+  const errEl = document.getElementById("benchmark-error");
+  errEl.hidden = true;
+  if (!text.trim()) {
+    errEl.textContent = "Colle d'abord des logs à analyser.";
+    errEl.hidden = false;
+    return;
+  }
+  try {
+    const report = await api("/api/admin/benchmark", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    renderBenchmarkResults(report);
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.hidden = false;
+  }
+};
+
+document.getElementById("benchmark-copy-report-btn").onclick = (e) => {
+  if (!_lastBenchmarkReport) return;
+  const r = _lastBenchmarkReport;
+  const lines = [
+    `Benchmark TokenVeil — couverture mesurée : ${r.coverage_pct}%`,
+    `${r.total_found} donnée(s) sensible(s) repérée(s), ${r.total_leaked} fuite(s).`,
+    "",
+    "Par catégorie :",
+    ...Object.entries(r.by_category)
+      .filter(([, c]) => c.found > 0)
+      .map(([cat, c]) => `  - ${CATEGORY_LABELS[cat] || cat} : ${c.found - c.leaked}/${c.found} anonymisé(s)`),
+  ];
+  if (r.leaks.length) {
+    lines.push("", "Fuites à corriger :");
+    r.leaks.forEach((l) => lines.push(`  - [${CATEGORY_LABELS[l.category] || l.category}] ligne ${l.line}, aperçu : ${l.preview}`));
+  }
+  if (r.name_candidates && r.name_candidates.length) {
+    lines.push("", "Candidats noms en texte libre à vérifier (non comptés dans le score) :");
+    r.name_candidates.forEach((c) => lines.push(`  - ligne ${c.line}, aperçu : ${c.preview}`));
+  }
+  const btn = e.currentTarget;
+  copyToClipboard(lines.join("\n")).then((ok) => {
+    btn.textContent = ok ? "Copié !" : "Échec de la copie";
+    setTimeout(() => { btn.textContent = "Copier le rapport pour Claude"; }, 1800);
+  });
+};
+
+document.querySelectorAll(".settings-tab-btn").forEach((btn) => {
+  btn.onclick = () => {
+    document.querySelectorAll(".settings-tab-btn").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".settings-tab-panel").forEach((p) => { p.hidden = true; });
+    btn.classList.add("active");
+    document.getElementById(`settings-tab-${btn.dataset.tab}`).hidden = false;
+  };
+});
+
+// --- Auto-détection : colle le JSON produit par tools/scan_infra.py ---
+const autoDetectInput = document.getElementById("auto-detect-input");
+const autoDetectError = document.getElementById("auto-detect-error");
+const autoDetectResults = document.getElementById("auto-detect-results");
+const autoDetectList = document.getElementById("auto-detect-list");
+
+function showAutoDetectError(msg) {
+  autoDetectError.textContent = msg;
+  autoDetectError.hidden = false;
+}
+
+document.getElementById("auto-detect-analyze-btn").onclick = () => {
+  autoDetectError.hidden = true;
+  let data;
+  try {
+    data = JSON.parse(autoDetectInput.value.trim());
+  } catch (e) {
+    showAutoDetectError("JSON invalide — copie bien la sortie complète du script.");
+    return;
+  }
+  const candidates = data.candidates || [];
+  if (!Array.isArray(candidates) || !candidates.length) {
+    showAutoDetectError("Aucun candidat trouvé dans ce JSON.");
+    autoDetectResults.hidden = true;
+    return;
+  }
+  autoDetectList.innerHTML = candidates.map((c, i) => `
+    <label class="candidate-row">
+      <input type="checkbox" data-idx="${i}" ${c.suggested ? "checked" : ""} />
+      <span class="term-text">${escapeHtml(c.term)}</span>
+      <span class="term-source">${escapeHtml(c.source)} · ${escapeHtml(c.default_label || "CUSTOM_TERM")}</span>
+    </label>`).join("");
+  autoDetectList._candidates = candidates;
+  autoDetectResults.hidden = false;
+};
+
+document.getElementById("auto-detect-add-btn").onclick = async () => {
+  const candidates = autoDetectList._candidates || [];
+  const checked = [...autoDetectList.querySelectorAll('input[type="checkbox"]:checked')]
+    .map((cb) => candidates[Number(cb.dataset.idx)]);
+  if (!checked.length) { showAutoDetectError("Coche au moins un terme à ajouter."); return; }
+  autoDetectError.hidden = true;
+  let added = 0;
+  for (const c of checked) {
+    try {
+      await api("/api/custom-terms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ term: c.term, label: c.default_label || "CUSTOM_TERM", is_regex: false }),
+      });
+      added++;
+    } catch (e) {
+      // un terme en doublon ou invalide ne doit pas bloquer l'ajout du reste
+    }
+  }
+  autoDetectResults.hidden = true;
+  autoDetectInput.value = "";
+  document.querySelector('.settings-tab-btn[data-tab="manual"]').click();
+  await refreshCustomTerms();
+  settingsError.textContent = `${added}/${checked.length} terme(s) ajouté(s).`;
+  settingsError.style.color = "var(--accent)";
+  settingsError.hidden = false;
+  setTimeout(() => { settingsError.style.color = ""; }, 3000);
+};
+
+profileLinkBtn.onclick = async () => {
+  clearProfileError();
+  profileLinkBtn.disabled = true;
+  profileLinkBtn.textContent = "Génération du lien…";
+  try {
+    const { url } = await api("/api/account/link/start", { method: "POST" });
+    profileAuthLink.href = url;
+    profileAuthLink.textContent = url;
+    profileStepStatus.hidden = true;
+    profileStepUrl.hidden = false;
+    window.open(url, "_blank");
+  } catch (e) {
+    showProfileError(e.message);
+  } finally {
+    profileLinkBtn.disabled = false;
+    profileLinkBtn.textContent = "Lier mon compte Claude Pro/Max";
+  }
+};
+
+document.getElementById("profile-submit-code-btn").onclick = async () => {
+  const code = profileCodeInput.value.trim();
+  if (!code) return;
+  clearProfileError();
+  const btn = document.getElementById("profile-submit-code-btn");
+  btn.disabled = true;
+  btn.textContent = "Validation…";
+  try {
+    await api("/api/account/link/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    });
+    profileStepUrl.hidden = true;
+    profileStepSuccess.hidden = false;
+    await refreshProfileStatus();
+  } catch (e) {
+    showProfileError(e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Valider";
+  }
+};
+
+document.getElementById("profile-cancel-link-btn").onclick = async () => {
+  try { await api("/api/account/link/cancel", { method: "POST" }); } catch (e) {}
+  profileStepUrl.hidden = true;
+  profileStepStatus.hidden = false;
+};
+
+async function startChattingFromProfile() {
+  await closeProfileModal();
+  if (!currentConvId) {
+    document.getElementById("new-chat-btn").click();
+  }
+  input.focus();
+}
+document.getElementById("profile-start-btn").onclick = startChattingFromProfile;
+document.getElementById("profile-status-start-btn").onclick = startChattingFromProfile;
+
+profileUnlinkBtn.onclick = async () => {
+  if (!confirm("Délier ce compte Claude ?")) return;
+  await api("/api/account/link", { method: "DELETE" });
+  await refreshProfileStatus();
+};
+
+function clearGeminiError() {
+  document.getElementById("gemini-error").hidden = true;
+}
+
+document.getElementById("gemini-link-btn").onclick = async () => {
+  const errEl = document.getElementById("gemini-error");
+  const input = document.getElementById("gemini-api-key-input");
+  const btn = document.getElementById("gemini-link-btn");
+  errEl.hidden = true;
+  const apiKey = input.value.trim();
+  if (!apiKey) return;
+  btn.disabled = true;
+  btn.textContent = "Vérification…";
+  try {
+    await api("/api/account/gemini/link", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ api_key: apiKey }),
+    });
+    input.value = "";
+    await refreshProfileStatus();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Lier ma clé Gemini";
+  }
+};
+
+document.getElementById("gemini-unlink-btn").onclick = async () => {
+  if (!confirm("Délier ton compte Gemini ?")) return;
+  await api("/api/account/gemini/link", { method: "DELETE" });
+  await refreshProfileStatus();
+};
+
+refreshProfileStatus().catch(() => {});
+loadPreferences().catch(() => {});
+loadConversations();
+</script>
+</body>
+</html>

@@ -1,0 +1,1000 @@
+2026-06-19T08:00:00+02:00 srv-app-01 systemd[1]: billing-service.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19T08:00:22+02:00] DEBUG billing-service: auth attempt password=706d7e80 user=paul.petit
+[2026-06-19 08:00:33] WARN payment-export: paiement refusé carte=5116 1559 4078 1618 ref=TICKET-5803
+[2026-06-19 08:01:00] WARN auth-gateway: paiement refusé carte=0341 3164 7525 5341 ref=TICKET-3803
+[2026-06-19T08:01:18+02:00] INFO payment-export: nouveau device détecté mac=7a:17:1a:c8:26:a6 hostname=laptop-771.internal.corp
+[2026-06-19T08:01:34+02:00] INFO notif-worker: nouveau device détecté mac=47:8d:cb:74:f2:13 hostname=laptop-256.internal.corp
+[2026-06-19 08:01:55] DEBUG notif-worker: auth attempt bearer=e8038a39d5e08539 user=thomas.lefevre
+[2026-06-19 08:02:00] ERROR payment-export: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=2163&apikey=3b971722f244f58d669cbee3772a0770
+client_ip=192.168.16.6
+2026-06-19 08:02:23 srv-app-01 sshd[8020]: Failed password for ubuntu from 104.36.121.72 port 36363 ssh2
+[2026-06-19T08:02:28+02:00] INFO backup-sync: nouveau device détecté mac=fd:63:3d:bd:de:13 hostname=laptop-162.internal.corp
+[2026-06-19T08:02:41+02:00] WARN billing-service: paiement refusé carte=8726 2473 1781 0801 ref=TICKET-4872
+[2026-06-19T08:02:47+02:00] INFO inventory-sync: nouveau device détecté mac=c1:5c:0c:8e:9d:f4 hostname=laptop-294.internal.corp
+[2026-06-19 08:02:57] ERROR billing-service: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=3170&apikey=f5125227c3712da86a78c49ea20e3268
+client_ip=192.168.2.14
+[2026-06-19T08:03:27+02:00] WARN billing-service: paiement refusé carte=2784 9808 4124 1182 ref=TICKET-5462
+[2026-06-19T08:03:37+02:00] ERROR payment-export: connection refused to db-3.internal.corp:5432 retry=9
+2026-06-19 08:03:53 srv-app-07 sshd[21876]: Failed password for root from 90.22.1.86 port 18191 ssh2
+[2026-06-19 08:03:59] DEBUG backup-sync: auth attempt password=41b4d419 user=claire.dupont
+[2026-06-19 08:04:28] WARN payment-export: paiement refusé carte=5869 2322 6025 6342 ref=TICKET-2771
+[2026-06-19T08:04:41+02:00] WARN inventory-sync: paiement refusé carte=7543 3036 5414 5868 ref=TICKET-6425
+[2026-06-19 08:04:42] INFO auth-gateway: ref=CUST-24208 iban=FR7696556981693406088356 montant=583.85EUR client=Luc Dupont email=luc.dupont@clientmail.com tel=07 79 40 84 15
+2026-06-19 08:05:06 srv-app-07 systemd[1]: Started backup-sync.service.
+[2026-06-19T08:05:29+02:00] INFO backup-sync: ref=CUST-90676 iban=FR7694680443699577738721 montant=2334.65EUR client=Marc Bernard email=marc.bernard@clientmail.com tel=07 11 96 30 86
+[2026-06-19T08:05:39+02:00] INFO payment-export: ref=CUST-90120 iban=FR7617693676320163287083 montant=1004.58EUR client=Sophie Robert email=sophie.robert@clientmail.com tel=06 59 85 67 71
+[2026-06-19 08:05:59] DEBUG inventory-sync: auth attempt bearer=fe878f78 user=julie.martin
+2026-06-19T08:06:22+02:00 srv-app-07 systemd[1]: payment-export.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19 08:06:27] DEBUG payment-export: auth attempt token=ddaed16d user=marc.dupont
+[2026-06-19T08:06:55+02:00] INFO inventory-sync: nouveau device détecté mac=b9:cd:7f:78:df:0c hostname=laptop-444.internal.corp
+[2026-06-19 08:07:17] INFO notif-worker: ref=CUST-61645 iban=FR7699016272046537556464 montant=680.60EUR client=Paul Dupont email=paul.dupont@clientmail.com tel=06 95 69 06 44
+[2026-06-19 08:07:25] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=7882&apikey=0474f36e8b5359309cc6273931bdb2a0
+client_ip=192.168.8.53
+[2026-06-19 08:07:52] DEBUG billing-service: auth attempt bearer=4d58fed8a728e7eca0fa5f6b user=luc.moreau
+2026-06-19 08:08:01 srv-auth-02 systemd[1]: notif-worker.service: Failed with result 'exit-code'.
+[2026-06-19T08:08:04+02:00] DEBUG notif-worker: auth attempt token=ffe0297c79bfbdabe898736a user=marie.bernard
+[2026-06-19T08:08:11+02:00] INFO notif-worker: nouveau device détecté mac=93:69:7b:59:04:81 hostname=laptop-155.internal.corp
+[2026-06-19 08:08:29] INFO notif-worker: ref=CUST-11607 iban=FR7694777520471167190229 montant=2499.10EUR client=Julie Martin email=julie.martin@clientmail.com tel=06 15 71 97 53
+[2026-06-19 08:08:49] WARN backup-sync: paiement refusé carte=6774 9649 9091 3341 ref=TICKET-3573
+2026-06-19T08:08:57+02:00 srv-app-02 sshd[8585]: Failed password for admin from 124.230.240.75 port 19905 ssh2
+[2026-06-19T08:09:20+02:00] INFO notif-worker: nouveau device détecté mac=78:6d:37:48:42:15 hostname=laptop-911.internal.corp
+2026-06-19T08:09:30+02:00 srv-auth-02 systemd[1]: notif-worker.service: Scheduled restart job, restart counter is at 120.
+[2026-06-19T08:09:53+02:00] INFO auth-gateway: nouveau device détecté mac=1d:a8:02:70:81:5f hostname=laptop-631.internal.corp
+[2026-06-19 08:10:14] INFO auth-gateway: ref=CUST-21959 iban=FR7675655125674680715451 montant=3321.65EUR client=Marc Robert email=marc.robert@clientmail.com tel=06 84 69 59 52
+[2026-06-19 08:10:16] ERROR backup-sync: connection refused to db-4.internal.corp:5432 retry=8
+2026-06-19 08:10:41 srv-app-01 systemd[1]: Started payment-export.service.
+[2026-06-19 08:11:10] ERROR billing-service: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=3434&apikey=7590d273e34f98dff7e4c6428da8099f
+client_ip=192.168.20.206
+[2026-06-19T08:11:25+02:00] ERROR inventory-sync: connection refused to db-5.internal.corp:5432 retry=7
+[2026-06-19 08:11:40] WARN payment-export: paiement refusé carte=3605 7662 7028 9517 ref=TICKET-2633
+[2026-06-19T08:11:57+02:00] INFO billing-service: ref=CUST-71537 iban=FR7645961586578091343161 montant=833.56EUR client=Paul Martin email=paul.martin@clientmail.com tel=06 88 38 03 05
+[2026-06-19T08:12:08+02:00] ERROR auth-gateway: connection refused to db-2.internal.corp:5432 retry=4
+[2026-06-19T08:12:25+02:00] INFO backup-sync: ref=CUST-91226 iban=FR7637923747407482175946 montant=2058.58EUR client=Marie Petit email=marie.petit@clientmail.com tel=07 25 49 61 13
+[2026-06-19 08:12:33] ERROR backup-sync: connection refused to db-3.internal.corp:5432 retry=1
+[2026-06-19 08:13:00] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=3306&apikey=f97b7684319e1b429ad564b858f9a3e2
+client_ip=192.168.2.235
+[2026-06-19 08:13:25] DEBUG notif-worker: auth attempt secret=c083eb8c user=claire.martin
+[2026-06-19 08:13:47] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=2627&apikey=72e9d34119f3374cebd4d3fd81b6ee7b
+client_ip=192.168.18.85
+[2026-06-19T08:14:09+02:00] ERROR backup-sync: connection refused to db-3.internal.corp:5432 retry=4
+[2026-06-19 08:14:13] WARN billing-service: paiement refusé carte=9005 3293 1839 3352 ref=TICKET-1046
+2026-06-19 08:14:22 srv-app-02 systemd[1]: payment-export.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19 08:14:27] WARN auth-gateway: paiement refusé carte=0240 2681 1775 8917 ref=TICKET-9254
+2026-06-19T08:14:35+02:00 srv-auth-02 systemd[1]: billing-service.service: Main process exited, code=exited, status=1/FAILURE
+2026-06-19T08:14:51+02:00 srv-db-03 sshd[3152]: Failed password for root from 133.37.41.83 port 9294 ssh2
+[2026-06-19T08:15:00+02:00] ERROR notif-worker: connection refused to db-5.internal.corp:5432 retry=9
+[2026-06-19T08:15:10+02:00] DEBUG backup-sync: auth attempt password=6de7daecd3ada8b4f2222d3b user=paul.dupont
+[2026-06-19 08:15:29] ERROR backup-sync: connection refused to db-4.internal.corp:5432 retry=6
+[2026-06-19 08:15:57] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=8432&apikey=b364f73bb387d080589ab054c24026cd
+client_ip=192.168.20.81
+2026-06-19 08:16:08 srv-app-02 systemd[1]: auth-gateway.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19 08:16:37] INFO payment-export: ref=CUST-45665 iban=FR7676797643815614978403 montant=3247.76EUR client=Jean Martin email=jean.martin@clientmail.com tel=06 00 26 38 27
+2026-06-19T08:17:02+02:00 srv-app-02 systemd[1]: Started auth-gateway.service.
+[2026-06-19T08:17:26+02:00] INFO payment-export: ref=CUST-19447 iban=FR7660607159696641605297 montant=2974.11EUR client=Sophie Moreau email=sophie.moreau@clientmail.com tel=07 13 31 55 75
+[2026-06-19 08:17:39] DEBUG billing-service: auth attempt secret=a5236bb4 user=sophie.martin
+[2026-06-19 08:17:44] INFO payment-export: ref=CUST-92306 iban=FR7677997995527177449058 montant=617.39EUR client=Marie Bernard email=marie.bernard@clientmail.com tel=07 57 04 07 47
+2026-06-19 08:18:11 srv-app-07 sshd[15736]: Failed password for admin from 149.196.236.149 port 60599 ssh2
+[2026-06-19T08:18:37+02:00] WARN notif-worker: paiement refusé carte=7820 7151 8203 7788 ref=TICKET-3600
+[2026-06-19T08:18:49+02:00] DEBUG auth-gateway: auth attempt secret=1a2a3c984a24b9c429ca42db user=jean.moreau
+[2026-06-19 08:18:59] ERROR payment-export: connection refused to db-4.internal.corp:5432 retry=4
+2026-06-19T08:19:07+02:00 srv-app-02 sshd[29717]: Failed password for deploy from 221.51.19.170 port 51244 ssh2
+[2026-06-19T08:19:27+02:00] DEBUG backup-sync: auth attempt token=5e1db7e9e779f6bee9cd5648 user=jean.robert
+2026-06-19 08:19:55 srv-app-07 sshd[9938]: Failed password for root from 152.63.145.22 port 30470 ssh2
+[2026-06-19T08:20:24+02:00] DEBUG payment-export: auth attempt token=b0d1cb7c2b70a3a4 user=paul.dupont
+[2026-06-19 08:20:34] INFO notif-worker: ref=CUST-90654 iban=FR7601043289861434103697 montant=524.14EUR client=Julie Robert email=julie.robert@clientmail.com tel=07 76 68 02 80
+[2026-06-19T08:20:51+02:00] INFO payment-export: ref=CUST-41531 iban=FR7696218518888806706540 montant=2935.08EUR client=Jean Moreau email=jean.moreau@clientmail.com tel=07 30 93 84 80
+[2026-06-19T08:20:55+02:00] ERROR notif-worker: connection refused to db-3.internal.corp:5432 retry=9
+[2026-06-19 08:21:06] INFO notif-worker: nouveau device détecté mac=f5:42:e1:96:16:1a hostname=laptop-417.internal.corp
+[2026-06-19T08:21:23+02:00] INFO backup-sync: nouveau device détecté mac=69:b1:a8:3b:dc:ec hostname=laptop-447.internal.corp
+[2026-06-19T08:21:29+02:00] INFO notif-worker: nouveau device détecté mac=82:d2:d5:9a:32:a9 hostname=laptop-413.internal.corp
+[2026-06-19T08:21:44+02:00] DEBUG notif-worker: auth attempt bearer=e1bd812cb504e142 user=sophie.moreau
+[2026-06-19 08:21:56] ERROR backup-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=2063&apikey=bbe24bca87305fc388e69f6342e5e2ab
+client_ip=192.168.15.244
+2026-06-19 08:22:14 srv-auth-02 systemd[1]: auth-gateway.service: Failed with result 'exit-code'.
+[2026-06-19T08:22:40+02:00] WARN backup-sync: paiement refusé carte=3237 0589 5782 9114 ref=TICKET-7523
+[2026-06-19 08:23:03] DEBUG backup-sync: auth attempt password=a2eeb454 user=marc.dupont
+[2026-06-19T08:23:30+02:00] INFO backup-sync: ref=CUST-39552 iban=FR7658414384249818299229 montant=4967.43EUR client=Paul Moreau email=paul.moreau@clientmail.com tel=06 03 10 05 82
+[2026-06-19 08:23:55] WARN auth-gateway: paiement refusé carte=6907 8447 3647 1027 ref=TICKET-7809
+[2026-06-19 08:24:11] ERROR payment-export: connection refused to db-3.internal.corp:5432 retry=6
+[2026-06-19 08:24:35] INFO inventory-sync: ref=CUST-51827 iban=FR7637147321046963259532 montant=4091.65EUR client=Thomas Martin email=thomas.martin@clientmail.com tel=07 63 39 63 02
+[2026-06-19 08:24:38] INFO backup-sync: nouveau device détecté mac=6b:11:9f:f9:03:d4 hostname=laptop-370.internal.corp
+[2026-06-19T08:25:02+02:00] ERROR inventory-sync: connection refused to db-1.internal.corp:5432 retry=9
+2026-06-19T08:25:09+02:00 srv-app-07 systemd[1]: Started backup-sync.service.
+2026-06-19T08:25:34+02:00 srv-auth-02 sshd[19279]: Failed password for deploy from 44.201.191.204 port 62558 ssh2
+[2026-06-19 08:25:46] DEBUG payment-export: auth attempt password=4afe44aa user=paul.petit
+[2026-06-19 08:26:06] ERROR backup-sync: connection refused to db-5.internal.corp:5432 retry=9
+[2026-06-19 08:26:22] INFO auth-gateway: nouveau device détecté mac=ba:3d:90:f8:71:f5 hostname=laptop-636.internal.corp
+[2026-06-19 08:26:43] INFO inventory-sync: ref=CUST-85047 iban=FR7613075626368970283857 montant=4314.48EUR client=Sophie Dupont email=sophie.dupont@clientmail.com tel=07 22 58 68 43
+2026-06-19 08:27:01 srv-app-07 systemd[1]: notif-worker.service: Failed with result 'exit-code'.
+[2026-06-19 08:27:10] WARN auth-gateway: paiement refusé carte=4437 5758 4419 8665 ref=TICKET-3399
+2026-06-19T08:27:20+02:00 srv-app-01 sshd[28130]: Failed password for root from 133.131.245.55 port 36320 ssh2
+2026-06-19T08:27:29+02:00 srv-auth-02 systemd[1]: notif-worker.service: Failed with result 'exit-code'.
+[2026-06-19 08:27:37] WARN notif-worker: paiement refusé carte=0165 7120 8267 7345 ref=TICKET-5676
+[2026-06-19 08:27:58] WARN billing-service: paiement refusé carte=0262 0672 4004 9915 ref=TICKET-5662
+[2026-06-19 08:28:13] INFO backup-sync: nouveau device détecté mac=4e:86:3a:5e:85:0a hostname=laptop-909.internal.corp
+[2026-06-19T08:28:23+02:00] WARN notif-worker: paiement refusé carte=6685 1612 2753 0463 ref=TICKET-8319
+2026-06-19 08:28:48 srv-app-07 systemd[1]: auth-gateway.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19T08:28:57+02:00] WARN notif-worker: paiement refusé carte=1742 6841 4593 3272 ref=TICKET-8454
+[2026-06-19 08:29:21] DEBUG auth-gateway: auth attempt bearer=672eb231645ae36f2e1e4de1 user=thomas.robert
+[2026-06-19T08:29:43+02:00] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9920&apikey=621db212f19d54dbcecc24b35c47009e
+client_ip=192.168.1.192
+[2026-06-19T08:29:57+02:00] WARN inventory-sync: paiement refusé carte=5243 1069 0331 1907 ref=TICKET-1797
+[2026-06-19T08:30:05+02:00] INFO inventory-sync: nouveau device détecté mac=61:49:7a:a7:94:7d hostname=laptop-407.internal.corp
+[2026-06-19 08:30:14] INFO backup-sync: ref=CUST-16145 iban=FR7656856624628733427086 montant=3422.71EUR client=Marc Robert email=marc.robert@clientmail.com tel=06 49 31 32 26
+[2026-06-19T08:30:25+02:00] ERROR inventory-sync: connection refused to db-2.internal.corp:5432 retry=1
+[2026-06-19 08:30:34] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=4625&apikey=6f6a90663f76c7a9ceb98bfe3fa6bad1
+client_ip=192.168.7.207
+2026-06-19 08:30:58 srv-app-02 systemd[1]: Started billing-service.service.
+[2026-06-19T08:31:08+02:00] ERROR payment-export: connection refused to db-5.internal.corp:5432 retry=4
+[2026-06-19T08:31:24+02:00] ERROR notif-worker: connection refused to db-4.internal.corp:5432 retry=8
+[2026-06-19T08:31:39+02:00] ERROR notif-worker: connection refused to db-5.internal.corp:5432 retry=8
+[2026-06-19 08:31:45] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=7502&apikey=10d472406eb1ff00d00890d5334768b8
+client_ip=192.168.3.243
+[2026-06-19 08:31:48] INFO inventory-sync: nouveau device détecté mac=79:21:2c:cc:f1:05 hostname=laptop-184.internal.corp
+[2026-06-19 08:32:04] ERROR notif-worker: connection refused to db-1.internal.corp:5432 retry=9
+[2026-06-19 08:32:34] WARN payment-export: paiement refusé carte=9740 1489 0250 3926 ref=TICKET-2260
+[2026-06-19 08:32:44] WARN backup-sync: paiement refusé carte=6856 2185 0163 1599 ref=TICKET-7499
+2026-06-19 08:33:09 srv-app-07 systemd[1]: Started billing-service.service.
+[2026-06-19T08:33:17+02:00] DEBUG backup-sync: auth attempt bearer=972284c4 user=marc.moreau
+[2026-06-19 08:33:29] ERROR billing-service: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=8121&apikey=83425ded302b2ac09dc275c54898f425
+client_ip=192.168.15.94
+[2026-06-19 08:33:38] INFO auth-gateway: nouveau device détecté mac=b8:7f:6e:34:90:ca hostname=laptop-961.internal.corp
+[2026-06-19T08:33:58+02:00] INFO auth-gateway: nouveau device détecté mac=49:a6:fa:5c:a9:f7 hostname=laptop-433.internal.corp
+[2026-06-19T08:34:11+02:00] ERROR inventory-sync: connection refused to db-5.internal.corp:5432 retry=4
+[2026-06-19 08:34:30] ERROR payment-export: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=5239&apikey=6e92df49784dc2efcd1b237b51cad303
+client_ip=192.168.15.243
+[2026-06-19T08:34:38+02:00] WARN notif-worker: paiement refusé carte=6798 2507 1461 1254 ref=TICKET-6620
+[2026-06-19T08:34:53+02:00] INFO backup-sync: nouveau device détecté mac=3e:ea:29:13:0a:35 hostname=laptop-858.internal.corp
+[2026-06-19T08:35:01+02:00] INFO payment-export: ref=CUST-40389 iban=FR7662266093796603341918 montant=1541.46EUR client=Marc Robert email=marc.robert@clientmail.com tel=07 25 58 14 33
+[2026-06-19 08:35:23] ERROR backup-sync: connection refused to db-5.internal.corp:5432 retry=7
+[2026-06-19 08:35:42] ERROR auth-gateway: connection refused to db-5.internal.corp:5432 retry=3
+2026-06-19 08:36:09 srv-app-07 sshd[6998]: Failed password for admin from 100.60.122.79 port 25488 ssh2
+[2026-06-19T08:36:32+02:00] DEBUG backup-sync: auth attempt token=cd5f55f945ae1b0f46cfdfde user=julie.bernard
+[2026-06-19T08:36:35+02:00] WARN billing-service: paiement refusé carte=4384 2797 8819 1485 ref=TICKET-9880
+[2026-06-19 08:37:02] INFO notif-worker: nouveau device détecté mac=d3:79:1e:8b:2e:37 hostname=laptop-314.internal.corp
+[2026-06-19 08:37:28] ERROR notif-worker: connection refused to db-5.internal.corp:5432 retry=7
+[2026-06-19 08:37:34] WARN payment-export: paiement refusé carte=0958 4982 5449 4812 ref=TICKET-7743
+[2026-06-19 08:38:04] INFO auth-gateway: ref=CUST-29168 iban=FR7653672946671168457759 montant=30.99EUR client=Paul Lefevre email=paul.lefevre@clientmail.com tel=06 93 58 81 85
+[2026-06-19T08:38:27+02:00] DEBUG billing-service: auth attempt bearer=f8a9a4fa user=jean.dupont
+2026-06-19 08:38:31 srv-db-03 sshd[7629]: Failed password for ubuntu from 60.225.233.1 port 46151 ssh2
+2026-06-19T08:39:01+02:00 srv-app-02 systemd[1]: notif-worker.service: Main process exited, code=exited, status=1/FAILURE
+2026-06-19T08:39:22+02:00 srv-app-07 sshd[24789]: Failed password for deploy from 186.84.26.102 port 46862 ssh2
+2026-06-19 08:39:47 srv-app-02 sshd[20453]: Failed password for root from 20.109.244.20 port 15847 ssh2
+[2026-06-19 08:40:04] ERROR billing-service: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=8035&apikey=d4f27c233ab94c44205eb64de62343cb
+client_ip=192.168.4.254
+2026-06-19 08:40:15 srv-app-02 systemd[1]: payment-export.service: Scheduled restart job, restart counter is at 64.
+2026-06-19T08:40:40+02:00 srv-app-01 systemd[1]: notif-worker.service: Failed with result 'exit-code'.
+[2026-06-19 08:41:04] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=2294&apikey=c37f20ba4cdb5f20208611c9ddc24829
+client_ip=192.168.8.128
+[2026-06-19T08:41:21+02:00] ERROR payment-export: connection refused to db-1.internal.corp:5432 retry=5
+[2026-06-19T08:41:44+02:00] WARN notif-worker: paiement refusé carte=1617 9904 2102 0275 ref=TICKET-9568
+[2026-06-19T08:42:01+02:00] ERROR payment-export: connection refused to db-3.internal.corp:5432 retry=2
+[2026-06-19T08:42:26+02:00] DEBUG auth-gateway: auth attempt password=2feb1f5b58337010 user=sophie.dupont
+[2026-06-19T08:42:42+02:00] INFO inventory-sync: ref=CUST-39427 iban=FR7653654195180238061744 montant=2691.11EUR client=Jean Petit email=jean.petit@clientmail.com tel=07 01 47 25 37
+[2026-06-19T08:43:01+02:00] WARN notif-worker: paiement refusé carte=9738 3206 0385 0506 ref=TICKET-6038
+[2026-06-19T08:43:05+02:00] WARN backup-sync: paiement refusé carte=0241 0386 5719 1826 ref=TICKET-2226
+[2026-06-19 08:43:24] DEBUG billing-service: auth attempt token=98acaae8 user=sophie.martin
+2026-06-19T08:43:31+02:00 srv-app-02 sshd[4956]: Failed password for ubuntu from 62.230.238.81 port 36146 ssh2
+2026-06-19T08:43:43+02:00 srv-app-02 systemd[1]: inventory-sync.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19T08:43:49+02:00] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=2506&apikey=27bc19850ce73e34301746cb282026e4
+client_ip=192.168.11.39
+[2026-06-19 08:44:18] ERROR billing-service: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9921&apikey=dcf0cd5b6588e4179fdf128c4d670cbf
+client_ip=192.168.2.45
+[2026-06-19T08:44:44+02:00] ERROR auth-gateway: connection refused to db-2.internal.corp:5432 retry=1
+[2026-06-19 08:44:55] ERROR payment-export: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=1011&apikey=fb75377817cb557ab0b46f95f121770f
+client_ip=192.168.9.16
+[2026-06-19T08:45:06+02:00] INFO payment-export: ref=CUST-17806 iban=FR7602921851569154522675 montant=1437.90EUR client=Paul Moreau email=paul.moreau@clientmail.com tel=07 28 85 75 22
+2026-06-19T08:45:19+02:00 srv-app-07 systemd[1]: notif-worker.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19T08:45:42+02:00] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=2661&apikey=73f4a27ba52ae08672b8301ced5dfcbc
+client_ip=192.168.11.237
+[2026-06-19T08:46:09+02:00] WARN backup-sync: paiement refusé carte=1040 5411 5262 1815 ref=TICKET-8909
+[2026-06-19 08:46:32] INFO inventory-sync: ref=CUST-17019 iban=FR7615336884443106987205 montant=41.54EUR client=Marc Bernard email=marc.bernard@clientmail.com tel=06 37 84 80 76
+[2026-06-19T08:46:48+02:00] ERROR billing-service: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9561&apikey=2f39cff82c5bcb5e18ee8781432bd71c
+client_ip=192.168.10.252
+[2026-06-19 08:47:02] INFO notif-worker: nouveau device détecté mac=7f:92:c1:43:e5:56 hostname=laptop-927.internal.corp
+[2026-06-19T08:47:09+02:00] DEBUG billing-service: auth attempt bearer=48a22cca user=luc.robert
+[2026-06-19T08:47:39+02:00] DEBUG notif-worker: auth attempt token=3339bd8c user=julie.robert
+[2026-06-19T08:47:41+02:00] DEBUG auth-gateway: auth attempt bearer=ca71f8b0 user=claire.durand
+2026-06-19 08:47:51 srv-app-07 sshd[26363]: Failed password for ubuntu from 78.68.153.250 port 55145 ssh2
+[2026-06-19 08:48:02] DEBUG notif-worker: auth attempt password=e6dfb152 user=luc.petit
+[2026-06-19T08:48:07+02:00] ERROR backup-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=4387&apikey=171e1b68bec307bfe5fbb58290c15677
+client_ip=192.168.7.216
+[2026-06-19 08:48:16] ERROR backup-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9475&apikey=4507898dcbe86e9c30b993f2a8a88964
+client_ip=192.168.1.123
+[2026-06-19 08:48:41] DEBUG billing-service: auth attempt token=0f98dcc16a7fb95593f485a2 user=sophie.moreau
+[2026-06-19T08:48:49+02:00] ERROR inventory-sync: connection refused to db-5.internal.corp:5432 retry=5
+[2026-06-19 08:49:04] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=8105&apikey=2f63c9d1446ade4a52fa5a10e8655f24
+client_ip=192.168.19.150
+[2026-06-19 08:49:25] DEBUG inventory-sync: auth attempt bearer=16b0a600 user=sophie.lefevre
+[2026-06-19T08:49:48+02:00] INFO auth-gateway: ref=CUST-31891 iban=FR7610447898562575326033 montant=1084.27EUR client=Thomas Durand email=thomas.durand@clientmail.com tel=06 75 64 21 15
+2026-06-19 08:50:00 srv-app-01 systemd[1]: inventory-sync.service: Main process exited, code=exited, status=1/FAILURE
+2026-06-19 08:50:20 srv-app-01 sshd[13460]: Failed password for ubuntu from 25.24.59.107 port 9123 ssh2
+[2026-06-19T08:50:38+02:00] INFO inventory-sync: ref=CUST-65164 iban=FR7618499261891411739348 montant=1662.45EUR client=Jean Durand email=jean.durand@clientmail.com tel=07 37 20 05 70
+[2026-06-19T08:50:54+02:00] INFO notif-worker: nouveau device détecté mac=00:23:f4:22:38:7e hostname=laptop-403.internal.corp
+2026-06-19 08:51:03 srv-db-03 sshd[14959]: Failed password for deploy from 30.148.184.206 port 49424 ssh2
+[2026-06-19 08:51:07] ERROR billing-service: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=7738&apikey=be82ba53cce8cfd534153dfe5cb04ff3
+client_ip=192.168.6.86
+2026-06-19 08:51:22 srv-app-01 systemd[1]: billing-service.service: Failed with result 'exit-code'.
+2026-06-19T08:51:44+02:00 srv-app-07 sshd[5871]: Failed password for ubuntu from 206.127.246.89 port 56010 ssh2
+[2026-06-19T08:52:11+02:00] ERROR backup-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9328&apikey=ff52fa7a817cc72eee2fea3f03cd1029
+client_ip=192.168.6.131
+[2026-06-19 08:52:29] INFO notif-worker: nouveau device détecté mac=b1:7e:af:be:33:70 hostname=laptop-449.internal.corp
+[2026-06-19 08:52:41] ERROR backup-sync: connection refused to db-1.internal.corp:5432 retry=3
+[2026-06-19T08:52:57+02:00] DEBUG notif-worker: auth attempt token=3c6e6a3d user=jean.martin
+[2026-06-19 08:53:22] INFO inventory-sync: ref=CUST-82512 iban=FR7669782922169958669346 montant=2818.37EUR client=Jean Dupont email=jean.dupont@clientmail.com tel=07 17 17 52 77
+[2026-06-19 08:53:45] ERROR auth-gateway: connection refused to db-5.internal.corp:5432 retry=4
+2026-06-19 08:53:52 srv-app-02 systemd[1]: backup-sync.service: Failed with result 'exit-code'.
+[2026-06-19 08:54:15] ERROR backup-sync: connection refused to db-3.internal.corp:5432 retry=9
+[2026-06-19 08:54:31] DEBUG backup-sync: auth attempt secret=030c411685984196 user=thomas.dupont
+[2026-06-19 08:54:43] WARN billing-service: paiement refusé carte=8638 4066 6580 0439 ref=TICKET-8259
+[2026-06-19 08:55:10] ERROR notif-worker: connection refused to db-5.internal.corp:5432 retry=4
+[2026-06-19T08:55:35+02:00] INFO auth-gateway: nouveau device détecté mac=25:53:c1:d8:84:58 hostname=laptop-105.internal.corp
+[2026-06-19T08:55:46+02:00] INFO notif-worker: ref=CUST-91968 iban=FR7694798515832818268861 montant=2872.28EUR client=Claire Dupont email=claire.dupont@clientmail.com tel=06 84 42 42 46
+[2026-06-19 08:55:56] INFO backup-sync: nouveau device détecté mac=03:be:77:1a:c3:c8 hostname=laptop-653.internal.corp
+[2026-06-19 08:56:20] ERROR billing-service: connection refused to db-5.internal.corp:5432 retry=8
+[2026-06-19T08:56:36+02:00] WARN auth-gateway: paiement refusé carte=1128 8013 3613 8612 ref=TICKET-1389
+2026-06-19T08:56:51+02:00 srv-app-07 sshd[9475]: Failed password for root from 65.128.36.148 port 27738 ssh2
+[2026-06-19T08:57:04+02:00] DEBUG notif-worker: auth attempt password=30212b39929ecc0f user=paul.lefevre
+2026-06-19 08:57:09 srv-db-03 systemd[1]: backup-sync.service: Scheduled restart job, restart counter is at 37.
+[2026-06-19T08:57:31+02:00] INFO billing-service: ref=CUST-80405 iban=FR7681435368222394312908 montant=3788.82EUR client=Jean Petit email=jean.petit@clientmail.com tel=06 37 85 08 32
+[2026-06-19 08:57:35] INFO notif-worker: nouveau device détecté mac=b4:73:92:6a:fe:a9 hostname=laptop-810.internal.corp
+[2026-06-19 08:57:54] ERROR backup-sync: connection refused to db-4.internal.corp:5432 retry=3
+[2026-06-19 08:57:55] WARN payment-export: paiement refusé carte=6452 5777 5478 1291 ref=TICKET-5597
+[2026-06-19T08:58:23+02:00] WARN backup-sync: paiement refusé carte=1108 0996 9308 4887 ref=TICKET-3435
+2026-06-19T08:58:35+02:00 srv-db-03 systemd[1]: payment-export.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19 08:58:48] ERROR backup-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=2275&apikey=54e554fb17f728b716bcfe11a3885ccb
+client_ip=192.168.20.177
+[2026-06-19 08:59:05] WARN inventory-sync: paiement refusé carte=5577 9082 7231 8432 ref=TICKET-4062
+2026-06-19 08:59:11 srv-app-07 sshd[16696]: Failed password for ubuntu from 126.169.58.124 port 14832 ssh2
+[2026-06-19T08:59:30+02:00] DEBUG notif-worker: auth attempt password=54141585 user=thomas.petit
+[2026-06-19 08:59:50] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9835&apikey=26eff57d4585ae27cc4306d435f132f4
+client_ip=192.168.10.244
+[2026-06-19 09:00:17] DEBUG notif-worker: auth attempt secret=d7fcb3d4 user=luc.robert
+2026-06-19 09:00:42 srv-app-02 systemd[1]: Started billing-service.service.
+[2026-06-19 09:00:51] ERROR billing-service: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9328&apikey=0c6adb34d88db8c6df5bf89bc437e536
+client_ip=192.168.4.135
+[2026-06-19T09:01:04+02:00] ERROR backup-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=7544&apikey=24fd2287b21cc915fe06961751b70528
+client_ip=192.168.1.207
+[2026-06-19 09:01:16] WARN inventory-sync: paiement refusé carte=1184 8955 4393 7690 ref=TICKET-5277
+2026-06-19 09:01:22 srv-db-03 sshd[27310]: Failed password for admin from 148.150.174.243 port 34662 ssh2
+2026-06-19 09:01:31 srv-auth-02 systemd[1]: Started backup-sync.service.
+[2026-06-19 09:01:56] INFO auth-gateway: nouveau device détecté mac=0f:38:2c:77:ad:b0 hostname=laptop-817.internal.corp
+2026-06-19T09:02:23+02:00 srv-app-07 systemd[1]: payment-export.service: Scheduled restart job, restart counter is at 173.
+[2026-06-19T09:02:26+02:00] INFO payment-export: nouveau device détecté mac=68:56:f6:77:86:76 hostname=laptop-954.internal.corp
+[2026-06-19 09:02:34] INFO auth-gateway: ref=CUST-98580 iban=FR7679080759579472846392 montant=453.67EUR client=Marie Martin email=marie.martin@clientmail.com tel=07 61 69 04 64
+[2026-06-19T09:02:46+02:00] INFO notif-worker: ref=CUST-51373 iban=FR7600369155942843479552 montant=4095.54EUR client=Marie Robert email=marie.robert@clientmail.com tel=06 53 89 96 47
+[2026-06-19T09:02:58+02:00] INFO auth-gateway: nouveau device détecté mac=47:38:7d:c6:44:f0 hostname=laptop-280.internal.corp
+[2026-06-19 09:03:12] ERROR payment-export: connection refused to db-3.internal.corp:5432 retry=5
+[2026-06-19T09:03:30+02:00] DEBUG billing-service: auth attempt token=68f3ea8b user=claire.durand
+2026-06-19T09:03:42+02:00 srv-app-01 sshd[12636]: Failed password for deploy from 193.101.89.251 port 22329 ssh2
+[2026-06-19 09:04:04] INFO inventory-sync: nouveau device détecté mac=c9:e4:5a:dc:22:5a hostname=laptop-333.internal.corp
+2026-06-19 09:04:15 srv-app-07 systemd[1]: Started notif-worker.service.
+[2026-06-19T09:04:24+02:00] INFO auth-gateway: nouveau device détecté mac=50:47:82:65:c3:32 hostname=laptop-999.internal.corp
+[2026-06-19 09:04:40] ERROR billing-service: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=6044&apikey=23842c9779e44501bafe8e45ed9bf72e
+client_ip=192.168.17.197
+[2026-06-19T09:04:52+02:00] INFO auth-gateway: ref=CUST-55073 iban=FR7647807740649308536866 montant=2057.20EUR client=Jean Bernard email=jean.bernard@clientmail.com tel=07 48 28 33 10
+2026-06-19T09:05:06+02:00 srv-app-02 systemd[1]: backup-sync.service: Scheduled restart job, restart counter is at 191.
+[2026-06-19T09:05:20+02:00] INFO billing-service: ref=CUST-90967 iban=FR7674973502080214427031 montant=1244.01EUR client=Marie Robert email=marie.robert@clientmail.com tel=07 27 43 53 39
+[2026-06-19 09:05:46] INFO auth-gateway: nouveau device détecté mac=1a:24:18:c2:f5:68 hostname=laptop-936.internal.corp
+[2026-06-19T09:05:59+02:00] WARN billing-service: paiement refusé carte=7303 7183 7645 2088 ref=TICKET-3001
+2026-06-19T09:06:08+02:00 srv-db-03 systemd[1]: notif-worker.service: Failed with result 'exit-code'.
+[2026-06-19T09:06:12+02:00] DEBUG notif-worker: auth attempt token=3c701f4b275f2a11 user=claire.bernard
+[2026-06-19T09:06:35+02:00] INFO billing-service: ref=CUST-67503 iban=FR7630652407784873928557 montant=2265.76EUR client=Claire Moreau email=claire.moreau@clientmail.com tel=06 08 67 19 57
+[2026-06-19T09:06:45+02:00] ERROR backup-sync: connection refused to db-5.internal.corp:5432 retry=7
+[2026-06-19 09:07:09] ERROR billing-service: connection refused to db-2.internal.corp:5432 retry=6
+[2026-06-19T09:07:33+02:00] DEBUG notif-worker: auth attempt bearer=49ada332145163f631cf81b7 user=anne.martin
+[2026-06-19 09:07:34] INFO notif-worker: nouveau device détecté mac=2e:1b:db:18:12:92 hostname=laptop-321.internal.corp
+[2026-06-19 09:07:51] WARN billing-service: paiement refusé carte=3383 9288 6195 7612 ref=TICKET-3955
+[2026-06-19 09:08:09] ERROR backup-sync: connection refused to db-5.internal.corp:5432 retry=8
+[2026-06-19 09:08:39] ERROR auth-gateway: connection refused to db-4.internal.corp:5432 retry=7
+[2026-06-19 09:09:06] WARN backup-sync: paiement refusé carte=3684 5776 0049 0824 ref=TICKET-1107
+[2026-06-19T09:09:16+02:00] ERROR payment-export: connection refused to db-3.internal.corp:5432 retry=9
+[2026-06-19T09:09:33+02:00] INFO backup-sync: ref=CUST-30461 iban=FR7624593344196931572791 montant=4886.82EUR client=Julie Moreau email=julie.moreau@clientmail.com tel=07 04 93 73 48
+[2026-06-19 09:09:36] ERROR auth-gateway: connection refused to db-4.internal.corp:5432 retry=7
+[2026-06-19 09:10:06] ERROR payment-export: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=4212&apikey=91a4a741ce27d9c44a2f1c82cd44f6fc
+client_ip=192.168.13.15
+[2026-06-19T09:10:24+02:00] WARN notif-worker: paiement refusé carte=4659 1166 5535 5904 ref=TICKET-3773
+[2026-06-19T09:10:36+02:00] INFO inventory-sync: ref=CUST-99831 iban=FR7652110392405147705383 montant=1679.69EUR client=Sophie Lefevre email=sophie.lefevre@clientmail.com tel=07 70 61 79 93
+[2026-06-19T09:10:41+02:00] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=6765&apikey=681e02c8b309c7c3af256e0179afc50b
+client_ip=192.168.2.74
+2026-06-19 09:10:53 srv-app-07 systemd[1]: payment-export.service: Scheduled restart job, restart counter is at 161.
+2026-06-19T09:11:22+02:00 srv-db-03 systemd[1]: Started billing-service.service.
+[2026-06-19 09:11:44] DEBUG billing-service: auth attempt token=74d9ae4646494d45 user=claire.martin
+2026-06-19T09:12:02+02:00 srv-auth-02 sshd[14475]: Failed password for ubuntu from 57.15.163.226 port 20904 ssh2
+[2026-06-19T09:12:17+02:00] WARN payment-export: paiement refusé carte=2099 4999 3933 0517 ref=TICKET-3196
+[2026-06-19T09:12:34+02:00] ERROR inventory-sync: connection refused to db-4.internal.corp:5432 retry=8
+[2026-06-19T09:12:50+02:00] WARN payment-export: paiement refusé carte=6046 3331 2797 5736 ref=TICKET-7633
+[2026-06-19 09:13:15] DEBUG backup-sync: auth attempt bearer=13ee17c1c169ec99e5d914ee user=marie.martin
+[2026-06-19T09:13:21+02:00] INFO notif-worker: ref=CUST-13265 iban=FR7627937145211175186892 montant=3112.70EUR client=Claire Robert email=claire.robert@clientmail.com tel=07 05 98 21 42
+[2026-06-19T09:13:40+02:00] INFO payment-export: ref=CUST-50378 iban=FR7647421230940777809733 montant=4833.84EUR client=Jean Petit email=jean.petit@clientmail.com tel=07 58 52 56 10
+[2026-06-19 09:14:00] WARN billing-service: paiement refusé carte=4983 0220 5020 9945 ref=TICKET-2436
+[2026-06-19T09:14:02+02:00] INFO inventory-sync: ref=CUST-69682 iban=FR7695014556168147214586 montant=4307.26EUR client=Luc Bernard email=luc.bernard@clientmail.com tel=06 78 07 13 73
+[2026-06-19 09:14:26] INFO billing-service: nouveau device détecté mac=9d:a8:b4:ff:f5:79 hostname=laptop-298.internal.corp
+[2026-06-19 09:14:27] INFO billing-service: nouveau device détecté mac=36:dd:1a:b6:06:98 hostname=laptop-909.internal.corp
+[2026-06-19 09:14:30] ERROR auth-gateway: connection refused to db-1.internal.corp:5432 retry=6
+[2026-06-19 09:14:41] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=7780&apikey=aff14f4eaed19a06ab2480ac5c539a18
+client_ip=192.168.7.86
+[2026-06-19T09:14:44+02:00] ERROR payment-export: connection refused to db-3.internal.corp:5432 retry=4
+2026-06-19T09:15:01+02:00 srv-app-07 sshd[27182]: Failed password for admin from 29.103.47.114 port 32655 ssh2
+[2026-06-19T09:15:30+02:00] WARN payment-export: paiement refusé carte=7845 2182 3076 8104 ref=TICKET-1721
+[2026-06-19T09:15:52+02:00] ERROR billing-service: connection refused to db-1.internal.corp:5432 retry=2
+2026-06-19 09:16:09 srv-app-07 systemd[1]: billing-service.service: Scheduled restart job, restart counter is at 54.
+2026-06-19 09:16:16 srv-app-02 systemd[1]: Started auth-gateway.service.
+[2026-06-19T09:16:38+02:00] INFO auth-gateway: ref=CUST-91650 iban=FR7688138585424932149587 montant=425.16EUR client=Marie Dupont email=marie.dupont@clientmail.com tel=06 60 86 06 13
+[2026-06-19T09:16:51+02:00] DEBUG billing-service: auth attempt bearer=b9a62e42e3e9ef7748bc5aae user=julie.dupont
+[2026-06-19T09:16:54+02:00] ERROR billing-service: connection refused to db-2.internal.corp:5432 retry=5
+[2026-06-19 09:17:19] INFO backup-sync: ref=CUST-52712 iban=FR7681487696393827615396 montant=3576.72EUR client=Marc Martin email=marc.martin@clientmail.com tel=07 69 88 30 22
+[2026-06-19T09:17:41+02:00] INFO notif-worker: nouveau device détecté mac=ea:3e:59:c2:3c:af hostname=laptop-760.internal.corp
+[2026-06-19 09:18:03] WARN billing-service: paiement refusé carte=9022 7846 9973 3549 ref=TICKET-5989
+[2026-06-19 09:18:33] ERROR notif-worker: connection refused to db-5.internal.corp:5432 retry=1
+[2026-06-19 09:18:53] INFO inventory-sync: ref=CUST-81943 iban=FR7600851403696566668327 montant=1149.24EUR client=Jean Moreau email=jean.moreau@clientmail.com tel=07 46 53 19 36
+[2026-06-19T09:19:21+02:00] ERROR payment-export: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=8617&apikey=fd424ded5edecb75d0f78db11fb3f248
+client_ip=192.168.1.38
+2026-06-19T09:19:38+02:00 srv-app-01 sshd[12257]: Failed password for admin from 181.39.159.157 port 36087 ssh2
+[2026-06-19 09:20:03] INFO inventory-sync: nouveau device détecté mac=fa:db:99:51:98:1f hostname=laptop-692.internal.corp
+2026-06-19 09:20:09 srv-auth-02 systemd[1]: billing-service.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19 09:20:19] INFO billing-service: ref=CUST-27372 iban=FR7694440192927524372805 montant=701.18EUR client=Luc Durand email=luc.durand@clientmail.com tel=06 63 96 52 98
+[2026-06-19 09:20:32] INFO notif-worker: nouveau device détecté mac=56:b1:83:15:ec:f9 hostname=laptop-587.internal.corp
+[2026-06-19 09:20:56] DEBUG payment-export: auth attempt bearer=84d09eca13bd8a88 user=marie.durand
+[2026-06-19 09:21:17] INFO inventory-sync: nouveau device détecté mac=76:a5:a0:02:0d:33 hostname=laptop-801.internal.corp
+2026-06-19T09:21:32+02:00 srv-app-07 systemd[1]: payment-export.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19 09:21:52] WARN billing-service: paiement refusé carte=1119 2692 1244 7174 ref=TICKET-7995
+[2026-06-19 09:22:15] INFO auth-gateway: ref=CUST-60174 iban=FR7665044271739627128639 montant=880.56EUR client=Luc Dupont email=luc.dupont@clientmail.com tel=07 13 04 09 09
+[2026-06-19 09:22:34] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=7294&apikey=01c84ac0ffdc270cf3ba9c12ba2e9651
+client_ip=192.168.5.169
+[2026-06-19 09:22:56] DEBUG auth-gateway: auth attempt secret=2e641607fc29fe01 user=claire.dupont
+2026-06-19T09:23:07+02:00 srv-app-01 sshd[3360]: Failed password for root from 187.234.76.190 port 3440 ssh2
+[2026-06-19T09:23:31+02:00] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=3753&apikey=7405193e5233f726daca34a615a2384d
+client_ip=192.168.20.13
+[2026-06-19T09:23:54+02:00] INFO backup-sync: ref=CUST-27481 iban=FR7619620710021946723248 montant=3699.52EUR client=Anne Dupont email=anne.dupont@clientmail.com tel=06 22 78 88 04
+[2026-06-19 09:24:14] INFO notif-worker: nouveau device détecté mac=29:bd:07:63:3b:7e hostname=laptop-888.internal.corp
+[2026-06-19T09:24:35+02:00] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=2606&apikey=ff5511b96d8ae131550f327ead6a73a7
+client_ip=192.168.5.177
+[2026-06-19 09:24:43] DEBUG payment-export: auth attempt password=f1d46e5cb4e6b86a user=paul.dupont
+2026-06-19T09:25:06+02:00 srv-auth-02 systemd[1]: Started billing-service.service.
+[2026-06-19 09:25:20] WARN auth-gateway: paiement refusé carte=9292 9831 6873 9774 ref=TICKET-1237
+[2026-06-19T09:25:44+02:00] WARN notif-worker: paiement refusé carte=6939 2906 0078 0686 ref=TICKET-8852
+[2026-06-19T09:26:10+02:00] INFO inventory-sync: nouveau device détecté mac=0d:64:b9:72:0f:95 hostname=laptop-820.internal.corp
+[2026-06-19 09:26:25] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9841&apikey=4c5be02ca19d862a1b13cbe1bb5264a7
+client_ip=192.168.15.199
+[2026-06-19 09:26:29] WARN notif-worker: paiement refusé carte=3554 8640 1557 7881 ref=TICKET-8703
+2026-06-19T09:26:52+02:00 srv-auth-02 systemd[1]: notif-worker.service: Main process exited, code=exited, status=1/FAILURE
+2026-06-19T09:26:59+02:00 srv-db-03 sshd[10042]: Failed password for root from 65.147.39.28 port 8365 ssh2
+[2026-06-19 09:27:22] INFO inventory-sync: ref=CUST-48426 iban=FR7668275670431038569557 montant=4870.85EUR client=Thomas Dupont email=thomas.dupont@clientmail.com tel=07 58 38 72 16
+2026-06-19T09:27:51+02:00 srv-app-07 systemd[1]: payment-export.service: Scheduled restart job, restart counter is at 96.
+[2026-06-19T09:28:16+02:00] ERROR payment-export: connection refused to db-2.internal.corp:5432 retry=3
+[2026-06-19 09:28:39] INFO auth-gateway: ref=CUST-41182 iban=FR7610592745238055257828 montant=2480.15EUR client=Paul Bernard email=paul.bernard@clientmail.com tel=06 51 63 98 18
+[2026-06-19 09:28:54] ERROR payment-export: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=6206&apikey=a9f94ea3f14390c7eb2a1678602e2c6f
+client_ip=192.168.18.251
+[2026-06-19 09:29:14] ERROR backup-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=5478&apikey=4dbcb09bb9e26ede95dd42469fa2c20d
+client_ip=192.168.12.103
+[2026-06-19 09:29:28] INFO backup-sync: nouveau device détecté mac=46:5c:9f:19:9f:e7 hostname=laptop-127.internal.corp
+2026-06-19T09:29:54+02:00 srv-app-01 systemd[1]: Started payment-export.service.
+[2026-06-19T09:29:58+02:00] INFO inventory-sync: ref=CUST-25644 iban=FR7647195979647158904290 montant=1207.40EUR client=Sophie Dupont email=sophie.dupont@clientmail.com tel=07 88 17 45 20
+[2026-06-19 09:30:00] DEBUG auth-gateway: auth attempt secret=9926535a user=claire.durand
+[2026-06-19 09:30:09] ERROR billing-service: connection refused to db-1.internal.corp:5432 retry=3
+[2026-06-19T09:30:26+02:00] INFO auth-gateway: nouveau device détecté mac=53:64:76:3d:e2:34 hostname=laptop-117.internal.corp
+[2026-06-19T09:30:42+02:00] ERROR auth-gateway: connection refused to db-4.internal.corp:5432 retry=9
+2026-06-19T09:31:07+02:00 srv-app-07 systemd[1]: payment-export.service: Failed with result 'exit-code'.
+[2026-06-19T09:31:12+02:00] WARN notif-worker: paiement refusé carte=3216 1107 6031 0890 ref=TICKET-8685
+2026-06-19T09:31:16+02:00 srv-app-07 sshd[20254]: Failed password for root from 22.49.63.236 port 60083 ssh2
+[2026-06-19T09:31:23+02:00] ERROR notif-worker: connection refused to db-2.internal.corp:5432 retry=5
+[2026-06-19 09:31:42] INFO auth-gateway: ref=CUST-76179 iban=FR7691190833428013875927 montant=889.23EUR client=Anne Lefevre email=anne.lefevre@clientmail.com tel=07 48 54 27 65
+[2026-06-19T09:31:50+02:00] ERROR billing-service: connection refused to db-1.internal.corp:5432 retry=9
+2026-06-19 09:31:55 srv-db-03 systemd[1]: auth-gateway.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19T09:32:06+02:00] DEBUG billing-service: auth attempt secret=e7d9d62fb50f3ce234cc352b user=sophie.moreau
+2026-06-19T09:32:13+02:00 srv-auth-02 sshd[25782]: Failed password for deploy from 128.255.142.196 port 52764 ssh2
+[2026-06-19 09:32:39] INFO auth-gateway: nouveau device détecté mac=cf:84:e3:38:ff:74 hostname=laptop-130.internal.corp
+[2026-06-19 09:32:43] INFO billing-service: nouveau device détecté mac=5c:a4:93:2f:e6:9f hostname=laptop-602.internal.corp
+[2026-06-19 09:33:00] ERROR backup-sync: connection refused to db-5.internal.corp:5432 retry=9
+2026-06-19T09:33:01+02:00 srv-app-01 sshd[2076]: Failed password for admin from 100.192.226.118 port 12615 ssh2
+[2026-06-19T09:33:19+02:00] INFO notif-worker: ref=CUST-60997 iban=FR7671978897782806479695 montant=2340.41EUR client=Paul Durand email=paul.durand@clientmail.com tel=06 03 75 05 16
+[2026-06-19 09:33:46] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9001&apikey=3dbbdb177792293a50a1edd80f0acca3
+client_ip=192.168.11.99
+[2026-06-19 09:33:50] INFO auth-gateway: nouveau device détecté mac=a5:9b:d6:f2:69:81 hostname=laptop-404.internal.corp
+2026-06-19 09:34:09 srv-db-03 sshd[19560]: Failed password for admin from 168.48.172.70 port 53530 ssh2
+[2026-06-19T09:34:26+02:00] WARN inventory-sync: paiement refusé carte=1484 6853 6649 8782 ref=TICKET-1304
+[2026-06-19T09:34:47+02:00] INFO payment-export: nouveau device détecté mac=e8:d1:6b:e4:74:9d hostname=laptop-520.internal.corp
+[2026-06-19 09:34:58] WARN notif-worker: paiement refusé carte=4424 9363 1230 3477 ref=TICKET-8145
+[2026-06-19T09:35:12+02:00] INFO payment-export: ref=CUST-46408 iban=FR7682070015941651623198 montant=998.66EUR client=Jean Durand email=jean.durand@clientmail.com tel=07 63 11 30 76
+[2026-06-19 09:35:16] DEBUG auth-gateway: auth attempt token=643568ed81fb3adf user=sophie.durand
+[2026-06-19 09:35:45] INFO auth-gateway: nouveau device détecté mac=90:11:78:c9:b3:7e hostname=laptop-497.internal.corp
+2026-06-19T09:35:46+02:00 srv-db-03 systemd[1]: auth-gateway.service: Failed with result 'exit-code'.
+[2026-06-19 09:35:56] INFO payment-export: nouveau device détecté mac=d1:82:ff:da:d3:58 hostname=laptop-618.internal.corp
+[2026-06-19T09:35:59+02:00] ERROR inventory-sync: connection refused to db-1.internal.corp:5432 retry=1
+[2026-06-19 09:36:20] INFO notif-worker: nouveau device détecté mac=40:c6:9a:23:57:4d hostname=laptop-911.internal.corp
+[2026-06-19T09:36:31+02:00] INFO inventory-sync: ref=CUST-46935 iban=FR7631652669300893173420 montant=3295.79EUR client=Anne Moreau email=anne.moreau@clientmail.com tel=07 76 33 19 11
+2026-06-19T09:36:43+02:00 srv-app-02 sshd[4883]: Failed password for ubuntu from 154.222.232.212 port 15735 ssh2
+2026-06-19T09:37:06+02:00 srv-app-02 systemd[1]: Started payment-export.service.
+[2026-06-19 09:37:11] WARN payment-export: paiement refusé carte=4362 6204 4397 3597 ref=TICKET-2404
+[2026-06-19 09:37:12] ERROR payment-export: connection refused to db-4.internal.corp:5432 retry=4
+[2026-06-19 09:37:35] DEBUG notif-worker: auth attempt secret=311a7fb1 user=jean.durand
+2026-06-19 09:37:52 srv-auth-02 systemd[1]: inventory-sync.service: Scheduled restart job, restart counter is at 172.
+[2026-06-19T09:37:57+02:00] INFO billing-service: ref=CUST-54456 iban=FR7672158624150274564494 montant=4245.40EUR client=Thomas Robert email=thomas.robert@clientmail.com tel=07 21 40 94 62
+[2026-06-19T09:38:22+02:00] INFO backup-sync: nouveau device détecté mac=41:75:1f:85:ed:3f hostname=laptop-141.internal.corp
+[2026-06-19T09:38:37+02:00] INFO notif-worker: nouveau device détecté mac=34:3b:26:95:58:60 hostname=laptop-638.internal.corp
+[2026-06-19 09:39:02] DEBUG payment-export: auth attempt token=3a093cb3a402efe8 user=anne.dupont
+[2026-06-19T09:39:13+02:00] INFO notif-worker: nouveau device détecté mac=46:19:a1:2c:2c:85 hostname=laptop-345.internal.corp
+[2026-06-19 09:39:38] ERROR billing-service: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9638&apikey=c9439fd94b3b6fecf8d2db5dd21ae74f
+client_ip=192.168.6.101
+2026-06-19T09:39:59+02:00 srv-auth-02 systemd[1]: Started billing-service.service.
+2026-06-19 09:40:09 srv-app-02 systemd[1]: Started payment-export.service.
+2026-06-19 09:40:19 srv-auth-02 sshd[16225]: Failed password for admin from 151.55.217.106 port 44333 ssh2
+[2026-06-19T09:40:43+02:00] ERROR auth-gateway: connection refused to db-1.internal.corp:5432 retry=9
+[2026-06-19T09:40:44+02:00] INFO notif-worker: nouveau device détecté mac=5c:12:d9:ae:e8:a5 hostname=laptop-316.internal.corp
+2026-06-19 09:40:50 srv-app-01 systemd[1]: Started notif-worker.service.
+[2026-06-19T09:41:08+02:00] DEBUG billing-service: auth attempt token=fecf9bc92440630606f47d62 user=luc.robert
+[2026-06-19T09:41:13+02:00] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9106&apikey=eff0e769c1a03ddf91fcff710da28df3
+client_ip=192.168.5.191
+[2026-06-19T09:41:33+02:00] DEBUG inventory-sync: auth attempt secret=6fbe77ae49cdbf5692f4565f user=marie.petit
+[2026-06-19 09:41:49] WARN payment-export: paiement refusé carte=0545 2280 1561 9318 ref=TICKET-4671
+[2026-06-19 09:42:05] ERROR auth-gateway: connection refused to db-5.internal.corp:5432 retry=5
+2026-06-19 09:42:34 srv-app-02 sshd[26613]: Failed password for admin from 132.234.56.250 port 41038 ssh2
+[2026-06-19 09:42:54] ERROR backup-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=8025&apikey=36b59ef34ba436ed07fa9528bdb74d74
+client_ip=192.168.6.163
+[2026-06-19 09:43:08] ERROR inventory-sync: connection refused to db-4.internal.corp:5432 retry=3
+2026-06-19T09:43:33+02:00 srv-app-01 sshd[13886]: Failed password for admin from 100.205.84.112 port 50778 ssh2
+[2026-06-19 09:43:35] ERROR backup-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=5979&apikey=9dc9ab084ce6ebc6921ac49629a50087
+client_ip=192.168.17.251
+2026-06-19 09:43:59 srv-db-03 sshd[25790]: Failed password for admin from 115.132.181.32 port 43685 ssh2
+[2026-06-19T09:44:03+02:00] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9020&apikey=7b994c73a6be34dd221d4f6e2bcc8fde
+client_ip=192.168.8.208
+[2026-06-19 09:44:27] INFO payment-export: ref=CUST-26958 iban=FR7688137702851961159408 montant=1265.15EUR client=Julie Robert email=julie.robert@clientmail.com tel=07 39 47 38 37
+[2026-06-19 09:44:43] INFO payment-export: ref=CUST-49998 iban=FR7643270185106794975679 montant=1097.97EUR client=Marc Dupont email=marc.dupont@clientmail.com tel=06 64 81 58 97
+[2026-06-19T09:44:58+02:00] ERROR payment-export: connection refused to db-5.internal.corp:5432 retry=7
+[2026-06-19 09:45:11] ERROR inventory-sync: connection refused to db-4.internal.corp:5432 retry=5
+[2026-06-19 09:45:32] ERROR payment-export: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=5675&apikey=32616f0350867e2ac1f0ad5d0ac82335
+client_ip=192.168.10.145
+2026-06-19T09:45:37+02:00 srv-app-02 sshd[6946]: Failed password for deploy from 124.86.30.158 port 2804 ssh2
+[2026-06-19T09:46:00+02:00] DEBUG auth-gateway: auth attempt token=a8c31677fc381aed user=marie.robert
+[2026-06-19 09:46:01] WARN notif-worker: paiement refusé carte=0489 1382 4967 1832 ref=TICKET-7116
+[2026-06-19 09:46:19] DEBUG payment-export: auth attempt bearer=0e9501f8 user=anne.durand
+[2026-06-19 09:46:46] WARN auth-gateway: paiement refusé carte=8402 8914 1612 8463 ref=TICKET-9270
+[2026-06-19 09:47:12] ERROR notif-worker: connection refused to db-4.internal.corp:5432 retry=5
+[2026-06-19T09:47:20+02:00] WARN auth-gateway: paiement refusé carte=9502 0970 0268 7681 ref=TICKET-2270
+[2026-06-19 09:47:38] INFO notif-worker: nouveau device détecté mac=bc:bc:50:3e:b6:e0 hostname=laptop-326.internal.corp
+[2026-06-19T09:48:02+02:00] ERROR auth-gateway: connection refused to db-5.internal.corp:5432 retry=5
+[2026-06-19 09:48:28] INFO payment-export: nouveau device détecté mac=18:f6:06:c3:8f:56 hostname=laptop-775.internal.corp
+[2026-06-19T09:48:52+02:00] INFO notif-worker: ref=CUST-26702 iban=FR7649384308948706056641 montant=4255.59EUR client=Paul Martin email=paul.martin@clientmail.com tel=07 46 66 97 05
+2026-06-19 09:49:21 srv-app-02 systemd[1]: Started billing-service.service.
+[2026-06-19T09:49:32+02:00] WARN inventory-sync: paiement refusé carte=9036 1332 5411 0760 ref=TICKET-6477
+2026-06-19T09:49:59+02:00 srv-app-07 sshd[3389]: Failed password for root from 107.27.170.134 port 51863 ssh2
+2026-06-19 09:50:19 srv-auth-02 sshd[2092]: Failed password for admin from 168.63.43.250 port 25756 ssh2
+[2026-06-19 09:50:30] ERROR payment-export: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=8887&apikey=9d23119cc3d70eced3a0ea63302648bd
+client_ip=192.168.15.16
+[2026-06-19T09:50:54+02:00] INFO inventory-sync: ref=CUST-26735 iban=FR7649685498227495450892 montant=479.30EUR client=Jean Dupont email=jean.dupont@clientmail.com tel=06 54 44 25 25
+[2026-06-19T09:51:15+02:00] ERROR billing-service: connection refused to db-4.internal.corp:5432 retry=8
+[2026-06-19 09:51:35] ERROR backup-sync: connection refused to db-4.internal.corp:5432 retry=6
+[2026-06-19T09:51:41+02:00] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=6567&apikey=77e67fac6c50b02b0349e6b106695785
+client_ip=192.168.1.165
+[2026-06-19T09:52:09+02:00] INFO payment-export: ref=CUST-23263 iban=FR7602615347355289611223 montant=1580.68EUR client=Paul Durand email=paul.durand@clientmail.com tel=07 88 47 40 76
+[2026-06-19 09:52:23] WARN billing-service: paiement refusé carte=4253 0428 9731 7912 ref=TICKET-9333
+[2026-06-19 09:52:36] INFO auth-gateway: nouveau device détecté mac=5a:bf:ff:8c:16:76 hostname=laptop-562.internal.corp
+[2026-06-19T09:53:04+02:00] WARN inventory-sync: paiement refusé carte=6925 4812 1478 5390 ref=TICKET-8622
+[2026-06-19T09:53:21+02:00] DEBUG auth-gateway: auth attempt bearer=bfa8c05e782b2928 user=sophie.martin
+[2026-06-19 09:53:25] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=8372&apikey=a898648099bcc0f4c776f7eea2a6dd6e
+client_ip=192.168.11.52
+[2026-06-19T09:53:53+02:00] ERROR billing-service: connection refused to db-2.internal.corp:5432 retry=5
+[2026-06-19T09:54:17+02:00] ERROR inventory-sync: connection refused to db-4.internal.corp:5432 retry=7
+2026-06-19T09:54:39+02:00 srv-db-03 systemd[1]: notif-worker.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19 09:55:09] ERROR payment-export: connection refused to db-5.internal.corp:5432 retry=7
+2026-06-19 09:55:22 srv-app-02 sshd[21938]: Failed password for ubuntu from 68.243.55.85 port 59661 ssh2
+2026-06-19 09:55:32 srv-app-01 sshd[7520]: Failed password for root from 65.16.250.7 port 5578 ssh2
+[2026-06-19T09:56:02+02:00] WARN auth-gateway: paiement refusé carte=8170 5802 5662 1286 ref=TICKET-8835
+[2026-06-19T09:56:26+02:00] WARN inventory-sync: paiement refusé carte=3467 2994 9387 4302 ref=TICKET-8302
+[2026-06-19 09:56:29] WARN backup-sync: paiement refusé carte=9777 9014 7546 9263 ref=TICKET-3942
+[2026-06-19T09:56:58+02:00] DEBUG notif-worker: auth attempt token=3c1758926fd3b23ade5861e0 user=marie.robert
+[2026-06-19 09:57:11] DEBUG notif-worker: auth attempt bearer=0834aefe user=marie.martin
+[2026-06-19T09:57:29+02:00] INFO notif-worker: nouveau device détecté mac=85:50:35:93:c5:20 hostname=laptop-793.internal.corp
+[2026-06-19T09:57:38+02:00] ERROR inventory-sync: connection refused to db-1.internal.corp:5432 retry=9
+[2026-06-19 09:57:45] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9875&apikey=3c9e101c67b7620d00a6273551d3aa66
+client_ip=192.168.17.166
+[2026-06-19T09:57:58+02:00] WARN billing-service: paiement refusé carte=5520 6506 3731 4950 ref=TICKET-2103
+2026-06-19 09:58:27 srv-app-02 systemd[1]: inventory-sync.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19T09:58:50+02:00] INFO backup-sync: ref=CUST-92689 iban=FR7662525715099768389030 montant=1026.39EUR client=Marie Moreau email=marie.moreau@clientmail.com tel=06 94 54 96 31
+[2026-06-19T09:59:10+02:00] INFO billing-service: ref=CUST-29879 iban=FR7663039752450864035533 montant=4428.06EUR client=Luc Lefevre email=luc.lefevre@clientmail.com tel=06 87 89 92 28
+[2026-06-19T09:59:30+02:00] ERROR backup-sync: connection refused to db-1.internal.corp:5432 retry=2
+[2026-06-19T09:59:58+02:00] WARN billing-service: paiement refusé carte=2321 2983 3816 7423 ref=TICKET-5012
+[2026-06-19T10:00:12+02:00] WARN backup-sync: paiement refusé carte=9734 7156 6277 6896 ref=TICKET-3553
+[2026-06-19T10:00:39+02:00] DEBUG billing-service: auth attempt password=458ce9e9cf2a4f64 user=sophie.dupont
+[2026-06-19T10:00:40+02:00] ERROR notif-worker: connection refused to db-4.internal.corp:5432 retry=7
+[2026-06-19T10:01:04+02:00] INFO inventory-sync: nouveau device détecté mac=2d:13:c5:6d:8b:fb hostname=laptop-813.internal.corp
+[2026-06-19T10:01:06+02:00] WARN inventory-sync: paiement refusé carte=0502 4972 4399 2011 ref=TICKET-7297
+[2026-06-19 10:01:19] WARN billing-service: paiement refusé carte=2644 8869 4611 9524 ref=TICKET-4432
+2026-06-19T10:01:49+02:00 srv-db-03 systemd[1]: Started notif-worker.service.
+[2026-06-19 10:01:50] DEBUG billing-service: auth attempt secret=d55b546f53e6561568de3529 user=marie.petit
+[2026-06-19T10:01:54+02:00] ERROR billing-service: connection refused to db-2.internal.corp:5432 retry=8
+[2026-06-19T10:02:10+02:00] ERROR billing-service: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=8785&apikey=1360c8ffadabaa7bcc1ba30ec40387be
+client_ip=192.168.1.172
+[2026-06-19T10:02:27+02:00] WARN notif-worker: paiement refusé carte=5050 5739 7691 5671 ref=TICKET-7305
+[2026-06-19 10:02:37] INFO payment-export: ref=CUST-26759 iban=FR7671487271783332116025 montant=3151.98EUR client=Anne Dupont email=anne.dupont@clientmail.com tel=07 28 92 32 85
+[2026-06-19 10:02:53] INFO notif-worker: ref=CUST-53620 iban=FR7639915668633414111593 montant=961.73EUR client=Julie Martin email=julie.martin@clientmail.com tel=07 16 40 48 73
+[2026-06-19 10:03:17] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=4450&apikey=cdab473c0ea497fe4941a938f6f9c1a4
+client_ip=192.168.7.218
+[2026-06-19 10:03:45] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=1149&apikey=fc950cadfbcc2996c34a19e54ef94666
+client_ip=192.168.6.221
+[2026-06-19T10:03:57+02:00] INFO billing-service: ref=CUST-17383 iban=FR7615720185962630136749 montant=1423.83EUR client=Marc Bernard email=marc.bernard@clientmail.com tel=07 99 88 85 84
+[2026-06-19T10:04:00+02:00] DEBUG notif-worker: auth attempt bearer=03323f70f835cfd9 user=anne.bernard
+[2026-06-19T10:04:04+02:00] INFO billing-service: ref=CUST-82883 iban=FR7688718981312920875102 montant=4721.26EUR client=Jean Petit email=jean.petit@clientmail.com tel=06 11 71 32 96
+2026-06-19T10:04:06+02:00 srv-app-01 systemd[1]: billing-service.service: Failed with result 'exit-code'.
+2026-06-19T10:04:20+02:00 srv-app-01 systemd[1]: payment-export.service: Scheduled restart job, restart counter is at 133.
+[2026-06-19 10:04:42] INFO inventory-sync: ref=CUST-89452 iban=FR7688310303243298395429 montant=3467.09EUR client=Claire Moreau email=claire.moreau@clientmail.com tel=07 33 48 83 20
+2026-06-19 10:04:55 srv-db-03 systemd[1]: billing-service.service: Failed with result 'exit-code'.
+2026-06-19 10:05:13 srv-app-02 systemd[1]: billing-service.service: Failed with result 'exit-code'.
+[2026-06-19T10:05:36+02:00] INFO backup-sync: ref=CUST-66836 iban=FR7660931418186151554234 montant=90.12EUR client=Paul Moreau email=paul.moreau@clientmail.com tel=07 28 48 13 15
+2026-06-19 10:05:42 srv-auth-02 systemd[1]: notif-worker.service: Main process exited, code=exited, status=1/FAILURE
+2026-06-19 10:05:59 srv-app-07 systemd[1]: notif-worker.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19 10:06:28] ERROR payment-export: connection refused to db-4.internal.corp:5432 retry=3
+[2026-06-19T10:06:40+02:00] DEBUG backup-sync: auth attempt token=0444c81b7de5ebe9 user=luc.petit
+2026-06-19 10:06:57 srv-app-02 sshd[3513]: Failed password for admin from 124.160.46.163 port 48862 ssh2
+[2026-06-19T10:07:05+02:00] ERROR payment-export: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9832&apikey=f0d4ff3c060db71e5752b4b1dfc5b3a7
+client_ip=192.168.10.143
+2026-06-19T10:07:33+02:00 srv-app-01 systemd[1]: auth-gateway.service: Failed with result 'exit-code'.
+[2026-06-19 10:07:34] WARN inventory-sync: paiement refusé carte=8079 7050 9754 5105 ref=TICKET-4050
+2026-06-19T10:07:47+02:00 srv-app-07 sshd[16971]: Failed password for admin from 70.43.78.106 port 1476 ssh2
+[2026-06-19T10:07:52+02:00] INFO payment-export: nouveau device détecté mac=9b:d5:83:ee:54:bd hostname=laptop-105.internal.corp
+[2026-06-19T10:08:04+02:00] WARN billing-service: paiement refusé carte=2665 0237 4167 8725 ref=TICKET-7551
+2026-06-19 10:08:21 srv-db-03 sshd[17384]: Failed password for deploy from 222.10.64.40 port 1918 ssh2
+[2026-06-19T10:08:46+02:00] ERROR billing-service: connection refused to db-5.internal.corp:5432 retry=1
+2026-06-19T10:09:00+02:00 srv-db-03 systemd[1]: Started auth-gateway.service.
+[2026-06-19T10:09:08+02:00] INFO payment-export: ref=CUST-42421 iban=FR7663718923923126043260 montant=1645.11EUR client=Marie Durand email=marie.durand@clientmail.com tel=06 48 52 67 39
+[2026-06-19T10:09:31+02:00] ERROR payment-export: connection refused to db-1.internal.corp:5432 retry=9
+2026-06-19T10:09:45+02:00 srv-app-01 sshd[2558]: Failed password for deploy from 91.179.214.64 port 12935 ssh2
+[2026-06-19T10:09:47+02:00] ERROR billing-service: connection refused to db-4.internal.corp:5432 retry=5
+[2026-06-19T10:10:17+02:00] DEBUG billing-service: auth attempt bearer=a93304abbb786c23 user=paul.martin
+[2026-06-19T10:10:19+02:00] WARN notif-worker: paiement refusé carte=7118 9547 3820 2368 ref=TICKET-5137
+[2026-06-19T10:10:48+02:00] ERROR auth-gateway: connection refused to db-1.internal.corp:5432 retry=7
+[2026-06-19T10:10:51+02:00] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=1640&apikey=49116cf25eccc8650560e89798357179
+client_ip=192.168.9.180
+[2026-06-19T10:11:12+02:00] INFO auth-gateway: ref=CUST-37521 iban=FR7681059551842694500534 montant=1457.32EUR client=Jean Lefevre email=jean.lefevre@clientmail.com tel=06 68 84 99 99
+[2026-06-19 10:11:31] DEBUG notif-worker: auth attempt secret=6e7a86c4e7db4f2f5e556f59 user=jean.durand
+[2026-06-19T10:11:37+02:00] WARN inventory-sync: paiement refusé carte=1637 6182 0916 6010 ref=TICKET-1716
+2026-06-19T10:11:42+02:00 srv-app-02 systemd[1]: billing-service.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19 10:12:08] ERROR billing-service: connection refused to db-1.internal.corp:5432 retry=4
+[2026-06-19 10:12:13] INFO backup-sync: nouveau device détecté mac=9a:f4:71:83:01:39 hostname=laptop-205.internal.corp
+[2026-06-19 10:12:30] ERROR payment-export: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=5441&apikey=dc4b97c3f53739b2a3b2145da5d499b3
+client_ip=192.168.1.60
+[2026-06-19 10:13:00] ERROR notif-worker: connection refused to db-1.internal.corp:5432 retry=1
+[2026-06-19T10:13:28+02:00] INFO notif-worker: ref=CUST-72709 iban=FR7611964215226557676952 montant=2024.49EUR client=Marc Robert email=marc.robert@clientmail.com tel=07 70 63 68 68
+[2026-06-19T10:13:44+02:00] WARN backup-sync: paiement refusé carte=9689 3135 0305 8721 ref=TICKET-1976
+[2026-06-19T10:14:14+02:00] INFO auth-gateway: ref=CUST-41784 iban=FR7633021260650191792025 montant=1167.10EUR client=Paul Petit email=paul.petit@clientmail.com tel=06 09 01 72 53
+[2026-06-19 10:14:19] INFO inventory-sync: ref=CUST-63939 iban=FR7657041200928206678498 montant=2517.90EUR client=Luc Robert email=luc.robert@clientmail.com tel=06 54 20 34 11
+[2026-06-19T10:14:36+02:00] WARN payment-export: paiement refusé carte=0362 8917 7566 2056 ref=TICKET-4190
+2026-06-19T10:14:45+02:00 srv-app-01 sshd[6333]: Failed password for deploy from 219.171.14.62 port 36516 ssh2
+[2026-06-19 10:14:49] ERROR payment-export: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=3482&apikey=617821f11a290b9c6acb43ad340cf195
+client_ip=192.168.10.50
+2026-06-19 10:15:11 srv-db-03 sshd[17437]: Failed password for root from 79.110.72.197 port 34860 ssh2
+[2026-06-19T10:15:35+02:00] ERROR notif-worker: connection refused to db-2.internal.corp:5432 retry=6
+[2026-06-19T10:15:45+02:00] DEBUG backup-sync: auth attempt bearer=624f3049 user=thomas.martin
+[2026-06-19T10:16:01+02:00] ERROR inventory-sync: connection refused to db-3.internal.corp:5432 retry=3
+[2026-06-19T10:16:04+02:00] ERROR backup-sync: connection refused to db-1.internal.corp:5432 retry=3
+[2026-06-19 10:16:27] INFO auth-gateway: nouveau device détecté mac=e4:3f:1b:9c:d4:eb hostname=laptop-624.internal.corp
+[2026-06-19T10:16:55+02:00] ERROR auth-gateway: connection refused to db-4.internal.corp:5432 retry=9
+[2026-06-19 10:17:10] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=2873&apikey=70439c5c27ce2beee3253cd6ca2aaf6f
+client_ip=192.168.2.191
+[2026-06-19 10:17:19] INFO billing-service: ref=CUST-51967 iban=FR7690960567303064421214 montant=3328.10EUR client=Paul Lefevre email=paul.lefevre@clientmail.com tel=07 91 57 53 67
+[2026-06-19T10:17:26+02:00] ERROR payment-export: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=4581&apikey=956bdff5dbc0624aa04e4fa3d80e4e31
+client_ip=192.168.14.89
+[2026-06-19 10:17:50] INFO inventory-sync: ref=CUST-37494 iban=FR7639055044817766558685 montant=938.22EUR client=Sophie Moreau email=sophie.moreau@clientmail.com tel=07 54 47 22 70
+[2026-06-19T10:18:10+02:00] DEBUG backup-sync: auth attempt bearer=932320d3f3e19d67ec36f3be user=marc.petit
+2026-06-19T10:18:11+02:00 srv-app-07 systemd[1]: payment-export.service: Scheduled restart job, restart counter is at 169.
+[2026-06-19T10:18:21+02:00] WARN notif-worker: paiement refusé carte=6000 2589 5529 6386 ref=TICKET-4156
+[2026-06-19T10:18:41+02:00] DEBUG billing-service: auth attempt bearer=5ca5d7343c85a6220d0402c0 user=paul.robert
+[2026-06-19 10:19:02] WARN payment-export: paiement refusé carte=3438 3640 4120 9117 ref=TICKET-3010
+2026-06-19 10:19:06 srv-app-02 systemd[1]: auth-gateway.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19T10:19:22+02:00] DEBUG payment-export: auth attempt password=2f26dcae5590513a user=claire.robert
+[2026-06-19T10:19:42+02:00] ERROR backup-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=2685&apikey=360046b360a472488f62b9efdc68568c
+client_ip=192.168.9.239
+[2026-06-19 10:20:01] INFO auth-gateway: ref=CUST-68478 iban=FR7669459196639551720849 montant=3367.37EUR client=Julie Petit email=julie.petit@clientmail.com tel=07 50 03 14 23
+[2026-06-19T10:20:27+02:00] INFO inventory-sync: ref=CUST-96108 iban=FR7655251050537953816493 montant=4329.27EUR client=Marie Lefevre email=marie.lefevre@clientmail.com tel=06 71 35 91 77
+[2026-06-19 10:20:56] DEBUG backup-sync: auth attempt bearer=a661ff18d33e5ac7 user=anne.dupont
+[2026-06-19 10:21:06] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=8138&apikey=c11a02f3d98abc2af1c9ef3b3071043a
+client_ip=192.168.10.35
+[2026-06-19 10:21:14] WARN billing-service: paiement refusé carte=5800 4010 4145 9642 ref=TICKET-3257
+[2026-06-19T10:21:33+02:00] INFO billing-service: ref=CUST-93480 iban=FR7671883977457314415833 montant=649.09EUR client=Paul Petit email=paul.petit@clientmail.com tel=07 07 27 01 85
+[2026-06-19T10:21:40+02:00] WARN inventory-sync: paiement refusé carte=5398 8547 2812 3567 ref=TICKET-9412
+2026-06-19T10:21:47+02:00 srv-db-03 sshd[29711]: Failed password for ubuntu from 62.157.52.38 port 8047 ssh2
+[2026-06-19 10:22:11] ERROR payment-export: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=5078&apikey=0feb832bd64cda1e8b31cd696c58fd31
+client_ip=192.168.6.70
+[2026-06-19 10:22:15] ERROR billing-service: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=1208&apikey=72387ccc378f656b99035f975a255ae4
+client_ip=192.168.19.70
+[2026-06-19T10:22:37+02:00] ERROR inventory-sync: connection refused to db-3.internal.corp:5432 retry=2
+[2026-06-19 10:22:43] ERROR backup-sync: connection refused to db-5.internal.corp:5432 retry=1
+2026-06-19T10:22:59+02:00 srv-app-02 sshd[25739]: Failed password for root from 24.148.116.135 port 10630 ssh2
+2026-06-19 10:23:24 srv-app-01 systemd[1]: Started billing-service.service.
+2026-06-19 10:23:40 srv-app-07 systemd[1]: backup-sync.service: Scheduled restart job, restart counter is at 65.
+2026-06-19 10:23:55 srv-app-01 systemd[1]: Started auth-gateway.service.
+[2026-06-19T10:23:59+02:00] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=1136&apikey=74bf07db626c38e58bacd8961a3deb93
+client_ip=192.168.14.221
+[2026-06-19 10:24:15] INFO inventory-sync: ref=CUST-49799 iban=FR7674140703491074065004 montant=1138.44EUR client=Luc Bernard email=luc.bernard@clientmail.com tel=07 64 85 98 71
+2026-06-19T10:24:20+02:00 srv-app-01 systemd[1]: notif-worker.service: Failed with result 'exit-code'.
+2026-06-19T10:24:34+02:00 srv-auth-02 systemd[1]: billing-service.service: Scheduled restart job, restart counter is at 122.
+[2026-06-19 10:24:42] DEBUG inventory-sync: auth attempt password=995da4684d69929e user=thomas.bernard
+[2026-06-19 10:24:55] INFO billing-service: ref=CUST-71391 iban=FR7656766708061294398529 montant=4460.72EUR client=Claire Moreau email=claire.moreau@clientmail.com tel=07 06 96 50 16
+[2026-06-19 10:25:08] INFO inventory-sync: nouveau device détecté mac=21:83:a3:9f:a1:31 hostname=laptop-818.internal.corp
+[2026-06-19T10:25:15+02:00] INFO payment-export: nouveau device détecté mac=49:90:f6:32:04:33 hostname=laptop-353.internal.corp
+[2026-06-19 10:25:22] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=3427&apikey=139cf578e3d4054756ff993fb8cc3edd
+client_ip=192.168.15.102
+2026-06-19 10:25:23 srv-app-07 sshd[2396]: Failed password for ubuntu from 22.155.17.166 port 60537 ssh2
+[2026-06-19 10:25:53] INFO payment-export: nouveau device détecté mac=e8:05:b6:bc:25:4b hostname=laptop-771.internal.corp
+[2026-06-19 10:26:17] INFO auth-gateway: nouveau device détecté mac=48:9c:2f:cf:58:4a hostname=laptop-702.internal.corp
+[2026-06-19T10:26:36+02:00] DEBUG backup-sync: auth attempt password=5733ffa7735cd218312eb05a user=marie.robert
+[2026-06-19T10:26:49+02:00] WARN notif-worker: paiement refusé carte=7743 3268 3190 1302 ref=TICKET-1085
+2026-06-19T10:27:01+02:00 srv-db-03 sshd[19689]: Failed password for root from 194.254.97.214 port 55260 ssh2
+[2026-06-19 10:27:17] ERROR auth-gateway: connection refused to db-5.internal.corp:5432 retry=3
+[2026-06-19 10:27:43] DEBUG inventory-sync: auth attempt password=24933f71a0798cb259279c13 user=anne.robert
+[2026-06-19T10:28:13+02:00] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9752&apikey=6a146a17f21b2d2f48131f7bdf970106
+client_ip=192.168.14.68
+[2026-06-19 10:28:33] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=6728&apikey=c4dd43e3bb6ad177207d1071214e591a
+client_ip=192.168.2.101
+[2026-06-19 10:28:53] INFO auth-gateway: ref=CUST-96060 iban=FR7611483753745843845881 montant=452.44EUR client=Julie Martin email=julie.martin@clientmail.com tel=07 90 79 62 35
+[2026-06-19T10:28:56+02:00] WARN payment-export: paiement refusé carte=8315 2037 7107 0449 ref=TICKET-7294
+2026-06-19 10:29:06 srv-app-01 systemd[1]: Started billing-service.service.
+[2026-06-19T10:29:07+02:00] INFO inventory-sync: nouveau device détecté mac=6c:5d:19:1b:0a:86 hostname=laptop-875.internal.corp
+[2026-06-19 10:29:08] DEBUG notif-worker: auth attempt password=c9ed85ce user=sophie.bernard
+2026-06-19T10:29:38+02:00 srv-app-01 systemd[1]: auth-gateway.service: Scheduled restart job, restart counter is at 64.
+[2026-06-19 10:29:49] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=3406&apikey=8039a85ee0e0e1bf6d128a2e5888f475
+client_ip=192.168.12.70
+[2026-06-19T10:30:17+02:00] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=8711&apikey=ea171880b17b32e3276abd2d940abadb
+client_ip=192.168.2.49
+[2026-06-19T10:30:27+02:00] INFO billing-service: ref=CUST-87493 iban=FR7601935889536902611398 montant=4715.80EUR client=Luc Bernard email=luc.bernard@clientmail.com tel=07 68 93 15 67
+[2026-06-19 10:30:53] INFO backup-sync: nouveau device détecté mac=ea:86:97:a7:b7:ea hostname=laptop-866.internal.corp
+[2026-06-19T10:30:57+02:00] DEBUG inventory-sync: auth attempt secret=2bf7ed747d489aa32dd4f65e user=jean.bernard
+[2026-06-19 10:31:01] INFO auth-gateway: nouveau device détecté mac=41:d0:52:4c:db:4c hostname=laptop-813.internal.corp
+2026-06-19T10:31:19+02:00 srv-app-02 systemd[1]: notif-worker.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19 10:31:43] ERROR billing-service: connection refused to db-4.internal.corp:5432 retry=8
+[2026-06-19 10:32:07] INFO auth-gateway: nouveau device détecté mac=52:40:be:ca:e5:83 hostname=laptop-337.internal.corp
+[2026-06-19 10:32:17] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=1448&apikey=d9aca5416d8a3b95398fe75983784365
+client_ip=192.168.17.150
+[2026-06-19T10:32:37+02:00] WARN backup-sync: paiement refusé carte=0534 9678 2741 1767 ref=TICKET-5309
+2026-06-19 10:32:40 srv-app-02 sshd[17615]: Failed password for root from 40.113.38.84 port 23000 ssh2
+2026-06-19 10:32:49 srv-db-03 sshd[7238]: Failed password for deploy from 100.19.221.26 port 56168 ssh2
+[2026-06-19T10:33:07+02:00] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=7425&apikey=768f4f5f946260d2f651d8c7bf5979ff
+client_ip=192.168.19.98
+[2026-06-19T10:33:27+02:00] INFO backup-sync: nouveau device détecté mac=73:9d:ea:7d:35:ea hostname=laptop-776.internal.corp
+[2026-06-19 10:33:31] DEBUG notif-worker: auth attempt bearer=d70986d1a8adcedc user=luc.dupont
+[2026-06-19T10:33:40+02:00] WARN notif-worker: paiement refusé carte=0476 3928 3199 5298 ref=TICKET-1326
+2026-06-19 10:34:04 srv-app-01 sshd[17995]: Failed password for admin from 105.180.32.168 port 14816 ssh2
+[2026-06-19 10:34:16] INFO payment-export: ref=CUST-48035 iban=FR7625563830008186702440 montant=1894.80EUR client=Marc Lefevre email=marc.lefevre@clientmail.com tel=06 04 34 95 15
+[2026-06-19T10:34:43+02:00] DEBUG notif-worker: auth attempt secret=22d0043c user=sophie.durand
+[2026-06-19T10:35:09+02:00] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=2562&apikey=38fc9d27d8f97c0fcb3e70c7ebf39a42
+client_ip=192.168.15.53
+[2026-06-19 10:35:27] INFO payment-export: nouveau device détecté mac=24:cf:71:f8:d9:a4 hostname=laptop-137.internal.corp
+[2026-06-19 10:35:38] DEBUG backup-sync: auth attempt secret=6ffa7aef23d2c405356e31df user=paul.robert
+[2026-06-19T10:35:43+02:00] DEBUG inventory-sync: auth attempt password=98ab5496b8fe6a45 user=thomas.robert
+[2026-06-19T10:35:44+02:00] INFO inventory-sync: ref=CUST-50873 iban=FR7633187510979215835034 montant=2338.54EUR client=Marie Dupont email=marie.dupont@clientmail.com tel=07 47 79 98 51
+[2026-06-19T10:36:14+02:00] WARN backup-sync: paiement refusé carte=2134 2491 2896 5999 ref=TICKET-5542
+[2026-06-19T10:36:40+02:00] INFO notif-worker: nouveau device détecté mac=07:62:44:5f:0a:21 hostname=laptop-240.internal.corp
+[2026-06-19T10:36:57+02:00] INFO inventory-sync: nouveau device détecté mac=37:cc:cf:b9:a2:65 hostname=laptop-748.internal.corp
+[2026-06-19 10:37:24] INFO notif-worker: ref=CUST-74237 iban=FR7641865205756398365203 montant=3631.46EUR client=Thomas Robert email=thomas.robert@clientmail.com tel=06 00 75 39 42
+[2026-06-19 10:37:28] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=6185&apikey=8fc18810fef5f31b04542d31e1a3860a
+client_ip=192.168.2.167
+[2026-06-19 10:37:57] ERROR backup-sync: connection refused to db-4.internal.corp:5432 retry=7
+[2026-06-19 10:38:24] WARN billing-service: paiement refusé carte=8241 2704 9386 2044 ref=TICKET-6745
+2026-06-19 10:38:28 srv-app-07 sshd[6980]: Failed password for admin from 138.45.59.236 port 48835 ssh2
+[2026-06-19 10:38:31] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=1601&apikey=be2796491c9584ad7686598e82fbbbe5
+client_ip=192.168.1.57
+[2026-06-19 10:38:58] INFO inventory-sync: ref=CUST-55471 iban=FR7643588418343740182727 montant=4817.41EUR client=Sophie Petit email=sophie.petit@clientmail.com tel=07 72 48 84 75
+2026-06-19 10:39:27 srv-app-01 sshd[12032]: Failed password for deploy from 22.81.215.122 port 43483 ssh2
+[2026-06-19T10:39:56+02:00] ERROR payment-export: connection refused to db-4.internal.corp:5432 retry=9
+[2026-06-19 10:40:02] INFO inventory-sync: nouveau device détecté mac=dc:f7:8b:af:c9:17 hostname=laptop-881.internal.corp
+[2026-06-19T10:40:32+02:00] DEBUG billing-service: auth attempt secret=c0559644a1294bec5e046599 user=marie.bernard
+2026-06-19 10:40:40 srv-app-02 sshd[12295]: Failed password for root from 59.191.2.123 port 7571 ssh2
+[2026-06-19 10:40:56] DEBUG notif-worker: auth attempt bearer=ce73c4a4ca9dc2bf0757bba0 user=anne.petit
+[2026-06-19T10:41:26+02:00] WARN notif-worker: paiement refusé carte=3034 6156 2624 4670 ref=TICKET-5276
+[2026-06-19 10:41:40] DEBUG payment-export: auth attempt password=2b3c05a4ce0fcd19 user=marc.durand
+[2026-06-19 10:42:04] INFO backup-sync: nouveau device détecté mac=fa:b3:5d:c2:40:a8 hostname=laptop-302.internal.corp
+[2026-06-19T10:42:21+02:00] INFO notif-worker: nouveau device détecté mac=e9:13:fe:b1:b8:da hostname=laptop-791.internal.corp
+2026-06-19T10:42:31+02:00 srv-app-01 systemd[1]: Started backup-sync.service.
+2026-06-19 10:42:32 srv-db-03 systemd[1]: auth-gateway.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19T10:42:44+02:00] DEBUG backup-sync: auth attempt password=344fd8be7e12ab143c2a9dc0 user=paul.durand
+2026-06-19 10:43:08 srv-app-01 sshd[23749]: Failed password for root from 166.133.155.158 port 53384 ssh2
+[2026-06-19T10:43:10+02:00] INFO backup-sync: nouveau device détecté mac=d8:58:1c:59:80:d6 hostname=laptop-119.internal.corp
+[2026-06-19T10:43:36+02:00] INFO notif-worker: ref=CUST-22733 iban=FR7633053194979695867805 montant=2800.40EUR client=Julie Moreau email=julie.moreau@clientmail.com tel=07 56 19 59 95
+[2026-06-19 10:43:52] INFO backup-sync: ref=CUST-14229 iban=FR7691785138544577029929 montant=2890.72EUR client=Luc Petit email=luc.petit@clientmail.com tel=07 53 97 02 96
+[2026-06-19 10:44:02] INFO notif-worker: nouveau device détecté mac=c4:c3:3c:66:39:55 hostname=laptop-885.internal.corp
+[2026-06-19T10:44:27+02:00] DEBUG backup-sync: auth attempt token=8ab3ac7cfe9e55c9 user=jean.moreau
+[2026-06-19 10:44:52] INFO notif-worker: ref=CUST-86042 iban=FR7666630932998199605932 montant=4673.80EUR client=Marie Petit email=marie.petit@clientmail.com tel=07 87 11 47 02
+[2026-06-19 10:45:16] DEBUG notif-worker: auth attempt token=eb75f6a4 user=luc.martin
+[2026-06-19T10:45:45+02:00] INFO payment-export: nouveau device détecté mac=e7:5e:3a:57:e2:01 hostname=laptop-798.internal.corp
+[2026-06-19 10:46:07] INFO backup-sync: nouveau device détecté mac=2d:83:0e:f1:9c:1b hostname=laptop-509.internal.corp
+[2026-06-19T10:46:30+02:00] INFO notif-worker: nouveau device détecté mac=33:48:35:bd:a4:7f hostname=laptop-315.internal.corp
+2026-06-19T10:46:39+02:00 srv-app-01 sshd[12221]: Failed password for deploy from 201.251.125.194 port 20376 ssh2
+[2026-06-19 10:47:02] INFO auth-gateway: nouveau device détecté mac=81:44:90:7b:b9:95 hostname=laptop-681.internal.corp
+[2026-06-19 10:47:23] INFO inventory-sync: nouveau device détecté mac=44:49:c8:70:69:40 hostname=laptop-365.internal.corp
+[2026-06-19T10:47:35+02:00] DEBUG notif-worker: auth attempt token=4abcf5f5fc02a796 user=sophie.bernard
+2026-06-19 10:47:44 srv-auth-02 sshd[28524]: Failed password for admin from 111.255.235.146 port 49930 ssh2
+[2026-06-19T10:48:12+02:00] WARN payment-export: paiement refusé carte=0615 8148 8810 7983 ref=TICKET-5009
+[2026-06-19T10:48:21+02:00] WARN notif-worker: paiement refusé carte=7209 4841 3128 4033 ref=TICKET-4996
+[2026-06-19T10:48:40+02:00] INFO inventory-sync: nouveau device détecté mac=1a:26:f3:e2:f6:36 hostname=laptop-712.internal.corp
+[2026-06-19 10:48:56] ERROR backup-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=8261&apikey=e6e08d8f5af9987a89e35f0aff552d93
+client_ip=192.168.4.186
+[2026-06-19 10:49:07] WARN payment-export: paiement refusé carte=3348 4587 1493 9252 ref=TICKET-4144
+[2026-06-19 10:49:32] INFO payment-export: ref=CUST-77694 iban=FR7679643474524555746966 montant=56.97EUR client=Paul Moreau email=paul.moreau@clientmail.com tel=07 07 52 45 82
+2026-06-19T10:49:58+02:00 srv-app-02 systemd[1]: inventory-sync.service: Failed with result 'exit-code'.
+[2026-06-19T10:50:05+02:00] ERROR auth-gateway: connection refused to db-4.internal.corp:5432 retry=7
+[2026-06-19 10:50:16] WARN backup-sync: paiement refusé carte=9874 1132 5797 0673 ref=TICKET-5589
+[2026-06-19T10:50:36+02:00] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=6456&apikey=be93f42ad44962e7a89042abe65ae7eb
+client_ip=192.168.11.72
+[2026-06-19T10:50:43+02:00] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=1351&apikey=cf11b0d1af9a222352e62d8ee4a25aed
+client_ip=192.168.14.111
+[2026-06-19 10:50:56] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=4817&apikey=07ad487ae6b4646953014b2aa76695d8
+client_ip=192.168.13.6
+[2026-06-19T10:51:26+02:00] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=1118&apikey=c0e6c1eec66c3253563fbad662bf83e0
+client_ip=192.168.15.33
+2026-06-19T10:51:39+02:00 srv-db-03 sshd[8515]: Failed password for deploy from 99.33.222.243 port 46978 ssh2
+[2026-06-19 10:51:42] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=6260&apikey=a14750444f1169bd5d5545b350f69cb8
+client_ip=192.168.9.188
+[2026-06-19 10:51:43] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=4593&apikey=4d1c5530b72d23fede409ff84ab3ff64
+client_ip=192.168.2.190
+[2026-06-19 10:52:00] WARN payment-export: paiement refusé carte=1649 1334 2457 9889 ref=TICKET-5370
+[2026-06-19T10:52:25+02:00] DEBUG auth-gateway: auth attempt token=1c16504175ca0ffb6ce6e8e3 user=luc.moreau
+[2026-06-19 10:52:36] ERROR auth-gateway: connection refused to db-4.internal.corp:5432 retry=9
+[2026-06-19 10:52:51] ERROR notif-worker: connection refused to db-3.internal.corp:5432 retry=2
+[2026-06-19 10:53:17] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=5561&apikey=7e3394b9ed25c64706b41b75b53574d6
+client_ip=192.168.5.26
+[2026-06-19 10:53:19] DEBUG auth-gateway: auth attempt bearer=ea490289621d44f5 user=sophie.petit
+[2026-06-19T10:53:45+02:00] DEBUG notif-worker: auth attempt token=b2784c34 user=sophie.robert
+[2026-06-19 10:53:50] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=5123&apikey=3f7e93e42a81c83ed5f9732b7fdd1388
+client_ip=192.168.17.81
+[2026-06-19 10:54:11] DEBUG auth-gateway: auth attempt secret=203f7f7d83fcc133 user=anne.martin
+[2026-06-19 10:54:15] DEBUG auth-gateway: auth attempt password=ee1cd0650a39d0e8 user=claire.moreau
+[2026-06-19 10:54:27] INFO auth-gateway: nouveau device détecté mac=ae:85:6a:cb:5f:2a hostname=laptop-460.internal.corp
+[2026-06-19T10:54:47+02:00] WARN notif-worker: paiement refusé carte=4116 5972 6347 5575 ref=TICKET-3608
+2026-06-19T10:54:53+02:00 srv-app-07 sshd[7508]: Failed password for admin from 99.151.91.102 port 7142 ssh2
+[2026-06-19 10:54:56] DEBUG notif-worker: auth attempt token=abc4c392a7e17480f7777e64 user=jean.durand
+[2026-06-19 10:55:04] INFO backup-sync: nouveau device détecté mac=d6:d5:cc:8b:8d:bb hostname=laptop-340.internal.corp
+2026-06-19 10:55:15 srv-auth-02 sshd[4166]: Failed password for root from 54.164.126.204 port 61151 ssh2
+[2026-06-19 10:55:41] INFO notif-worker: nouveau device détecté mac=37:b7:e8:1e:ef:d2 hostname=laptop-275.internal.corp
+[2026-06-19 10:55:42] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=1483&apikey=42b2880fd4c6e99a7d4a01b322d56755
+client_ip=192.168.16.224
+2026-06-19T10:56:03+02:00 srv-db-03 sshd[13494]: Failed password for ubuntu from 44.206.198.207 port 46664 ssh2
+[2026-06-19T10:56:19+02:00] INFO auth-gateway: ref=CUST-66408 iban=FR7647124633515718409080 montant=3066.12EUR client=Claire Bernard email=claire.bernard@clientmail.com tel=06 00 67 01 00
+[2026-06-19 10:56:30] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=8338&apikey=b256f56b34b5e54e013993b553f64aec
+client_ip=192.168.19.146
+[2026-06-19T10:56:34+02:00] ERROR billing-service: connection refused to db-2.internal.corp:5432 retry=4
+[2026-06-19T10:57:01+02:00] DEBUG payment-export: auth attempt password=32ac69a4e69dcdc2 user=julie.dupont
+[2026-06-19 10:57:17] INFO auth-gateway: nouveau device détecté mac=9f:91:16:29:5a:10 hostname=laptop-148.internal.corp
+[2026-06-19 10:57:27] ERROR payment-export: connection refused to db-1.internal.corp:5432 retry=7
+[2026-06-19 10:57:51] INFO backup-sync: ref=CUST-22930 iban=FR7672351373990063140352 montant=3204.29EUR client=Jean Lefevre email=jean.lefevre@clientmail.com tel=07 51 05 19 18
+2026-06-19 10:58:11 srv-app-02 systemd[1]: backup-sync.service: Scheduled restart job, restart counter is at 109.
+[2026-06-19T10:58:18+02:00] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=3082&apikey=86f80c1e472335f25a58c999833c62f6
+client_ip=192.168.14.98
+[2026-06-19T10:58:35+02:00] INFO inventory-sync: nouveau device détecté mac=71:c5:22:7d:be:4e hostname=laptop-711.internal.corp
+[2026-06-19 10:59:00] WARN notif-worker: paiement refusé carte=5090 2542 5730 6624 ref=TICKET-9283
+[2026-06-19T10:59:03+02:00] WARN payment-export: paiement refusé carte=7071 3984 8228 5011 ref=TICKET-7716
+[2026-06-19 10:59:20] INFO billing-service: ref=CUST-15037 iban=FR7621306090691309810796 montant=2323.87EUR client=Claire Moreau email=claire.moreau@clientmail.com tel=07 57 95 30 87
+[2026-06-19 10:59:36] ERROR auth-gateway: connection refused to db-4.internal.corp:5432 retry=8
+[2026-06-19T11:00:06+02:00] ERROR inventory-sync: connection refused to db-3.internal.corp:5432 retry=3
+[2026-06-19 11:00:19] ERROR payment-export: connection refused to db-4.internal.corp:5432 retry=5
+[2026-06-19 11:00:24] DEBUG inventory-sync: auth attempt token=4b6cddeeecebaac4 user=thomas.lefevre
+[2026-06-19 11:00:32] WARN notif-worker: paiement refusé carte=9578 6543 6271 8749 ref=TICKET-7752
+[2026-06-19 11:00:34] ERROR payment-export: connection refused to db-2.internal.corp:5432 retry=7
+[2026-06-19 11:01:04] INFO inventory-sync: ref=CUST-60589 iban=FR7692492693265732759980 montant=805.08EUR client=Jean Lefevre email=jean.lefevre@clientmail.com tel=06 02 01 06 42
+[2026-06-19T11:01:32+02:00] ERROR auth-gateway: connection refused to db-2.internal.corp:5432 retry=4
+[2026-06-19 11:01:42] ERROR auth-gateway: connection refused to db-4.internal.corp:5432 retry=8
+2026-06-19T11:01:53+02:00 srv-app-02 systemd[1]: auth-gateway.service: Failed with result 'exit-code'.
+[2026-06-19T11:02:22+02:00] DEBUG payment-export: auth attempt bearer=f8734e31 user=paul.petit
+[2026-06-19 11:02:38] INFO inventory-sync: ref=CUST-67794 iban=FR7699270795515122946213 montant=2637.37EUR client=Anne Moreau email=anne.moreau@clientmail.com tel=06 45 77 63 02
+[2026-06-19T11:02:58+02:00] INFO inventory-sync: ref=CUST-77295 iban=FR7648075203447650471580 montant=1080.79EUR client=Luc Lefevre email=luc.lefevre@clientmail.com tel=06 94 73 02 38
+[2026-06-19T11:03:11+02:00] DEBUG inventory-sync: auth attempt secret=cabdda4b86f982e2a3043725 user=claire.martin
+2026-06-19 11:03:16 srv-auth-02 sshd[6119]: Failed password for admin from 22.6.174.223 port 39215 ssh2
+[2026-06-19 11:03:37] ERROR notif-worker: connection refused to db-1.internal.corp:5432 retry=2
+2026-06-19T11:03:39+02:00 srv-app-02 sshd[7888]: Failed password for root from 203.46.1.111 port 4300 ssh2
+[2026-06-19 11:04:02] ERROR inventory-sync: connection refused to db-2.internal.corp:5432 retry=8
+[2026-06-19 11:04:29] INFO notif-worker: nouveau device détecté mac=5f:91:e5:02:56:84 hostname=laptop-999.internal.corp
+2026-06-19 11:04:47 srv-auth-02 sshd[25781]: Failed password for deploy from 39.96.95.218 port 15947 ssh2
+2026-06-19 11:04:53 srv-db-03 systemd[1]: notif-worker.service: Scheduled restart job, restart counter is at 130.
+[2026-06-19 11:05:00] ERROR auth-gateway: connection refused to db-5.internal.corp:5432 retry=1
+[2026-06-19T11:05:21+02:00] INFO auth-gateway: ref=CUST-55118 iban=FR7609617015959194575757 montant=2469.97EUR client=Marie Robert email=marie.robert@clientmail.com tel=07 40 69 95 24
+[2026-06-19 11:05:29] ERROR payment-export: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=9148&apikey=eaceee44cd04ac4cb0d545630cf48a60
+client_ip=192.168.14.121
+2026-06-19T11:05:42+02:00 srv-app-02 systemd[1]: Started auth-gateway.service.
+[2026-06-19 11:05:56] INFO payment-export: nouveau device détecté mac=1b:32:af:94:7f:6d hostname=laptop-602.internal.corp
+[2026-06-19T11:05:57+02:00] INFO notif-worker: ref=CUST-90167 iban=FR7619284552597107563353 montant=2570.81EUR client=Luc Petit email=luc.petit@clientmail.com tel=07 35 71 43 73
+[2026-06-19 11:06:23] WARN notif-worker: paiement refusé carte=5939 9337 9705 8162 ref=TICKET-6269
+[2026-06-19 11:06:26] INFO inventory-sync: nouveau device détecté mac=82:ec:68:4b:1f:77 hostname=laptop-748.internal.corp
+[2026-06-19 11:06:27] INFO auth-gateway: nouveau device détecté mac=8a:fa:66:39:16:97 hostname=laptop-909.internal.corp
+[2026-06-19T11:06:40+02:00] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=1417&apikey=900d2be4ec5ea38e86e954a031afb4ac
+client_ip=192.168.7.38
+[2026-06-19T11:07:01+02:00] ERROR notif-worker: connection refused to db-3.internal.corp:5432 retry=1
+[2026-06-19 11:07:22] ERROR auth-gateway: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=1396&apikey=4f22443572bba2da2fc1dc426e538771
+client_ip=192.168.2.187
+[2026-06-19T11:07:24+02:00] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=4302&apikey=44aacc09f0d216167f0b2b5c64098bc5
+client_ip=192.168.8.245
+[2026-06-19T11:07:49+02:00] ERROR auth-gateway: connection refused to db-3.internal.corp:5432 retry=7
+[2026-06-19T11:07:53+02:00] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=8867&apikey=c6531c366969be178609065a6fcaec5f
+client_ip=192.168.17.199
+[2026-06-19T11:08:11+02:00] WARN auth-gateway: paiement refusé carte=1009 0040 4769 2105 ref=TICKET-4527
+[2026-06-19T11:08:32+02:00] ERROR inventory-sync: connection refused to db-4.internal.corp:5432 retry=1
+2026-06-19T11:08:42+02:00 srv-app-01 systemd[1]: billing-service.service: Failed with result 'exit-code'.
+[2026-06-19T11:08:46+02:00] INFO inventory-sync: ref=CUST-69669 iban=FR7698440971231660076762 montant=118.73EUR client=Marie Lefevre email=marie.lefevre@clientmail.com tel=06 84 08 98 35
+[2026-06-19T11:09:09+02:00] INFO notif-worker: nouveau device détecté mac=80:86:7e:01:df:71 hostname=laptop-393.internal.corp
+[2026-06-19T11:09:21+02:00] ERROR backup-sync: connection refused to db-4.internal.corp:5432 retry=9
+[2026-06-19 11:09:27] ERROR notif-worker: connection refused to db-5.internal.corp:5432 retry=3
+[2026-06-19 11:09:38] INFO inventory-sync: ref=CUST-55539 iban=FR7642786561942557782058 montant=1198.76EUR client=Claire Robert email=claire.robert@clientmail.com tel=07 69 80 95 20
+[2026-06-19 11:10:06] WARN payment-export: paiement refusé carte=6161 8808 1904 8235 ref=TICKET-9014
+[2026-06-19 11:10:10] ERROR notif-worker: connection refused to db-4.internal.corp:5432 retry=9
+[2026-06-19 11:10:32] ERROR payment-export: connection refused to db-1.internal.corp:5432 retry=4
+[2026-06-19 11:10:53] WARN payment-export: paiement refusé carte=8172 1436 4381 3000 ref=TICKET-5846
+2026-06-19T11:10:57+02:00 srv-app-02 sshd[22678]: Failed password for deploy from 135.60.216.242 port 27435 ssh2
+[2026-06-19T11:10:58+02:00] ERROR auth-gateway: connection refused to db-2.internal.corp:5432 retry=5
+[2026-06-19 11:11:12] INFO backup-sync: nouveau device détecté mac=1f:1f:ab:08:fc:3d hostname=laptop-805.internal.corp
+[2026-06-19 11:11:31] INFO auth-gateway: nouveau device détecté mac=c1:f2:f8:22:73:ec hostname=laptop-867.internal.corp
+[2026-06-19T11:11:42+02:00] INFO backup-sync: nouveau device détecté mac=9e:6d:30:40:e2:5e hostname=laptop-381.internal.corp
+[2026-06-19T11:12:05+02:00] ERROR inventory-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=3162&apikey=f5e9519ad3426ff70c5c1957af7e3354
+client_ip=192.168.4.180
+[2026-06-19T11:12:29+02:00] ERROR backup-sync: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=2898&apikey=d0b3df18dd2228bfc74305256eb8f25d
+client_ip=192.168.12.205
+[2026-06-19T11:12:47+02:00] WARN payment-export: paiement refusé carte=2605 0801 8498 0425 ref=TICKET-4992
+[2026-06-19 11:13:15] WARN payment-export: paiement refusé carte=7731 2688 1228 2178 ref=TICKET-2189
+[2026-06-19 11:13:34] DEBUG payment-export: auth attempt secret=8d1d1ac0 user=sophie.moreau
+[2026-06-19 11:13:47] WARN backup-sync: paiement refusé carte=2798 6239 8471 6906 ref=TICKET-2086
+[2026-06-19 11:14:05] INFO notif-worker: ref=CUST-46357 iban=FR7664754895478769899927 montant=2771.11EUR client=Jean Moreau email=jean.moreau@clientmail.com tel=07 43 68 66 78
+2026-06-19 11:14:26 srv-app-01 systemd[1]: auth-gateway.service: Failed with result 'exit-code'.
+[2026-06-19T11:14:37+02:00] WARN payment-export: paiement refusé carte=4358 6449 6392 4358 ref=TICKET-6261
+[2026-06-19T11:14:44+02:00] INFO backup-sync: ref=CUST-36965 iban=FR7695275367497852491416 montant=4521.50EUR client=Luc Lefevre email=luc.lefevre@clientmail.com tel=06 08 24 32 63
+2026-06-19 11:14:59 srv-auth-02 systemd[1]: backup-sync.service: Failed with result 'exit-code'.
+[2026-06-19 11:15:08] INFO inventory-sync: nouveau device détecté mac=fd:ca:34:53:b1:12 hostname=laptop-384.internal.corp
+2026-06-19T11:15:12+02:00 srv-auth-02 systemd[1]: Started backup-sync.service.
+[2026-06-19T11:15:19+02:00] ERROR notif-worker: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=2759&apikey=89d7778b740a75c60528f337d77e5578
+client_ip=192.168.11.252
+2026-06-19T11:15:20+02:00 srv-app-02 systemd[1]: Started notif-worker.service.
+2026-06-19 11:15:35 srv-app-02 sshd[28872]: Failed password for ubuntu from 124.227.226.39 port 41332 ssh2
+2026-06-19T11:16:00+02:00 srv-db-03 systemd[1]: Started billing-service.service.
+[2026-06-19T11:16:14+02:00] ERROR auth-gateway: connection refused to db-5.internal.corp:5432 retry=7
+[2026-06-19T11:16:41+02:00] WARN backup-sync: paiement refusé carte=1962 6335 5643 4369 ref=TICKET-8695
+2026-06-19T11:16:42+02:00 srv-auth-02 sshd[1671]: Failed password for ubuntu from 25.199.176.93 port 33199 ssh2
+2026-06-19T11:16:56+02:00 srv-db-03 sshd[16680]: Failed password for deploy from 109.117.137.94 port 11385 ssh2
+[2026-06-19 11:17:02] WARN backup-sync: paiement refusé carte=6503 1219 8041 8472 ref=TICKET-5803
+[2026-06-19T11:17:07+02:00] INFO auth-gateway: ref=CUST-78224 iban=FR7613190924876230391114 montant=1474.68EUR client=Luc Bernard email=luc.bernard@clientmail.com tel=06 99 59 70 97
+[2026-06-19T11:17:19+02:00] INFO payment-export: ref=CUST-32517 iban=FR7648088062207223959473 montant=3736.22EUR client=Jean Moreau email=jean.moreau@clientmail.com tel=06 91 31 20 81
+[2026-06-19T11:17:39+02:00] DEBUG billing-service: auth attempt secret=fccebc8d5f4162b9 user=marie.petit
+[2026-06-19T11:17:52+02:00] ERROR auth-gateway: connection refused to db-4.internal.corp:5432 retry=4
+[2026-06-19 11:18:17] DEBUG payment-export: auth attempt token=49c7407e8fceeb6e user=paul.petit
+2026-06-19T11:18:19+02:00 srv-app-02 sshd[22411]: Failed password for ubuntu from 33.179.238.233 port 58178 ssh2
+2026-06-19T11:18:33+02:00 srv-app-01 systemd[1]: Started backup-sync.service.
+[2026-06-19T11:18:35+02:00] ERROR billing-service: connection refused to db-3.internal.corp:5432 retry=9
+[2026-06-19 11:18:41] INFO billing-service: ref=CUST-17849 iban=FR7608385076597595450891 montant=3601.97EUR client=Thomas Durand email=thomas.durand@clientmail.com tel=07 55 97 65 04
+2026-06-19 11:19:03 srv-auth-02 sshd[24968]: Failed password for ubuntu from 59.193.169.170 port 48376 ssh2
+[2026-06-19 11:19:24] INFO payment-export: ref=CUST-90854 iban=FR7664630040236936268943 montant=14.08EUR client=Sophie Martin email=sophie.martin@clientmail.com tel=06 04 33 93 61
+[2026-06-19 11:19:50] INFO payment-export: nouveau device détecté mac=5f:32:ea:bf:8a:a4 hostname=laptop-783.internal.corp
+2026-06-19 11:20:12 srv-auth-02 systemd[1]: backup-sync.service: Failed with result 'exit-code'.
+[2026-06-19T11:20:20+02:00] INFO inventory-sync: nouveau device détecté mac=9f:c1:98:34:77:7e hostname=laptop-256.internal.corp
+[2026-06-19T11:20:50+02:00] ERROR notif-worker: connection refused to db-4.internal.corp:5432 retry=7
+2026-06-19T11:21:09+02:00 srv-app-07 sshd[2864]: Failed password for deploy from 179.246.33.199 port 29573 ssh2
+[2026-06-19T11:21:22+02:00] DEBUG payment-export: auth attempt password=b397ffc6cd7975a5 user=anne.moreau
+2026-06-19T11:21:41+02:00 srv-db-03 sshd[17143]: Failed password for ubuntu from 223.4.76.139 port 59782 ssh2
+[2026-06-19T11:21:44+02:00] ERROR billing-service: HTTP 401 calling payment-gateway
+Request: GET https://api.internal.corp/v2/charges?merchant_id=7445&apikey=9bb2159a3121065cf3892942e853f791
+client_ip=192.168.2.36
+[2026-06-19 11:22:12] INFO notif-worker: ref=CUST-76699 iban=FR7644663453372201091217 montant=1043.19EUR client=Julie Moreau email=julie.moreau@clientmail.com tel=06 36 98 42 88
+[2026-06-19T11:22:23+02:00] INFO payment-export: nouveau device détecté mac=39:6f:1b:5c:6b:21 hostname=laptop-132.internal.corp
+[2026-06-19 11:22:50] INFO inventory-sync: ref=CUST-52412 iban=FR7672565920246175202389 montant=4067.35EUR client=Julie Petit email=julie.petit@clientmail.com tel=06 92 23 53 04
+[2026-06-19 11:23:15] ERROR notif-worker: connection refused to db-5.internal.corp:5432 retry=6
+[2026-06-19 11:23:26] INFO billing-service: nouveau device détecté mac=66:4a:8c:6d:1e:9e hostname=laptop-145.internal.corp
+[2026-06-19 11:23:36] DEBUG billing-service: auth attempt password=de7a7e89178c8071 user=sophie.robert
+[2026-06-19T11:23:44+02:00] DEBUG billing-service: auth attempt password=d091f6937ca560d2 user=claire.lefevre
+[2026-06-19 11:24:00] INFO billing-service: ref=CUST-96174 iban=FR7644626325144881121031 montant=2222.22EUR client=Luc Bernard email=luc.bernard@clientmail.com tel=06 97 57 43 15
+2026-06-19T11:24:17+02:00 srv-auth-02 sshd[12574]: Failed password for admin from 177.142.42.92 port 12584 ssh2
+2026-06-19 11:24:30 srv-app-02 systemd[1]: backup-sync.service: Main process exited, code=exited, status=1/FAILURE
+[2026-06-19T11:24:33+02:00] ERROR payment-export: connection refused to db-5.internal.corp:5432 retry=4
+[2026-06-19 11:24:49] ERROR billing-service: connection refused to db-4.internal.corp:5432 retry=2
+[2026-06-19T11:25:15+02:00] WARN inventory-sync: paiement refusé carte=9791 3787 6553 0073 ref=TICKET-1060
+[2026-06-19 11:25:34] ERROR billing-service: connection refused to db-4.internal.corp:5432 retry=1
+[2026-06-19 11:25:45] INFO billing-service: ref=CUST-87710 iban=FR7627788519053486401042 montant=2125.48EUR client=Anne Martin email=anne.martin@clientmail.com tel=06 35 43 52 09
+[2026-06-19T11:26:02+02:00] INFO billing-service: nouveau device détecté mac=9d:00:9a:52:43:b3 hostname=laptop-197.internal.corp
+2026-06-19T11:26:11+02:00 srv-app-07 sshd[11206]: Failed password for deploy from 74.40.118.13 port 56170 ssh2
+2026-06-19 11:26:36 srv-auth-02 sshd[25651]: Failed password for ubuntu from 160.152.152.26 port 62024 ssh2
+2026-06-19 11:26:38 srv-app-07 sshd[20277]: Failed password for admin from 88.26.70.18 port 1286 ssh2
+[2026-06-19 11:26:42] INFO billing-service: nouveau device détecté mac=c3:85:72:a5:53:0f hostname=laptop-323.internal.corp
+[2026-06-19 11:27:06] WARN payment-export: paiement refusé carte=0849 3783 0639 6384 ref=TICKET-6640
+[2026-06-19 11:27:11] DEBUG backup-sync: auth attempt secret=73d8f03c68453741 user=sophie.lefevre
+2026-06-19 11:27:35 srv-app-01 sshd[19827]: Failed password for admin from 54.111.141.246 port 1208 ssh2
+2026-06-19 11:27:56 srv-app-02 sshd[15649]: Failed password for root from 23.211.54.88 port 10486 ssh2
+[2026-06-19 11:28:01] ERROR auth-gateway: connection refused to db-4.internal.corp:5432 retry=9
+[2026-06-19 11:28:23] WARN inventory-sync: paiement refusé carte=2365 3377 4604 0672 ref=TICKET-2006
+[2026-06-19 11:28:49] INFO notif-worker: nouveau device détecté mac=6d:39:49:85:d0:f2 hostname=laptop-700.internal.corp
+[2026-06-19T11:29:04+02:00] WARN auth-gateway: paiement refusé carte=4764 2737 2037 6388 ref=TICKET-3370
+[2026-06-19 11:29:08] ERROR notif-worker: connection refused to db-1.internal.corp:5432 retry=5
+[2026-06-19T11:29:36+02:00] DEBUG auth-gateway: auth attempt password=9875f040 user=claire.petit
+[2026-06-19T11:29:55+02:00] INFO billing-service: nouveau device détecté mac=39:d8:86:cb:3c:f6 hostname=laptop-350.internal.corp
+[2026-06-19T11:30:06+02:00] ERROR auth-gateway: connection refused to db-2.internal.corp:5432 retry=9
+[2026-06-19 11:30:17] DEBUG payment-export: auth attempt password=2347d16ed23e4766b3180d38 user=anne.robert
+[2026-06-19 11:30:46] ERROR billing-service: connection refused to db-5.internal.corp:5432 retry=2
+[2026-06-19T11:30:49+02:00] WARN backup-sync: paiement refusé carte=4820 7365 1189 3940 ref=TICKET-7997

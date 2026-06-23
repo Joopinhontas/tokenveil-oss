@@ -1,0 +1,15 @@
+services:
+  tokenveil:
+    build: .
+    container_name: tokenveil
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${ANON_PORT:-8500}:8500"
+    volumes:
+      # tout l'état qui doit survivre à un rebuild/update : base SQLite
+      # (conversations, mapping chiffré), comptes Claude/Gemini liés par
+      # utilisateur. Sans ce volume, un `docker compose up --build` efface
+      # tout — c'est le seul répertoire à sauvegarder côté client.
+      - ./data:/app/data
