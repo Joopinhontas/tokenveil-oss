@@ -6,9 +6,9 @@
 
 **Statut : Alpha (build de test interne), dépôt vitrine public**
 
-Une interface de chat auto-hébergée pour Claude qui anonymise automatiquement les données sensibles (PII, IP internes, clés API/secrets, références clients, IBAN, numéros de carte bancaire...) avant qu'elles n'atteignent Claude, et restaure de façon transparente les vraies valeurs dans la réponse affichée à l'utilisateur. Les données réelles ne quittent jamais votre infrastructure.
+Une interface de chat auto-hébergée pour Claude, Gemini, Vertex AI, Bedrock, OpenAI et Mistral qui anonymise automatiquement les données sensibles (PII, IP internes, clés API/secrets, références clients, IBAN, numéros de carte bancaire...) avant qu'elles n'atteignent le LLM, et restaure de façon transparente les vraies valeurs dans la réponse affichée à l'utilisateur. Les données réelles ne quittent jamais votre infrastructure.
 
-> **Ceci est une copie vitrine.** Tout ici est du vrai code de prod (auth, système de licence, frontend, déploiement Docker) sauf `anon_engine.py`, le moteur de détection/anonymisation réel, remplacé par un stub respectant son interface publique. Voir [ARCHITECTURE.md](ARCHITECTURE.md) §4 pour ce qu'il fait sans exposer comment. Code source complet disponible sous licence commerciale : [contact@tokenveil.eu](mailto:contact@tokenveil.eu).
+> **Ceci est une copie vitrine.** Tout ici est du vrai code de prod (auth, système de licence, frontend, déploiement Docker, comptes IA multi-providers) sauf `anon_engine.py`, le moteur de détection/anonymisation réel, remplacé par un stub respectant son interface publique. Voir [ARCHITECTURE.md](ARCHITECTURE.md) §4 pour ce qu'il fait sans exposer comment. Code source complet disponible sous licence commerciale : [contact@tokenveil.eu](mailto:contact@tokenveil.eu).
 
 > Non affilié à, ni approuvé ni sponsorisé par Anthropic ou Google. "Claude" est une marque déposée d'Anthropic PBC, "Gemini" une marque de Google LLC. Ce projet est un client indépendant qui utilise ces modèles via l'abonnement/accès API propre de chaque utilisateur.
 

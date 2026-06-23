@@ -6,9 +6,9 @@
 
 **Status: Alpha (internal test build), public showcase repository**
 
-A self-hosted chat interface for Claude that automatically anonymizes sensitive data (PII, internal IPs, API keys/secrets, customer references, IBANs, credit card numbers...) before it reaches Claude, and transparently restores the real values in the response shown to the user. The real data never leaves your infrastructure.
+A self-hosted chat interface for Claude, Gemini, Vertex AI, Bedrock, OpenAI, and Mistral that automatically anonymizes sensitive data (PII, internal IPs, API keys/secrets, customer references, IBANs, credit card numbers...) before it reaches the LLM, and transparently restores the real values in the response shown to the user. The real data never leaves your infrastructure.
 
-> **This is a showcase copy.** Everything here is real production code (auth, licensing system, frontend, Docker deployment) except `anon_engine.py`, the actual anonymization/detection engine, which is replaced by a stub matching its public interface. See [ARCHITECTURE.md](ARCHITECTURE.md) §4 for what it does without exposing how. Full source available under a commercial license: [contact@tokenveil.eu](mailto:contact@tokenveil.eu).
+> **This is a showcase copy.** Everything here is real production code (auth, licensing system, frontend, Docker deployment, multi-provider AI accounts) except `anon_engine.py`, the actual anonymization/detection engine, which is replaced by a stub matching its public interface. See [ARCHITECTURE.md](ARCHITECTURE.md) §4 for what it does without exposing how. Full source available under a commercial license: [contact@tokenveil.eu](mailto:contact@tokenveil.eu).
 
 > Not affiliated with, endorsed by, or sponsored by Anthropic or Google. "Claude" is a trademark of Anthropic PBC, "Gemini" a trademark of Google LLC. This project is an independent client that uses these models through each user's own subscription/API access.
 

@@ -225,12 +225,23 @@ async def phone_home_loop():
 
 
 def seats_used() -> int | None:
-    """Mode local : nombre de comptes locaux créés. Mode LDAP : nombre de
-    membres du groupe LDAP_REQUIRE_GROUP_DN (None si pas configuré ou
-    requête LDAP en échec — dans ce cas l'appelant ne doit pas bloquer)."""
+    """Mode local : nombre de comptes locaux créés. Mode LDAP : somme des
+    membres de chaque groupe de tenant configuré (db.list_ldap_tenants()),
+    ou repli sur le groupe global LDAP_REQUIRE_GROUP_DN si aucun tenant
+    n'est défini. None si injoignable/pas configuré : l'appelant ne doit
+    pas bloquer sur une valeur inconnue."""
     import auth
     import db
     if auth.get_auth_backend() == "ldap":
+        tenants = db.list_ldap_tenants()
+        if tenants:
+            total = 0
+            for tenant in tenants:
+                count = auth.count_group_members(tenant["group_dn"])
+                if count is None:
+                    return None
+                total += count
+            return total
         return auth.count_ldap_group_members()
     return len(db.list_local_users())
 

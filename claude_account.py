@@ -14,6 +14,7 @@ import re
 import subprocess
 import time
 
+import anthropic
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
 
@@ -48,8 +49,23 @@ def _token_path(username: str) -> str:
     return os.path.join(_config_dir(username), "oauth_token.enc")
 
 
+def _api_key_path(username: str) -> str:
+    return os.path.join(_config_dir(username), "api_key.enc")
+
+
 def is_linked(username: str) -> bool:
-    return os.path.exists(_token_path(username))
+    return os.path.exists(_token_path(username)) or os.path.exists(_api_key_path(username))
+
+
+def link_method(username: str) -> str | None:
+    # un seul mode actif à la fois : la clé API gagne si les deux fichiers
+    # existent par accident (ne devrait pas arriver, link_api_key/submit_code
+    # retirent l'autre méthode à chaque liaison réussie)
+    if os.path.exists(_api_key_path(username)):
+        return "api_key"
+    if os.path.exists(_token_path(username)):
+        return "oauth_token"
+    return None
 
 
 def _save_token(username: str, token: str):
@@ -63,10 +79,48 @@ def _load_token(username: str) -> str:
         return _fernet.decrypt(f.read()).decode()
 
 
+def link_api_key(username: str, api_key: str):
+    """Liaison Claude par clé API classique (console.anthropic.com), pour
+    les comptes facturés à l'usage plutôt que par abonnement Pro/Max. Validée
+    par un appel minimal avant sauvegarde chiffrée."""
+    api_key = api_key.strip()
+    if not api_key:
+        raise RuntimeError("Clé API vide.")
+    client = anthropic.Anthropic(api_key=api_key)
+    try:
+        client.messages.create(model=DEFAULT_MODEL, max_tokens=8, messages=[{"role": "user", "content": "ping"}])
+    except Exception as e:
+        raise RuntimeError(_clean_api_error(str(e)))
+
+    path = _api_key_path(username)
+    with open(path, "wb") as f:
+        f.write(_fernet.encrypt(api_key.encode()))
+    os.chmod(path, 0o600)
+    # une seule méthode active : retire l'OAuth si l'utilisateur bascule
+    if os.path.exists(_token_path(username)):
+        os.remove(_token_path(username))
+
+
+def _load_api_key(username: str) -> str:
+    with open(_api_key_path(username), "rb") as f:
+        return _fernet.decrypt(f.read()).decode()
+
+
+def _clean_api_error(raw: str) -> str:
+    lowered = raw.lower()
+    if "401" in raw or "authentication" in lowered or "invalid x-api-key" in lowered:
+        return "Clé API Claude invalide ou révoquée."
+    if "429" in raw or "rate" in lowered:
+        return "Limite de quota Claude atteinte, réessaie plus tard."
+    if "529" in raw or "overloaded" in lowered:
+        return "Claude est temporairement surchargé côté Anthropic, réessaie dans un instant."
+    return f"Erreur Claude : {raw[:300]}"
+
+
 def unlink_account(username: str):
-    path = _token_path(username)
-    if os.path.exists(path):
-        os.remove(path)
+    for path in (_token_path(username), _api_key_path(username)):
+        if os.path.exists(path):
+            os.remove(path)
     _link_sessions.pop(username, None)
 
 
@@ -177,6 +231,8 @@ def submit_code(username: str, code: str) -> dict:
         raise RuntimeError("La liaison n'a pas abouti, recommence.")
 
     _save_token(username, token)
+    if os.path.exists(_api_key_path(username)):
+        os.remove(_api_key_path(username))
     return {"linked": True}
 
 
@@ -232,16 +288,18 @@ DEFAULT_MODEL = "claude-sonnet-4-6"
 
 
 def run_prompt(username: str, system_prompt: str, message: str, session_id: str = None,
-                model: str = DEFAULT_MODEL) -> dict:
-    """Envoie un message à Claude via le CLI, authentifié avec le compte
-    Pro/Max lié de `username`. Retourne {"text": ..., "session_id": ...}."""
-    if not is_linked(username):
+                model: str = DEFAULT_MODEL, history: list = None) -> dict:
+    """Envoie un message à Claude. Méthode oauth_token : via le CLI, avec
+    --resume pour la continuité de session côté serveur Anthropic. Méthode
+    api_key : appel direct SDK, sans état (history reconstruit comme pour
+    Gemini, voir _run_prompt_api_key)."""
+    method = link_method(username)
+    if method is None:
         raise RuntimeError("Aucun compte Claude lié pour cet utilisateur.")
     if model not in ALLOWED_MODELS:
-        # liste blanche stricte : `model` vient du payload JSON du frontend,
-        # jamais d'interpolation directe d'une valeur arbitraire dans les
-        # arguments du CLI
         model = DEFAULT_MODEL
+    if method == "api_key":
+        return _run_prompt_api_key(username, system_prompt, message, history, model)
 
     config_dir = _config_dir(username)
     token = _load_token(username)
@@ -280,18 +338,50 @@ def run_prompt(username: str, system_prompt: str, message: str, session_id: str 
     }
 
 
+def _run_prompt_api_key(username: str, system_prompt: str, message: str, history: list, model: str) -> dict:
+    client = anthropic.Anthropic(api_key=_load_api_key(username))
+    messages = [{"role": h["role"], "content": h["content"]} for h in (history or [])]
+    messages.append({"role": "user", "content": message})
+    try:
+        response = client.messages.create(model=model, max_tokens=4096, system=system_prompt, messages=messages)
+    except Exception as e:
+        raise RuntimeError(_clean_api_error(str(e)))
+    text = "".join(block.text for block in response.content if block.type == "text")
+    return {"text": text, "session_id": None}
+
+
+def _stream_prompt_api_key(username: str, system_prompt: str, message: str, history: list, model: str):
+    client = anthropic.Anthropic(api_key=_load_api_key(username))
+    messages = [{"role": h["role"], "content": h["content"]} for h in (history or [])]
+    messages.append({"role": "user", "content": message})
+    full_text = ""
+    try:
+        with client.messages.stream(model=model, max_tokens=4096, system=system_prompt, messages=messages) as stream:
+            for text in stream.text_stream:
+                full_text += text
+                yield {"delta": text}
+    except Exception as e:
+        raise RuntimeError(_clean_api_error(str(e)))
+    yield {"done": True, "text": full_text, "session_id": None}
+
+
 def stream_prompt(username: str, system_prompt: str, message: str, session_id: str = None,
-                   model: str = DEFAULT_MODEL):
+                   model: str = DEFAULT_MODEL, history: list = None):
     """Variante streaming de run_prompt : générateur qui yield des morceaux
     de texte (deltas) au fur et à mesure, puis un dict final {"done": True,
     "text": <texte complet>, "session_id": ...}. Repose sur le mode NDJSON
     --output-format stream-json (un événement JSON par ligne), avec
     --include-partial-messages pour recevoir les deltas de texte au lieu
-    d'attendre le message complet."""
-    if not is_linked(username):
+    d'attendre le message complet. Méthode api_key : délègue à
+    _stream_prompt_api_key (SDK direct, sans état)."""
+    method = link_method(username)
+    if method is None:
         raise RuntimeError("Aucun compte Claude lié pour cet utilisateur.")
     if model not in ALLOWED_MODELS:
         model = DEFAULT_MODEL
+    if method == "api_key":
+        yield from _stream_prompt_api_key(username, system_prompt, message, history, model)
+        return
 
     config_dir = _config_dir(username)
     token = _load_token(username)
@@ -355,8 +445,13 @@ def get_auth_status(username: str) -> dict:
     token setup-token est volontairement scope inférence-only par Anthropic :
     impossible d'obtenir email/plan/usage avec ce token (testé : 403
     permission_error sur /api/oauth/profile et /api/oauth/usage)."""
-    if not is_linked(username):
+    method = link_method(username)
+    if method is None:
         return {"loggedIn": False}
+    if method == "api_key":
+        # pas de CLI à interroger pour ce mode : la clé a déjà été validée
+        # par un appel réel au moment de la liaison (link_api_key)
+        return {"loggedIn": True, "authMethod": "api_key", "apiProvider": "direct"}
 
     config_dir = _config_dir(username)
     token = _load_token(username)

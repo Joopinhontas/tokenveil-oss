@@ -177,26 +177,31 @@ def authenticate(username: str, password: str) -> bool:
     return _authenticate_local(username, password)
 
 
-def count_ldap_group_members() -> int | None:
-    """Compte les membres du groupe LDAP_REQUIRE_GROUP_DN — c'est ce
-    nombre qui est comparé à max_seats de la licence. Retourne None si
-    LDAP_REQUIRE_GROUP_DN n'est pas configuré ou si la requête échoue
-    (réseau/permissions) : dans ce cas l'appelant ne doit PAS bloquer
-    l'accès sur une valeur inconnue."""
-    cfg = get_ldap_config()
-    group_dn = cfg.get("LDAP_REQUIRE_GROUP_DN")
-    if not group_dn:
-        return None
+def _ldap_server_conn(cfg: dict) -> "Connection":
     server_uri = cfg["LDAP_SERVER"]
     use_ssl = str(cfg["LDAP_USE_SSL"] or "false").strip().lower() == "true" or (server_uri or "").startswith(
         "ldaps://"
     )
+    server = Server(server_uri, use_ssl=use_ssl, get_info=ALL, connect_timeout=5)
+    return Connection(
+        server, user=cfg.get("LDAP_BIND_DN") or None, password=cfg.get("LDAP_BIND_PASSWORD") or None,
+        auto_bind=True, receive_timeout=5,
+    )
+
+
+def count_group_members(group_dn: str) -> int | None:
+    """Compte les membres d'un groupe LDAP quelconque (utilisé pour le
+    groupe global LDAP_REQUIRE_GROUP_DN comme pour chaque groupe de tenant).
+    Retourne None si le groupe n'existe pas ou si la requête échoue
+    (réseau/permissions) : dans ce cas l'appelant ne doit PAS bloquer
+    l'accès sur une valeur inconnue."""
+    if not group_dn:
+        return None
+    cfg = get_ldap_config()
+    if not cfg.get("LDAP_SERVER"):
+        return None
     try:
-        server = Server(server_uri, use_ssl=use_ssl, get_info=ALL, connect_timeout=5)
-        conn = Connection(
-            server, user=cfg.get("LDAP_BIND_DN") or None, password=cfg.get("LDAP_BIND_PASSWORD") or None,
-            auto_bind=True, receive_timeout=5,
-        )
+        conn = _ldap_server_conn(cfg)
         # member (groupOfNames/AD) et uniqueMember (groupOfUniqueNames) sont les
         # deux schémas de groupe les plus courants ; memberUid (posixGroup) n'a
         # pas de DN d'entrée donc pas de recherche BASE possible ici.
@@ -214,5 +219,67 @@ def count_ldap_group_members() -> int | None:
                 members.update(str(v) for v in entry[attr].values)
         conn.unbind()
         return len(members)
+    except LDAPException:
+        return None
+
+
+def count_ldap_group_members() -> int | None:
+    """Compte les membres du groupe global LDAP_REQUIRE_GROUP_DN — c'est ce
+    nombre qui est comparé à max_seats de la licence quand aucun tenant
+    n'est configuré (mode mono-groupe historique)."""
+    cfg = get_ldap_config()
+    return count_group_members(cfg.get("LDAP_REQUIRE_GROUP_DN"))
+
+
+def _resolve_user_dn(cfg: dict, username: str) -> str | None:
+    """Résout le DN d'un utilisateur via le compte de service, sans bind en
+    tant qu'utilisateur (pas besoin de son mot de passe) — utilisé pour la
+    résolution de tenant après une authentification déjà réussie."""
+    safe_username = escape_filter_chars(username)
+    user_dn_template = cfg.get("LDAP_USER_DN_TEMPLATE")
+    if user_dn_template:
+        return user_dn_template.format(username=safe_username)
+    if not cfg.get("LDAP_SERVER"):
+        return None
+    try:
+        conn = _ldap_server_conn(cfg)
+        search_filter = (cfg.get("LDAP_SEARCH_FILTER") or "(uid={username})").format(username=safe_username)
+        conn.search(search_base=cfg.get("LDAP_BASE_DN"), search_filter=search_filter, attributes=["cn"])
+        dn = conn.entries[0].entry_dn if len(conn.entries) == 1 else None
+        conn.unbind()
+        return dn
+    except LDAPException:
+        return None
+
+
+def get_user_tenant(username: str) -> dict | None:
+    """Renvoie le premier tenant (db.list_ldap_tenants()) dont le groupe
+    LDAP contient cet utilisateur, ou None si aucun tenant n'est configuré
+    ou si l'utilisateur n'appartient à aucun groupe de tenant. Un
+    utilisateur dans plusieurs groupes de tenant est rattaché au premier
+    trouvé (ordre alphabétique par nom, voir db.list_ldap_tenants)."""
+    import db
+    tenants = db.list_ldap_tenants()
+    if not tenants:
+        return None
+    cfg = get_ldap_config()
+    if not cfg.get("LDAP_SERVER"):
+        return None
+    user_dn = _resolve_user_dn(cfg, username)
+    if not user_dn:
+        return None
+    try:
+        conn = _ldap_server_conn(cfg)
+        for tenant in tenants:
+            conn.search(
+                search_base=tenant["group_dn"],
+                search_filter=f"(member={escape_filter_chars(user_dn)})",
+                attributes=["cn"], search_scope="BASE",
+            )
+            if len(conn.entries) > 0:
+                conn.unbind()
+                return tenant
+        conn.unbind()
+        return None
     except LDAPException:
         return None

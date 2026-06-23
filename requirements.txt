@@ -5,6 +5,9 @@ python-dotenv==1.2.2
 cryptography==49.0.0
 httpx==0.28.1
 google-genai==2.9.0
+anthropic[vertex,bedrock]==0.69.0
+openai==1.99.4
+mistralai==1.9.11
 ldap3==2.9.1
 presidio_analyzer==2.2.362
 presidio_anonymizer==2.2.362
