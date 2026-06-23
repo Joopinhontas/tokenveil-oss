@@ -145,6 +145,14 @@ def init_db():
                 value TEXT
             )"""
         )
+        c.execute(
+            """CREATE TABLE IF NOT EXISTS ldap_tenants (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                group_dn TEXT NOT NULL,
+                max_seats INTEGER NOT NULL
+            )"""
+        )
 
         # préférences personnelles par utilisateur (avatar, nom d'affichage,
         # thème, comportement de l'aperçu...) — jamais une politique de
@@ -340,6 +348,45 @@ def get_settings(keys: list) -> dict:
         return {r["key"]: r["value"] for r in rows}
 
 
+def list_ldap_tenants() -> list:
+    with _conn() as c:
+        rows = c.execute("SELECT id, name, group_dn, max_seats FROM ldap_tenants ORDER BY name").fetchall()
+        return [dict(r) for r in rows]
+
+
+def create_ldap_tenant(name: str, group_dn: str, max_seats: int) -> int:
+    with _conn() as c:
+        cur = c.execute(
+            "INSERT INTO ldap_tenants (name, group_dn, max_seats) VALUES (?, ?, ?)",
+            (name, group_dn, max_seats),
+        )
+        return cur.lastrowid
+
+
+def update_ldap_tenant(tenant_id: int, name: str, group_dn: str, max_seats: int):
+    with _conn() as c:
+        c.execute(
+            "UPDATE ldap_tenants SET name = ?, group_dn = ?, max_seats = ? WHERE id = ?",
+            (name, group_dn, max_seats, tenant_id),
+        )
+
+
+def delete_ldap_tenant(tenant_id: int):
+    with _conn() as c:
+        c.execute("DELETE FROM ldap_tenants WHERE id = ?", (tenant_id,))
+
+
+def get_disabled_entities() -> list:
+    """Catégories natives désactivées pour ce déploiement (réglage admin,
+    global à l'instance — pas par utilisateur)."""
+    raw = get_setting("disabled_entities")
+    return json.loads(raw) if raw else []
+
+
+def set_disabled_entities(entities: list):
+    set_setting("disabled_entities", json.dumps(list(entities)))
+
+
 @contextmanager
 def _conn():
     # WAL : les lecteurs ne bloquent plus les écrivains (et inversement) —
@@ -369,7 +416,7 @@ def _decrypt_mapping(blob) -> dict:
     return json.loads(_fernet.decrypt(bytes(blob)).decode())
 
 
-def create_conversation(title: str, username: str = None) -> int:
+def create_conversation(title: str, username: str) -> int:
     with _conn() as c:
         cur = c.execute(
             "INSERT INTO conversations (title, mapping_encrypted, created_at, username) VALUES (?, ?, ?, ?)",
@@ -378,19 +425,15 @@ def create_conversation(title: str, username: str = None) -> int:
         return cur.lastrowid
 
 
-def list_conversations(username: str = None):
+def list_conversations(username: str):
+    # pas de branche "sans filtre" : un appel sans username ne doit jamais
+    # pouvoir lister les conversations de tout le monde, même par erreur.
     with _conn() as c:
-        if username is None:
-            rows = c.execute(
-                "SELECT id, title, created_at, favorite FROM conversations "
-                "ORDER BY favorite DESC, created_at DESC"
-            ).fetchall()
-        else:
-            rows = c.execute(
-                "SELECT id, title, created_at, favorite FROM conversations WHERE username = ? "
-                "ORDER BY favorite DESC, created_at DESC",
-                (username,),
-            ).fetchall()
+        rows = c.execute(
+            "SELECT id, title, created_at, favorite FROM conversations WHERE username = ? "
+            "ORDER BY favorite DESC, created_at DESC",
+            (username,),
+        ).fetchall()
         return [dict(r) for r in rows]
 
 

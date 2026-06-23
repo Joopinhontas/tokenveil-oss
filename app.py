@@ -17,6 +17,10 @@ from pydantic import BaseModel
 import auth
 import claude_account
 import gemini_account
+import vertex_account
+import bedrock_account
+import openai_account
+import mistral_account
 import db
 import license as license_mod
 from anon_engine import AnonSession, scan_coverage
@@ -81,6 +85,26 @@ SYSTEM_PROMPT = (
     "blocage les plus probables en priorité. Va droit au fix, pas à l'inventaire."
 )
 
+# Nom complet de chaque langue pour l'instruction donnée au LLM — ajouter une
+# langue ne demande qu'une ligne ici (+ son entrée dans le dictionnaire i18n
+# front), rien d'autre à changer dans le code.
+LANGUAGE_NAMES = {
+    "fr": "French", "en": "English",
+}
+
+
+def build_system_prompt(username: str) -> str:
+    """Le prompt système est fixe, mais la langue de réponse suit la
+    préférence d'interface de l'utilisateur (réglée dans Profil > Général),
+    pas la langue du message envoyé — un message en anglais collé par un
+    utilisateur en mode FR doit revenir en français, et inversement."""
+    lang = db.get_user_preferences(username).get("language", "fr")
+    lang_name = LANGUAGE_NAMES.get(lang, lang)
+    return (
+        f"{SYSTEM_PROMPT}\n\nYou MUST always answer in {lang_name}, regardless of "
+        f"the language the user's message is written in."
+    )
+
 
 # Endpoints accessibles même sans licence valide (au-delà de la grace
 # period) : juste ce qu'il faut pour qu'un admin atteigne le panel licence
@@ -140,6 +164,43 @@ class GeminiLinkPayload(BaseModel):
     api_key: str
 
 
+class ClaudeApiKeyPayload(BaseModel):
+    api_key: str
+
+
+class VertexLinkPayload(BaseModel):
+    project_id: str
+    region: str
+    service_account_json: str
+
+
+class BedrockLinkPayload(BaseModel):
+    aws_access_key: str
+    aws_secret_key: str
+    aws_region: str
+
+
+class OpenAiLinkPayload(BaseModel):
+    api_key: str
+
+
+class MistralLinkPayload(BaseModel):
+    api_key: str
+
+
+# providers "sans état" (API directe, sans session serveur type --resume) :
+# l'historique anonymisé est reconstruit et réinjecté à chaque appel, comme
+# pour Gemini. Claude reste à part (branche dédiée plus bas) car son mode
+# OAuth/CLI a une vraie continuité de session côté serveur Anthropic.
+STATELESS_PROVIDERS = {
+    "gemini": gemini_account,
+    "vertex": vertex_account,
+    "bedrock": bedrock_account,
+    "openai": openai_account,
+    "mistral": mistral_account,
+}
+
+
 class LinkCode(BaseModel):
     code: str
 
@@ -169,6 +230,10 @@ class LicenseTokenPayload(BaseModel):
     token: str
 
 
+class EntitySettingsPayload(BaseModel):
+    disabled: list[str] = []
+
+
 class LdapConfigPayload(BaseModel):
     LDAP_SERVER: str = ""
     LDAP_BASE_DN: str = ""
@@ -178,6 +243,12 @@ class LdapConfigPayload(BaseModel):
     LDAP_USE_SSL: str = "false"
     LDAP_USER_DN_TEMPLATE: str = ""
     LDAP_REQUIRE_GROUP_DN: str = ""
+
+
+class LdapTenantPayload(BaseModel):
+    name: str
+    group_dn: str
+    max_seats: int
 
 
 class AuthBackendPayload(BaseModel):
@@ -200,12 +271,26 @@ def api_login(payload: LoginPayload, response: Response):
     # Pas de blocage de connexion ici : sans licence valide, le gate se fait
     # par endpoint dans check_auth (tout sauf /api/admin/license), pour que
     # n'importe quel admin puisse toujours se connecter et réparer.
-    if payload.username not in _sessions.values() and license_mod.over_seat_limit():
+    is_new_session = payload.username not in _sessions.values()
+    if is_new_session and license_mod.over_seat_limit():
         raise HTTPException(
             status_code=403,
             detail=f"Limite de licence atteinte ({license_mod.state.max_seats} utilisateurs max). "
                    f"Contactez votre administrateur pour augmenter le quota.",
         )
+    # Plafond par tenant : indépendant de la limite globale de licence
+    # ci-dessus — un tenant peut avoir sa propre sous-allocation de sièges
+    # (ex: "Équipe support : 10 sièges max sur les 50 licenciés").
+    if is_new_session and auth.get_auth_backend() == "ldap":
+        tenant = auth.get_user_tenant(payload.username)
+        if tenant:
+            tenant_count = auth.count_group_members(tenant["group_dn"])
+            if tenant_count is not None and tenant_count > tenant["max_seats"]:
+                raise HTTPException(
+                    status_code=403,
+                    detail=f"Limite de sièges atteinte pour \"{tenant['name']}\" ({tenant['max_seats']} max). "
+                           f"Contactez votre administrateur pour augmenter le quota de ce groupe.",
+                )
     token = secrets.token_urlsafe(32)
     _sessions[token] = payload.username
     response.set_cookie(
@@ -229,11 +314,92 @@ def api_account_status(username: str = Depends(check_auth)):
         "username": username,
         "role": db.get_user_role(username),
         "linked": linked,
+        "claude_link_method": claude_account.link_method(username),
         "auth_method": auth_status.get("authMethod"),
         "api_provider": auth_status.get("apiProvider"),
         "gemini_linked": gemini_account.is_linked(username),
         "gemini_link_method": gemini_account.link_method(username),
+        "vertex_linked": vertex_account.is_linked(username),
+        "bedrock_linked": bedrock_account.is_linked(username),
+        "openai_linked": openai_account.is_linked(username),
+        "mistral_linked": mistral_account.is_linked(username),
     }
+
+
+@app.post("/api/account/claude/api-key")
+def api_claude_link_api_key(payload: ClaudeApiKeyPayload, username: str = Depends(check_auth)):
+    """Liaison Claude par clé API classique (console.anthropic.com), pour
+    les comptes facturés à l'usage plutôt qu'un abonnement Pro/Max. N'affecte
+    pas le flow OAuth/CLI existant : une seule méthode active à la fois,
+    chacune retire l'autre automatiquement (voir claude_account.py)."""
+    try:
+        claude_account.link_api_key(username, payload.api_key)
+    except RuntimeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"linked": True}
+
+
+@app.post("/api/account/vertex/link")
+def api_vertex_link(payload: VertexLinkPayload, username: str = Depends(check_auth)):
+    try:
+        vertex_account.link_credentials(username, payload.project_id, payload.region, payload.service_account_json)
+    except RuntimeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"linked": True}
+
+
+@app.delete("/api/account/vertex/link")
+def api_vertex_unlink(username: str = Depends(check_auth)):
+    vertex_account.unlink_account(username)
+    return {"ok": True}
+
+
+@app.post("/api/account/bedrock/link")
+def api_bedrock_link(payload: BedrockLinkPayload, username: str = Depends(check_auth)):
+    try:
+        bedrock_account.link_credentials(username, payload.aws_access_key, payload.aws_secret_key, payload.aws_region)
+    except RuntimeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"linked": True}
+
+
+@app.delete("/api/account/bedrock/link")
+def api_bedrock_unlink(username: str = Depends(check_auth)):
+    bedrock_account.unlink_account(username)
+    return {"ok": True}
+
+
+@app.post("/api/account/openai/link")
+def api_openai_link(payload: OpenAiLinkPayload, username: str = Depends(check_auth)):
+    """Liaison OpenAI par clé API (platform.openai.com) : seule méthode
+    officiellement supportée pour un usage tiers, l'API et l'abonnement
+    ChatGPT consumer étant des systèmes de facturation séparés chez OpenAI."""
+    try:
+        openai_account.link_api_key(username, payload.api_key)
+    except RuntimeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"linked": True}
+
+
+@app.delete("/api/account/openai/link")
+def api_openai_unlink(username: str = Depends(check_auth)):
+    openai_account.unlink_account(username)
+    return {"ok": True}
+
+
+@app.post("/api/account/mistral/link")
+def api_mistral_link(payload: MistralLinkPayload, username: str = Depends(check_auth)):
+    try:
+        mistral_account.link_api_key(username, payload.api_key)
+    except RuntimeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"linked": True}
+
+
+@app.delete("/api/account/mistral/link")
+def api_mistral_unlink(username: str = Depends(check_auth)):
+    mistral_account.unlink_account(username)
+    return {"ok": True}
 
 
 @app.post("/api/account/gemini/link")
@@ -256,7 +422,7 @@ def api_gemini_unlink(username: str = Depends(check_auth)):
 
 PREFERENCE_KEYS = {
     "display_name", "avatar_color", "avatar_emoji", "theme",
-    "auto_preview", "compact_mode", "anonymize_default",
+    "auto_preview", "compact_mode", "anonymize_default", "language",
 }
 
 
@@ -499,6 +665,25 @@ def api_admin_uninstall_license(_: str = Depends(require_admin)):
     return summary
 
 
+@app.get("/api/admin/entity-settings")
+def api_admin_get_entity_settings(_: str = Depends(require_admin)):
+    from anon_engine import ENTITIES_OF_INTEREST
+    return {
+        "available": ENTITIES_OF_INTEREST,
+        "disabled": db.get_disabled_entities(),
+    }
+
+
+@app.post("/api/admin/entity-settings")
+def api_admin_set_entity_settings(payload: EntitySettingsPayload, _: str = Depends(require_admin)):
+    from anon_engine import ENTITIES_OF_INTEREST
+    unknown = set(payload.disabled) - set(ENTITIES_OF_INTEREST)
+    if unknown:
+        raise HTTPException(status_code=400, detail=f"Catégorie(s) inconnue(s) : {', '.join(unknown)}")
+    db.set_disabled_entities(payload.disabled)
+    return {"disabled": payload.disabled}
+
+
 @app.delete("/api/admin/users/{username}")
 def api_admin_delete_user(username: str, admin_username: str = Depends(require_admin)):
     if username == admin_username:
@@ -554,6 +739,40 @@ def api_admin_test_ldap(payload: LdapConfigPayload, _: str = Depends(require_adm
     return auth.test_ldap_connection(config)
 
 
+@app.get("/api/admin/ldap-tenants")
+def api_admin_list_ldap_tenants(_: str = Depends(require_admin)):
+    tenants = db.list_ldap_tenants()
+    for tenant in tenants:
+        tenant["current_count"] = auth.count_group_members(tenant["group_dn"])
+    return tenants
+
+
+@app.post("/api/admin/ldap-tenants")
+def api_admin_create_ldap_tenant(payload: LdapTenantPayload, _: str = Depends(require_admin)):
+    if not payload.name.strip() or not payload.group_dn.strip():
+        raise HTTPException(status_code=400, detail="Nom et DN de groupe requis.")
+    if payload.max_seats < 1:
+        raise HTTPException(status_code=400, detail="max_seats doit être >= 1.")
+    tenant_id = db.create_ldap_tenant(payload.name.strip(), payload.group_dn.strip(), payload.max_seats)
+    return {"id": tenant_id, "name": payload.name, "group_dn": payload.group_dn, "max_seats": payload.max_seats}
+
+
+@app.patch("/api/admin/ldap-tenants/{tenant_id}")
+def api_admin_update_ldap_tenant(tenant_id: int, payload: LdapTenantPayload, _: str = Depends(require_admin)):
+    if not payload.name.strip() or not payload.group_dn.strip():
+        raise HTTPException(status_code=400, detail="Nom et DN de groupe requis.")
+    if payload.max_seats < 1:
+        raise HTTPException(status_code=400, detail="max_seats doit être >= 1.")
+    db.update_ldap_tenant(tenant_id, payload.name.strip(), payload.group_dn.strip(), payload.max_seats)
+    return {"ok": True}
+
+
+@app.delete("/api/admin/ldap-tenants/{tenant_id}")
+def api_admin_delete_ldap_tenant(tenant_id: int, _: str = Depends(require_admin)):
+    db.delete_ldap_tenant(tenant_id)
+    return {"ok": True}
+
+
 @app.post("/api/admin/benchmark")
 def api_admin_benchmark(payload: BenchmarkPayload, username: str = Depends(require_admin)):
     """Benchmark sur des logs réels non-annotés : anonymise le texte collé et
@@ -561,7 +780,7 @@ def api_admin_benchmark(payload: BenchmarkPayload, username: str = Depends(requi
     anon_engine.scan_coverage). Ne sauvegarde rien — lecture seule."""
     if not payload.text.strip():
         raise HTTPException(status_code=400, detail="Texte vide.")
-    session = AnonSession(language=LANGUAGE, custom_terms=db.list_custom_terms_for_user(username))
+    session = AnonSession(language=LANGUAGE, custom_terms=db.list_custom_terms_for_user(username), disabled_entities=db.get_disabled_entities())
     anonymized = session.anonymize(payload.text)
     report = scan_coverage(payload.text, anonymized)
     report["anonymized_preview"] = anonymized[:4000]
@@ -635,7 +854,7 @@ def api_patch_conversation(conversation_id: int, payload: ConversationPatch, use
 def api_get_messages(conversation_id: int, username: str = Depends(check_auth)):
     _assert_owns(conversation_id, username)
     state = db.get_conversation_mapping(conversation_id)
-    session = AnonSession.from_state(state, language=LANGUAGE, custom_terms=db.list_custom_terms_for_user(username))
+    session = AnonSession.from_state(state, language=LANGUAGE, custom_terms=db.list_custom_terms_for_user(username), disabled_entities=db.get_disabled_entities())
     messages = db.get_messages(conversation_id)
     out = []
     for m in messages:
@@ -661,28 +880,28 @@ def api_anonymize_preview(conversation_id: int, payload: PreviewPayload, usernam
     if conversation_id:
         _assert_owns(conversation_id, username)
     state = db.get_conversation_mapping(conversation_id) if conversation_id else None
-    session = AnonSession.from_state(state or {}, language=LANGUAGE, custom_terms=db.list_custom_terms_for_user(username))
+    session = AnonSession.from_state(state or {}, language=LANGUAGE, custom_terms=db.list_custom_terms_for_user(username), disabled_entities=db.get_disabled_entities())
     return {"anonymized": session.anonymize(payload.content)}
 
 
 @app.post("/api/conversations/{conversation_id}/messages")
 def api_send_message(conversation_id: int, payload: NewMessage, username: str = Depends(check_auth)):
     _assert_owns(conversation_id, username)
-    provider = payload.provider if payload.provider in ("claude", "gemini") else "claude"
+    provider = payload.provider if payload.provider in ("claude", "gemini", "vertex", "bedrock", "openai", "mistral") else "claude"
 
     if provider == "claude" and not claude_account.is_linked(username):
         raise HTTPException(
             status_code=409,
             detail="Aucun compte Claude lié. Ouvre Préférences pour lier ton compte Pro/Max.",
         )
-    if provider == "gemini" and not gemini_account.is_linked(username):
+    if provider in STATELESS_PROVIDERS and not STATELESS_PROVIDERS[provider].is_linked(username):
         raise HTTPException(
             status_code=409,
-            detail="Aucun compte Gemini lié. Ouvre Préférences > Comptes IA pour ajouter ta clé API.",
+            detail=f"Aucun compte {provider.capitalize()} lié. Ouvre Préférences > Comptes IA pour le lier.",
         )
 
     state = db.get_conversation_mapping(conversation_id)
-    session = AnonSession.from_state(state, language=LANGUAGE, custom_terms=db.list_custom_terms_for_user(username))
+    session = AnonSession.from_state(state, language=LANGUAGE, custom_terms=db.list_custom_terms_for_user(username), disabled_entities=db.get_disabled_entities())
 
     if payload.anonymize:
         counts_before = dict(session.counters)
@@ -695,19 +914,19 @@ def api_send_message(conversation_id: int, payload: NewMessage, username: str = 
     db.add_message(conversation_id, "user", anonymized_user_msg)
 
     # historique anonymisé de la conversation (hors message qu'on vient
-    # d'ajouter) : reconstruit pour Gemini à chaque appel (API sans état), et
-    # réinjecté pour Claude UNIQUEMENT si on vient de changer d'IA (sinon sa
-    # propre session --resume porte déjà tout le contexte, pas besoin de
-    # ressasher l'historique à chaque tour).
+    # d'ajouter) : reconstruit pour les providers sans état à chaque appel,
+    # et réinjecté pour Claude OAuth/CLI UNIQUEMENT si on vient de changer
+    # d'IA (sinon sa propre session --resume porte déjà tout le contexte,
+    # pas besoin de ressasher l'historique à chaque tour).
     prior_messages = db.get_messages(conversation_id)[:-1]
     history = [{"role": m["role"], "content": m["anonymized_content"]} for m in prior_messages]
     last_provider = next((m["provider"] for m in reversed(prior_messages) if m["role"] == "assistant"), None)
     switched_provider = last_provider is not None and last_provider != provider
 
     try:
-        if provider == "gemini":
-            result = gemini_account.run_prompt(
-                username, SYSTEM_PROMPT, anonymized_user_msg, history=history, model=payload.model,
+        if provider in STATELESS_PROVIDERS:
+            result = STATELESS_PROVIDERS[provider].run_prompt(
+                username, build_system_prompt(username), anonymized_user_msg, history=history, model=payload.model,
             )
         else:
             claude_session_id = None if switched_provider else db.get_claude_session_id(conversation_id)
@@ -721,8 +940,8 @@ def api_send_message(conversation_id: int, payload: NewMessage, username: str = 
                     f"[Nouveau message]\n{anonymized_user_msg}"
                 )
             result = claude_account.run_prompt(
-                username, SYSTEM_PROMPT, claude_message,
-                session_id=claude_session_id, model=payload.model,
+                username, build_system_prompt(username), claude_message,
+                session_id=claude_session_id, model=payload.model, history=history,
             )
     except RuntimeError as e:
         raise HTTPException(status_code=502, detail=str(e))
@@ -754,15 +973,15 @@ def api_send_message_stream(conversation_id: int, payload: NewMessage, username:
     (pas juste le delta) : un placeholder type <EMAIL_ADDRESS_1> peut être
     coupé en deux par un chunk, se réécrire correctement dès le suivant."""
     _assert_owns(conversation_id, username)
-    provider = payload.provider if payload.provider in ("claude", "gemini") else "claude"
+    provider = payload.provider if payload.provider in ("claude", "gemini", "vertex", "bedrock", "openai", "mistral") else "claude"
 
     if provider == "claude" and not claude_account.is_linked(username):
         raise HTTPException(status_code=409, detail="Aucun compte Claude lié. Ouvre Préférences pour lier ton compte Pro/Max.")
-    if provider == "gemini" and not gemini_account.is_linked(username):
-        raise HTTPException(status_code=409, detail="Aucun compte Gemini lié. Ouvre Préférences > Comptes IA pour ajouter ta clé API.")
+    if provider in STATELESS_PROVIDERS and not STATELESS_PROVIDERS[provider].is_linked(username):
+        raise HTTPException(status_code=409, detail=f"Aucun compte {provider.capitalize()} lié. Ouvre Préférences > Comptes IA pour le lier.")
 
     state = db.get_conversation_mapping(conversation_id)
-    session = AnonSession.from_state(state, language=LANGUAGE, custom_terms=db.list_custom_terms_for_user(username))
+    session = AnonSession.from_state(state, language=LANGUAGE, custom_terms=db.list_custom_terms_for_user(username), disabled_entities=db.get_disabled_entities())
 
     if payload.anonymize:
         counts_before = dict(session.counters)
@@ -781,9 +1000,9 @@ def api_send_message_stream(conversation_id: int, payload: NewMessage, username:
 
     def event_stream():
         try:
-            if provider == "gemini":
-                generator = gemini_account.stream_prompt(
-                    username, SYSTEM_PROMPT, anonymized_user_msg, history=history, model=payload.model,
+            if provider in STATELESS_PROVIDERS:
+                generator = STATELESS_PROVIDERS[provider].stream_prompt(
+                    username, build_system_prompt(username), anonymized_user_msg, history=history, model=payload.model,
                 )
             else:
                 claude_session_id = None if switched_provider else db.get_claude_session_id(conversation_id)
@@ -797,8 +1016,8 @@ def api_send_message_stream(conversation_id: int, payload: NewMessage, username:
                         f"[Nouveau message]\n{anonymized_user_msg}"
                     )
                 generator = claude_account.stream_prompt(
-                    username, SYSTEM_PROMPT, claude_message,
-                    session_id=claude_session_id, model=payload.model,
+                    username, build_system_prompt(username), claude_message,
+                    session_id=claude_session_id, model=payload.model, history=history,
                 )
 
             result_session_id = None

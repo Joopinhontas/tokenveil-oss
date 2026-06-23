@@ -681,8 +681,9 @@
   .cmd-copy-btn svg { width: 14px; height: 14px; }
   .cmd-copy-btn:hover { opacity: 1; background: rgba(255,255,255,0.08); }
   .cmd-copy-btn.copied { color: #8fc97a; opacity: 1; }
-  #settings-add-row, #admin-add-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-  #settings-term-input, #settings-label-input, #admin-user-input, #admin-pass-input, #admin-role-input {
+  #settings-add-row, #admin-add-row, #tenants-add-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  #settings-term-input, #settings-label-input, #admin-user-input, #admin-pass-input, #admin-role-input,
+  #tenant-name-input, #tenant-dn-input, #tenant-seats-input {
     flex: 1;
     min-width: 140px;
     background: var(--bg);
@@ -885,6 +886,8 @@
     font-size: 12px; cursor: pointer; color: var(--text-dim); font-family: inherit;
   }
   #pref-theme-segmented button.active { background: var(--accent); color: #fff; }
+  #pref-lang-select { display: none; }
+  .pref-row #pref-lang-select + .custom-select-btn { margin-left: auto; min-width: 130px; }
   body.compact-mode .msg-row { margin-bottom: 14px; gap: 9px; }
   body.compact-mode .avatar { width: 22px; height: 22px; margin-top: 0; }
   body.compact-mode .msg-row.user .msg-content { padding: 7px 11px; }
@@ -903,11 +906,68 @@
   #profile-modal-body { padding: 18px; font-size: 13.5px; color: var(--text-dim); line-height: 1.5; flex: 1; max-height: 70vh; overflow-y: auto; }
   #profile-modal-body p { margin: 0 0 10px 0; }
   #profile-modal-username { color: var(--text); }
-  .ai-account-section-title {
-    font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em;
-    color: var(--text-faint); font-weight: 700; margin: 22px 0 12px 0;
+  /* --- Comptes IA : cartes pliables, une par provider --- */
+  #ai-providers-list { display: flex; flex-direction: column; gap: 8px; }
+  .ai-provider-card {
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    background: var(--surface); overflow: hidden;
   }
-  .ai-account-section-title:first-child { margin-top: 0; }
+  .ai-provider-header {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    padding: 12px 14px; background: none; border: none; cursor: pointer;
+    text-align: left; font-family: inherit; color: var(--text);
+    transition: background-color 150ms ease;
+  }
+  .ai-provider-header:hover { background: var(--bg); }
+  .ai-provider-mark {
+    width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--accent-soft); color: var(--accent);
+  }
+  .ai-provider-mark svg { width: 18px; height: 18px; }
+  .ai-provider-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .ai-provider-name { font-size: 13.5px; font-weight: 600; color: var(--text); }
+  .ai-provider-sub {
+    font-size: 11.5px; color: var(--text-faint);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ai-provider-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong);
+    flex-shrink: 0; transition: background-color 200ms ease;
+  }
+  .ai-provider-dot.linked { background: #4caf6e; }
+  .ai-provider-chevron {
+    width: 16px; height: 16px; color: var(--text-faint); flex-shrink: 0;
+    transition: transform 200ms ease-out;
+  }
+  .ai-provider-card.expanded .ai-provider-chevron { transform: rotate(180deg); }
+  .ai-provider-body {
+    display: grid; grid-template-rows: minmax(0, 0fr); transition: grid-template-rows 220ms ease-out;
+  }
+  .ai-provider-card.expanded .ai-provider-body { grid-template-rows: minmax(0, 1fr); }
+  .ai-provider-body-inner {
+    min-height: 0; overflow: hidden;
+    padding: 0 14px 16px 14px; border-top: 1px solid var(--border);
+    margin-top: 1px; padding-top: 14px;
+  }
+  .ai-method-switch {
+    display: flex; gap: 2px; background: var(--bg); border: 1px solid var(--border-strong);
+    border-radius: 999px; padding: 2px; margin-bottom: 14px; width: fit-content;
+  }
+  .ai-method-switch button {
+    border: none; background: none; padding: 5px 12px; border-radius: 999px;
+    font-size: 12px; cursor: pointer; color: var(--text-dim); font-family: inherit;
+  }
+  .ai-method-switch button.active { background: var(--accent); color: #fff; }
+  .ai-cloud-form { display: flex; flex-direction: column; gap: 10px; }
+  .ai-cloud-form label { font-size: 12px; font-weight: 600; color: var(--text-dim); }
+  .ai-cloud-form input, .ai-cloud-form textarea {
+    width: 100%; background: var(--bg); border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm); padding: 8px 10px; font-size: 13px; color: var(--text);
+    font-family: inherit;
+  }
+  .ai-cloud-form textarea { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 11.5px; resize: vertical; min-height: 70px; }
+  .ai-cloud-form input:focus, .ai-cloud-form textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
   #gemini-link-status { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 13px; color: var(--text-dim); }
   #gemini-link-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-faint); flex-shrink: 0; }
   #gemini-link-status .dot.linked { background: #5a9c6a; }
@@ -1461,6 +1521,8 @@
     color: var(--text-faint); font-weight: 700; padding: 6px 10px 3px 10px;
   }
   .model-group-separator { height: 1px; background: var(--border); margin: 4px 6px; }
+  .model-provider-group { display: contents; }
+  .model-provider-group[hidden] { display: none; }
   #input-hint {
     font-size: 11.5px;
     color: var(--text-faint);
@@ -1597,31 +1659,31 @@
     <div id="sidebar-header">
       <button id="new-chat-btn" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-        Nouvelle conversation
+        <span data-i18n="new_conversation">Nouvelle conversation</span>
       </button>
     </div>
-    <div id="conversations-label">Historique</div>
+    <div id="conversations-label" data-i18n="conv_history_label">Historique</div>
     <div id="conversations"></div>
     <div id="sidebar-footer">
       <button id="admin-btn" type="button" title="Administration" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6l-8-4Z"/></svg>
-        <span>Administration</span>
+        <span data-i18n="admin">Administration</span>
       </button>
       <button id="settings-btn" type="button" title="Réglages d'anonymisation">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span>Mots-clés à anonymiser</span>
+        <span data-i18n="keywords_to_anonymize">Mots-clés à anonymiser</span>
       </button>
       <button id="profile-btn" type="button">
         <span class="profile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
         <span class="profile-text">
-          <span id="profile-username">Profil</span>
-          <span id="profile-status">Compte Claude non lié</span>
+          <span id="profile-username" data-i18n="profile">Profil</span>
+          <span id="profile-status" data-i18n="claude_not_linked">Compte Claude non lié</span>
         </span>
         <span id="profile-dot" class="dot" aria-hidden="true"></span>
       </button>
       <button id="logout-btn" type="button" title="Déconnexion">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-        <span>Déconnexion</span>
+        <span data-i18n="logout">Déconnexion</span>
       </button>
       <p id="not-affiliated-disclaimer">Non affilié à Anthropic ou Google. "Claude" est une marque d'Anthropic PBC, "Gemini" une marque de Google LLC.</p>
     </div>
@@ -1643,7 +1705,7 @@
   <div id="profile-overlay" hidden>
     <div id="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
       <div id="profile-modal-header">
-        <h2 id="profile-modal-title">Préférences</h2>
+        <h2 id="profile-modal-title" data-i18n="preferences">Préférences</h2>
         <button id="profile-close-btn" type="button" aria-label="Fermer">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
@@ -1652,27 +1714,27 @@
         <div id="profile-nav">
           <button class="profile-nav-btn active" type="button" data-profile-tab="general">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            Général
+            <span data-i18n="general_tab">Général</span>
           </button>
           <button class="profile-nav-btn" type="button" data-profile-tab="history">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
-            Historique
+            <span data-i18n="history_tab">Historique</span>
           </button>
           <button class="profile-nav-btn" type="button" data-profile-tab="account">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3M3 21l2.5-2.5M9 15l-2 2-3-3 6-6 3 3-1.5 1.5"/></svg>
-            Comptes IA
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M9 2v2M9 20v2M2 15h2M2 9h2M20 15h2M20 9h2"/></svg>
+            <span data-i18n="ai_accounts_tab">Comptes IA</span>
           </button>
         </div>
         <div id="profile-modal-body">
           <div id="profile-tab-general" class="profile-tab-panel">
             <div class="pref-section">
-              <h3>Profil</h3>
+              <h3 data-i18n="profile">Profil</h3>
               <div id="pref-avatar-row">
                 <button id="pref-avatar-btn" type="button" aria-label="Changer l'avatar">
                   <span id="pref-avatar-preview"></span>
                 </button>
                 <label class="pref-field" style="flex:1; margin-bottom:0;">
-                  <span class="pref-field-label">Nom d'affichage</span>
+                  <span class="pref-field-label" data-i18n="display_name">Nom d'affichage</span>
                   <input id="pref-display-name-input" type="text" maxlength="40" placeholder="Ton nom" autocomplete="off" />
                 </label>
               </div>
@@ -1682,18 +1744,25 @@
             </div>
 
             <div class="pref-section">
-              <h3>Apparence</h3>
+              <h3 data-i18n="appearance">Apparence</h3>
               <div class="pref-row">
-                <span class="pref-row-label">Thème</span>
+                <span class="pref-row-label">Langue / Language</span>
+                <select id="pref-lang-select">
+                  <option value="fr">Français</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+              <div class="pref-row">
+                <span class="pref-row-label" data-i18n="theme">Thème</span>
                 <div id="pref-theme-segmented" class="segmented">
-                  <button type="button" data-theme-choice="system">Système</button>
-                  <button type="button" data-theme-choice="light">Clair</button>
-                  <button type="button" data-theme-choice="dark">Sombre</button>
+                  <button type="button" data-theme-choice="system" data-i18n="theme_system">Système</button>
+                  <button type="button" data-theme-choice="light" data-i18n="theme_light">Clair</button>
+                  <button type="button" data-theme-choice="dark" data-i18n="theme_dark">Sombre</button>
                 </div>
               </div>
               <div class="pref-row">
-                <span class="pref-row-label">Mode compact</span>
-                <span class="pref-row-hint">Messages plus rapprochés, pour voir plus de conversation à l'écran.</span>
+                <span class="pref-row-label" data-i18n="compact_mode">Mode compact</span>
+                <span class="pref-row-hint" data-i18n="compact_mode_hint">Messages plus rapprochés, pour voir plus de conversation à l'écran.</span>
                 <label class="pref-switch">
                   <input id="pref-compact-toggle" type="checkbox" />
                   <span class="pref-switch-track"></span>
@@ -1702,18 +1771,18 @@
             </div>
 
             <div class="pref-section">
-              <h3>Comportement</h3>
+              <h3 data-i18n="behavior">Comportement</h3>
               <div class="pref-row">
-                <span class="pref-row-label">Aperçu automatique</span>
-                <span class="pref-row-hint">Affiche l'anonymisation en temps réel pendant la frappe. Toujours accessible via l'œil sinon.</span>
+                <span class="pref-row-label" data-i18n="auto_preview">Aperçu automatique</span>
+                <span class="pref-row-hint" data-i18n="auto_preview_hint">Affiche l'anonymisation en temps réel pendant la frappe. Toujours accessible via l'œil sinon.</span>
                 <label class="pref-switch">
                   <input id="pref-auto-preview-toggle" type="checkbox" />
                   <span class="pref-switch-track"></span>
                 </label>
               </div>
               <div class="pref-row">
-                <span class="pref-row-label">"Message sensible" activé par défaut</span>
-                <span class="pref-row-hint">Désactive si tes messages n'ont en général rien à cacher. Reste modifiable à tout moment sous le champ de saisie.</span>
+                <span class="pref-row-label" data-i18n="sensitive_default">"Message sensible" activé par défaut</span>
+                <span class="pref-row-hint" data-i18n="sensitive_default_hint">Désactive si tes messages n'ont en général rien à cacher. Reste modifiable à tout moment sous le champ de saisie.</span>
                 <label class="pref-switch">
                   <input id="pref-anonymize-default-toggle" type="checkbox" />
                   <span class="pref-switch-track"></span>
@@ -1724,15 +1793,15 @@
           </div>
 
           <div id="profile-tab-history" class="profile-tab-panel" hidden>
-            <p class="settings-hint">Gère toutes tes conversations d'un coup : sélection multiple pour supprimer, mettre en favoris ou retirer des favoris en masse.</p>
+            <p class="settings-hint" data-i18n="history_hint">Gère toutes tes conversations d'un coup : sélection multiple pour supprimer, mettre en favoris ou retirer des favoris en masse.</p>
             <div id="history-bulk-bar">
               <label id="history-select-all-label">
-                <input id="history-select-all" type="checkbox" /> Tout sélectionner
+                <input id="history-select-all" type="checkbox" /> <span data-i18n="select_all">Tout sélectionner</span>
               </label>
               <div id="history-bulk-actions" hidden>
-                <button id="history-bulk-favorite-btn" type="button" class="ghost-btn">Ajouter aux favoris</button>
-                <button id="history-bulk-unfavorite-btn" type="button" class="ghost-btn">Retirer des favoris</button>
-                <button id="history-bulk-delete-btn" type="button" class="danger-btn" style="width:auto; margin-top:0;">Supprimer la sélection</button>
+                <button id="history-bulk-favorite-btn" type="button" class="ghost-btn" data-i18n="add_to_favorites">Ajouter aux favoris</button>
+                <button id="history-bulk-unfavorite-btn" type="button" class="ghost-btn" data-i18n="remove_from_favorites">Retirer des favoris</button>
+                <button id="history-bulk-delete-btn" type="button" class="danger-btn" style="width:auto; margin-top:0;" data-i18n="delete_selection">Supprimer la sélection</button>
               </div>
             </div>
             <p id="history-error" class="error-text" hidden></p>
@@ -1740,56 +1809,202 @@
           </div>
 
           <div id="profile-tab-account" class="profile-tab-panel" hidden>
-            <h3 class="ai-account-section-title">Claude</h3>
-            <div id="profile-step-status">
-              <p>Connecté en tant que <strong id="profile-modal-username"></strong>.</p>
-              <p id="profile-link-state">Vérification du lien Claude…</p>
-              <div id="profile-auth-info" hidden></div>
-              <button id="profile-link-btn" type="button" class="primary-btn">Lier mon compte Claude Pro/Max</button>
-              <button id="profile-status-start-btn" type="button" class="primary-btn" hidden>Commencer à discuter</button>
-              <button id="profile-unlink-btn" type="button" class="danger-btn" hidden>Délier mon compte</button>
-            </div>
-            <div id="profile-step-url" hidden>
-              <p>Ouvre ce lien, connecte-toi avec ton compte Claude Pro ou Max, puis autorise l'accès :</p>
-              <a id="profile-auth-link" target="_blank" rel="noopener"></a>
-              <p>Une fois autorisé, colle ici le code affiché :</p>
-              <input id="profile-code-input" type="text" placeholder="Code de validation" autocomplete="off" />
-              <div class="profile-actions">
-                <button id="profile-submit-code-btn" type="button" class="primary-btn">Valider</button>
-                <button id="profile-cancel-link-btn" type="button" class="ghost-btn">Annuler</button>
-              </div>
-            </div>
-            <div id="profile-step-success" hidden>
-              <div id="profile-success-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-              </div>
-              <p id="profile-success-title">Compte lié avec succès</p>
-              <p>Tes messages passent désormais par ton abonnement Claude Pro/Max, sans clé API facturée.</p>
-              <button id="profile-start-btn" type="button" class="primary-btn">Commencer à discuter</button>
-            </div>
-            <p id="profile-error" class="error-text" hidden></p>
+            <p class="settings-hint" style="margin-bottom:14px;">
+              <span data-i18n="ai_accounts_intro_prefix">Connecté en tant que</span>
+              <strong id="profile-modal-username"></strong>.
+              <span data-i18n="ai_accounts_intro_suffix">Lie un ou plusieurs comptes IA ci-dessous, change de modèle à tout moment dans le sélecteur du chat.</span>
+            </p>
+            <div id="ai-providers-list">
 
-            <h3 class="ai-account-section-title">Gemini</h3>
-            <div id="gemini-link-status">
-              <span id="gemini-status-dot" class="dot" aria-hidden="true"></span>
-              <span id="gemini-status-text">Vérification du lien Gemini…</span>
-            </div>
+              <div class="ai-provider-card" data-provider-card="claude">
+                <button class="ai-provider-header" type="button" aria-expanded="false">
+                  <span class="ai-provider-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4 4 12l6 8"/><path d="M14 4l6 8-6 8"/></svg></span>
+                  <span class="ai-provider-info">
+                    <span class="ai-provider-name">Claude</span>
+                    <span class="ai-provider-sub" id="claude-status-text" data-i18n="checking_claude_link">Vérification du lien Claude…</span>
+                  </span>
+                  <span class="ai-provider-dot" id="claude-status-dot" aria-hidden="true"></span>
+                  <svg class="ai-provider-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="ai-provider-body">
+                  <div class="ai-provider-body-inner">
 
-            <div id="gemini-step-apikey">
-              <p class="settings-hint" style="margin-bottom:10px;">
-                Colle une clé API générée sur
-                <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com</a>
-                (connexion avec ton compte Google). Gratuit sur les modèles Flash, sans carte bancaire ; Gemini 2.5 Pro
-                nécessite la facturation activée côté Google (pas évitable depuis l'app).
-              </p>
-              <div id="gemini-link-form">
-                <input id="gemini-api-key-input" type="password" placeholder="Clé API Gemini" autocomplete="off" />
-                <button id="gemini-link-btn" type="button" class="primary-btn">Lier ma clé Gemini</button>
+                    <div id="claude-method-switch" class="ai-method-switch">
+                      <button type="button" data-claude-method="oauth_token" data-i18n="claude_method_oauth">Abonnement Pro/Max</button>
+                      <button type="button" data-claude-method="api_key" data-i18n="claude_method_apikey">Clé API</button>
+                    </div>
+
+                    <div id="claude-oauth-panel">
+                      <div id="profile-step-status">
+                        <div id="profile-auth-info" hidden></div>
+                        <button id="profile-link-btn" type="button" class="primary-btn" data-i18n="link_claude_account">Lier mon compte Claude Pro/Max</button>
+                        <button id="profile-unlink-btn" type="button" class="danger-btn" hidden data-i18n="unlink_account">Délier mon compte</button>
+                      </div>
+                      <div id="profile-step-url" hidden>
+                        <p data-i18n="open_link_authorize">Ouvre ce lien, connecte-toi avec ton compte Claude Pro ou Max, puis autorise l'accès :</p>
+                        <a id="profile-auth-link" target="_blank" rel="noopener"></a>
+                        <p data-i18n="paste_code_here">Une fois autorisé, colle ici le code affiché :</p>
+                        <input id="profile-code-input" type="text" placeholder="Code de validation" data-i18n-placeholder="validation_code" autocomplete="off" />
+                        <div class="profile-actions">
+                          <button id="profile-submit-code-btn" type="button" class="primary-btn" data-i18n="validate">Valider</button>
+                          <button id="profile-cancel-link-btn" type="button" class="ghost-btn" data-i18n="cancel">Annuler</button>
+                        </div>
+                      </div>
+                      <div id="profile-step-success" hidden>
+                        <div id="profile-success-icon" aria-hidden="true">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                        </div>
+                        <p id="profile-success-title" data-i18n="account_linked_success">Compte lié avec succès</p>
+                        <p data-i18n="messages_via_subscription">Tes messages passent désormais par ton abonnement Claude Pro/Max, sans clé API facturée.</p>
+                      </div>
+                    </div>
+
+                    <div id="claude-apikey-panel" hidden>
+                      <p class="settings-hint" style="margin-bottom:10px;" data-i18n="claude_apikey_hint">Colle une clé API générée sur console.anthropic.com. Facturée à l'usage, indépendante d'un abonnement Pro/Max.</p>
+                      <div class="ai-cloud-form">
+                        <input id="claude-api-key-input" type="password" placeholder="sk-ant-..." autocomplete="off" />
+                        <button id="claude-apikey-link-btn" type="button" class="primary-btn" data-i18n="link_claude_apikey">Lier cette clé</button>
+                      </div>
+                    </div>
+
+                    <p id="profile-error" class="error-text" hidden></p>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <button id="gemini-unlink-btn" type="button" class="danger-btn" hidden>Délier mon compte Gemini</button>
-            <p id="gemini-error" class="error-text" hidden></p>
+              <div class="ai-provider-card" data-provider-card="gemini">
+                <button class="ai-provider-header" type="button" aria-expanded="false">
+                  <span class="ai-provider-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>
+                  <span class="ai-provider-info">
+                    <span class="ai-provider-name">Gemini</span>
+                    <span class="ai-provider-sub" id="gemini-status-text" data-i18n="checking_gemini_link">Vérification du lien Gemini…</span>
+                  </span>
+                  <span class="ai-provider-dot" id="gemini-status-dot" aria-hidden="true"></span>
+                  <svg class="ai-provider-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="ai-provider-body">
+                  <div class="ai-provider-body-inner">
+                    <div id="gemini-step-apikey">
+                      <p class="settings-hint" style="margin-bottom:10px;" data-i18n="gemini_apikey_hint">
+                        Colle une clé API générée sur
+                        <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com</a>
+                        (connexion avec ton compte Google). Gratuit sur les modèles Flash, sans carte bancaire ; Gemini 2.5 Pro
+                        nécessite la facturation activée côté Google.
+                      </p>
+                      <div class="ai-cloud-form">
+                        <input id="gemini-api-key-input" type="password" placeholder="Clé API Gemini" data-i18n-placeholder="gemini_api_key" autocomplete="off" />
+                        <button id="gemini-link-btn" type="button" class="primary-btn" data-i18n="link_gemini_key">Lier ma clé Gemini</button>
+                      </div>
+                    </div>
+                    <button id="gemini-unlink-btn" type="button" class="danger-btn" hidden data-i18n="unlink_gemini">Délier mon compte Gemini</button>
+                    <p id="gemini-error" class="error-text" hidden></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ai-provider-card" data-provider-card="vertex">
+                <button class="ai-provider-header" type="button" aria-expanded="false">
+                  <span class="ai-provider-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>
+                  <span class="ai-provider-info">
+                    <span class="ai-provider-name">Vertex AI</span>
+                    <span class="ai-provider-sub" id="vertex-status-text" data-i18n="not_linked">Non lié</span>
+                  </span>
+                  <span class="ai-provider-dot" id="vertex-status-dot" aria-hidden="true"></span>
+                  <svg class="ai-provider-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="ai-provider-body">
+                  <div class="ai-provider-body-inner">
+                    <p class="settings-hint" style="margin-bottom:10px;" data-i18n="vertex_hint">Claude facturé sur ton compte Google Cloud. Colle le JSON de clé d'un service account avec le rôle <code>aiplatform.user</code>.</p>
+                    <div class="ai-cloud-form">
+                      <label data-i18n="project_id_label">Project ID</label>
+                      <input id="vertex-project-input" type="text" placeholder="mon-projet-gcp" autocomplete="off" />
+                      <label data-i18n="region_label">Région</label>
+                      <input id="vertex-region-input" type="text" placeholder="us-east5" autocomplete="off" />
+                      <label data-i18n="service_account_json_label">JSON du service account</label>
+                      <textarea id="vertex-sa-input" rows="4" placeholder='{"type": "service_account", ...}'></textarea>
+                      <button id="vertex-link-btn" type="button" class="primary-btn" data-i18n="link_vertex">Lier ce compte</button>
+                    </div>
+                    <button id="vertex-unlink-btn" type="button" class="danger-btn" hidden data-i18n="unlink_vertex" style="margin-top:10px;">Délier Vertex AI</button>
+                    <p id="vertex-error" class="error-text" hidden></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ai-provider-card" data-provider-card="bedrock">
+                <button class="ai-provider-header" type="button" aria-expanded="false">
+                  <span class="ai-provider-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.27 6.96 8.73 5.05 8.73-5.05"/><path d="M12 22.08V12"/></svg></span>
+                  <span class="ai-provider-info">
+                    <span class="ai-provider-name">Amazon Bedrock</span>
+                    <span class="ai-provider-sub" id="bedrock-status-text" data-i18n="not_linked">Non lié</span>
+                  </span>
+                  <span class="ai-provider-dot" id="bedrock-status-dot" aria-hidden="true"></span>
+                  <svg class="ai-provider-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="ai-provider-body">
+                  <div class="ai-provider-body-inner">
+                    <p class="settings-hint" style="margin-bottom:10px;" data-i18n="bedrock_hint">Claude facturé sur ton compte AWS. Identifiants d'un utilisateur IAM avec la permission <code>bedrock:InvokeModel</code>.</p>
+                    <div class="ai-cloud-form">
+                      <label data-i18n="aws_access_key_label">Access key ID</label>
+                      <input id="bedrock-access-key-input" type="text" placeholder="AKIA..." autocomplete="off" />
+                      <label data-i18n="aws_secret_key_label">Secret access key</label>
+                      <input id="bedrock-secret-key-input" type="password" autocomplete="off" />
+                      <label data-i18n="aws_region_label">Région</label>
+                      <input id="bedrock-region-input" type="text" placeholder="us-east-1" autocomplete="off" />
+                      <button id="bedrock-link-btn" type="button" class="primary-btn" data-i18n="link_bedrock">Lier ce compte</button>
+                    </div>
+                    <button id="bedrock-unlink-btn" type="button" class="danger-btn" hidden data-i18n="unlink_bedrock" style="margin-top:10px;">Délier Bedrock</button>
+                    <p id="bedrock-error" class="error-text" hidden></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ai-provider-card" data-provider-card="openai">
+                <button class="ai-provider-header" type="button" aria-expanded="false">
+                  <span class="ai-provider-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+                  <span class="ai-provider-info">
+                    <span class="ai-provider-name">OpenAI</span>
+                    <span class="ai-provider-sub" id="openai-status-text" data-i18n="not_linked">Non lié</span>
+                  </span>
+                  <span class="ai-provider-dot" id="openai-status-dot" aria-hidden="true"></span>
+                  <svg class="ai-provider-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="ai-provider-body">
+                  <div class="ai-provider-body-inner">
+                    <p class="settings-hint" style="margin-bottom:10px;" data-i18n="openai_hint">Colle une clé API générée sur platform.openai.com. Pas d'abonnement ChatGPT Plus possible ici : OpenAI sépare strictement abonnement consumer et facturation API.</p>
+                    <div class="ai-cloud-form">
+                      <input id="openai-api-key-input" type="password" placeholder="sk-..." autocomplete="off" />
+                      <button id="openai-link-btn" type="button" class="primary-btn" data-i18n="link_openai">Lier cette clé</button>
+                    </div>
+                    <button id="openai-unlink-btn" type="button" class="danger-btn" hidden data-i18n="unlink_openai" style="margin-top:10px;">Délier OpenAI</button>
+                    <p id="openai-error" class="error-text" hidden></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ai-provider-card" data-provider-card="mistral">
+                <button class="ai-provider-header" type="button" aria-expanded="false">
+                  <span class="ai-provider-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span>
+                  <span class="ai-provider-info">
+                    <span class="ai-provider-name">Mistral AI</span>
+                    <span class="ai-provider-sub" id="mistral-status-text" data-i18n="not_linked">Non lié</span>
+                  </span>
+                  <span class="ai-provider-dot" id="mistral-status-dot" aria-hidden="true"></span>
+                  <svg class="ai-provider-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="ai-provider-body">
+                  <div class="ai-provider-body-inner">
+                    <p class="settings-hint" style="margin-bottom:10px;" data-i18n="mistral_hint">Colle une clé API générée sur console.mistral.ai. Pas d'abonnement Le Chat Pro possible ici : Mistral sépare strictement abonnement consumer et facturation API.</p>
+                    <div class="ai-cloud-form">
+                      <input id="mistral-api-key-input" type="password" placeholder="..." autocomplete="off" />
+                      <button id="mistral-link-btn" type="button" class="primary-btn" data-i18n="link_mistral">Lier cette clé</button>
+                    </div>
+                    <button id="mistral-unlink-btn" type="button" class="danger-btn" hidden data-i18n="unlink_mistral" style="margin-top:10px;">Délier Mistral</button>
+                    <p id="mistral-error" class="error-text" hidden></p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
       </div>
@@ -1799,46 +2014,46 @@
   <div id="settings-overlay" hidden>
     <div id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
       <div id="settings-modal-header">
-        <h2 id="settings-modal-title">Mots-clés à anonymiser</h2>
+        <h2 id="settings-modal-title" data-i18n="keywords_to_anonymize">Mots-clés à anonymiser</h2>
         <button id="settings-close-btn" type="button" aria-label="Fermer">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
       </div>
       <div id="settings-tabs">
-        <button class="settings-tab-btn active" type="button" data-tab="manual">Mots-clés</button>
-        <button class="settings-tab-btn" type="button" data-tab="auto">Auto-détection</button>
+        <button class="settings-tab-btn active" type="button" data-tab="manual" data-i18n="keywords">Mots-clés</button>
+        <button class="settings-tab-btn" type="button" data-tab="auto" data-i18n="auto_detection">Auto-détection</button>
       </div>
       <div id="settings-modal-body">
         <div id="settings-tab-manual" class="settings-tab-panel">
-          <p class="settings-hint">Ajoute tes mots-clés internes (codenames, noms de projets...) : ils seront <strong>toujours remplacés par un token</strong> avant d'arriver chez l'IA.</p>
+          <p class="settings-hint" data-i18n="keywords_hint">Ajoute tes mots-clés internes (codenames, noms de projets...) : ils seront <strong>toujours remplacés par un token</strong> avant d'arriver chez l'IA.</p>
           <div id="settings-add-row">
-            <input id="settings-term-input" type="text" placeholder="Ex : Projet Phoenix" autocomplete="off" />
-            <input id="settings-label-input" type="text" placeholder="Étiquette (optionnel)" autocomplete="off" />
+            <input id="settings-term-input" type="text" placeholder="Ex : Projet Phoenix" data-i18n-placeholder="term_example" autocomplete="off" />
+            <input id="settings-label-input" type="text" placeholder="Étiquette (optionnel)" data-i18n-placeholder="label_optional" autocomplete="off" />
             <label id="settings-regex-toggle">
               <input id="settings-regex-checkbox" type="checkbox" /> Regex
             </label>
-            <button id="settings-add-btn" type="button" class="primary-btn">Ajouter</button>
+            <button id="settings-add-btn" type="button" class="primary-btn" data-i18n="add">Ajouter</button>
           </div>
           <p id="settings-error" class="error-text" hidden></p>
           <div id="settings-admin-bar" hidden>
             <label id="settings-select-all-label">
-              <input id="settings-select-all" type="checkbox" /> Tout sélectionner
+              <input id="settings-select-all" type="checkbox" /> <span data-i18n="select_all">Tout sélectionner</span>
             </label>
             <div id="settings-bulk-actions" hidden>
-              <button id="bulk-lock-btn" type="button" class="ghost-btn">Verrouiller la sélection</button>
-              <button id="bulk-unlock-btn" type="button" class="ghost-btn">Déverrouiller la sélection</button>
+              <button id="bulk-lock-btn" type="button" class="ghost-btn" data-i18n="lock_selection">Verrouiller la sélection</button>
+              <button id="bulk-unlock-btn" type="button" class="ghost-btn" data-i18n="unlock_selection">Déverrouiller la sélection</button>
             </div>
             <div id="settings-admin-bar-spacer"></div>
-            <button id="terms-import-btn" type="button" class="ghost-btn">Importer</button>
+            <button id="terms-import-btn" type="button" class="ghost-btn" data-i18n="import_btn">Importer</button>
             <input id="terms-import-file" type="file" accept="application/json" hidden />
-            <button id="terms-export-btn" type="button" class="ghost-btn">Exporter (JSON)</button>
+            <button id="terms-export-btn" type="button" class="ghost-btn" data-i18n="export_json">Exporter (JSON)</button>
           </div>
           <div id="settings-list"></div>
         </div>
         <div id="settings-tab-auto" class="settings-tab-panel" hidden>
           <ol class="settings-steps">
-            <li><strong>Télécharge</strong> le script ci-dessous.</li>
-            <li>
+            <li data-i18n="step_download_script"><strong>Télécharge</strong> le script ci-dessous.</li>
+            <li data-i18n="step_run_script">
               <strong>Lance-le</strong> sur le serveur à protéger (pas celui de la webapp) :
               <div class="cmd-row">
                 <code>python3 scan_infra.py</code>
@@ -1847,21 +2062,21 @@
                 </button>
               </div>
             </li>
-            <li><strong>Colle son résultat</strong> ici, ci-dessous.</li>
+            <li data-i18n="step_paste_result"><strong>Colle son résultat</strong> ici, ci-dessous.</li>
           </ol>
           <a id="scan-script-download" class="ghost-btn" href="/api/scan-script" download="scan_infra.py">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-            Télécharger le script (scan_infra.py)
+            <span data-i18n="download_script">Télécharger le script (scan_infra.py)</span>
           </a>
           <textarea id="auto-detect-input" rows="5" placeholder='{"candidates": [...]}'></textarea>
           <div class="profile-actions">
-            <button id="auto-detect-analyze-btn" type="button" class="primary-btn">Analyser</button>
+            <button id="auto-detect-analyze-btn" type="button" class="primary-btn" data-i18n="analyze">Analyser</button>
           </div>
           <p id="auto-detect-error" class="error-text" hidden></p>
           <div id="auto-detect-results" hidden>
             <div id="auto-detect-list"></div>
             <div class="profile-actions">
-              <button id="auto-detect-add-btn" type="button" class="primary-btn">Ajouter la sélection</button>
+              <button id="auto-detect-add-btn" type="button" class="primary-btn" data-i18n="add_selection">Ajouter la sélection</button>
             </div>
           </div>
         </div>
@@ -1872,71 +2087,83 @@
   <div id="admin-overlay" hidden>
     <div id="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-modal-title">
       <div id="admin-modal-header">
-        <h2 id="admin-modal-title">Administration</h2>
+        <h2 id="admin-modal-title" data-i18n="admin">Administration</h2>
         <button id="admin-close-btn" type="button" aria-label="Fermer">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
       </div>
       <div id="admin-tabs">
-        <button class="admin-tab-btn active" type="button" data-admin-tab="users">Utilisateurs</button>
+        <button class="admin-tab-btn active" type="button" data-admin-tab="users" data-i18n="users">Utilisateurs</button>
         <button class="admin-tab-btn" type="button" data-admin-tab="ldap">LDAP</button>
         <button class="admin-tab-btn" type="button" data-admin-tab="benchmark">Benchmark</button>
-        <button class="admin-tab-btn" type="button" data-admin-tab="audit">Journal d'audit</button>
-        <button class="admin-tab-btn" type="button" data-admin-tab="license">Licence</button>
+        <button class="admin-tab-btn" type="button" data-admin-tab="audit" data-i18n="audit_log">Journal d'audit</button>
+        <button class="admin-tab-btn" type="button" data-admin-tab="license" data-i18n="license">Licence</button>
+        <button class="admin-tab-btn" type="button" data-admin-tab="entities" data-i18n="entities">Entités</button>
       </div>
       <div id="admin-modal-body">
         <div id="admin-tab-users" class="admin-tab-panel">
-          <p class="settings-hint">Crée des comptes locaux et choisis qui a accès à l'administration.</p>
+          <p class="settings-hint" data-i18n="users_hint">Crée des comptes locaux et choisis qui a accès à l'administration.</p>
           <div id="admin-add-row">
-            <input id="admin-user-input" type="text" placeholder="Identifiant" autocomplete="off" />
-            <input id="admin-pass-input" type="password" placeholder="Mot de passe" autocomplete="off" />
+            <input id="admin-user-input" type="text" placeholder="Identifiant" data-i18n-placeholder="username" autocomplete="off" />
+            <input id="admin-pass-input" type="password" placeholder="Mot de passe" data-i18n-placeholder="password" autocomplete="off" />
             <select id="admin-role-input">
-              <option value="user">Utilisateur</option>
-              <option value="admin">Admin</option>
+              <option value="user" data-i18n="role_user">Utilisateur</option>
+              <option value="admin" data-i18n="role_admin">Admin</option>
             </select>
-            <button id="admin-add-user-btn" type="button" class="primary-btn">Créer</button>
+            <button id="admin-add-user-btn" type="button" class="primary-btn" data-i18n="create">Créer</button>
           </div>
           <p id="admin-users-error" class="error-text" hidden></p>
           <div id="admin-users-list"></div>
         </div>
         <div id="admin-tab-ldap" class="admin-tab-panel" hidden>
-          <p class="settings-hint">Configurable ici, ou via les mêmes variables dans le fichier <code>.env</code> — l'UI prend le pas si les deux sont définis.</p>
+          <p class="settings-hint" data-i18n="ldap_config_hint">Configurable ici, ou via les mêmes variables dans le fichier <code>.env</code> — l'UI prend le pas si les deux sont définis.</p>
           <div id="admin-backend-row">
-            <label>Méthode de connexion :</label>
+            <label data-i18n="connection_method">Méthode de connexion :</label>
             <select id="admin-auth-backend-select">
-              <option value="local">Comptes locaux</option>
+              <option value="local" data-i18n="local_accounts">Comptes locaux</option>
               <option value="ldap">LDAP / Active Directory</option>
             </select>
           </div>
           <div id="admin-ldap-form">
-            <label>Serveur (ldap:// ou ldaps://)</label>
+            <label data-i18n="ldap_server_label">Serveur (ldap:// ou ldaps://)</label>
             <input id="ldap-server" type="text" placeholder="ldap://ldap.example.com:389" autocomplete="off" />
-            <label>Base DN</label>
+            <label data-i18n="base_dn_label">Base DN</label>
             <input id="ldap-base-dn" type="text" placeholder="ou=people,dc=example,dc=com" autocomplete="off" />
-            <label>Filtre de recherche</label>
+            <label data-i18n="search_filter_label">Filtre de recherche</label>
             <input id="ldap-search-filter" type="text" placeholder="(uid={username})" autocomplete="off" />
-            <label>DN du compte de service (vide = recherche anonyme)</label>
+            <label data-i18n="service_account_dn_label">DN du compte de service (vide = recherche anonyme)</label>
             <input id="ldap-bind-dn" type="text" placeholder="cn=service-account,dc=example,dc=com" autocomplete="off" />
-            <label>Mot de passe du compte de service</label>
+            <label data-i18n="service_account_password_label">Mot de passe du compte de service</label>
             <input id="ldap-bind-password" type="password" placeholder="••••••••" autocomplete="off" />
-            <label>Template de DN direct (optionnel, saute la recherche)</label>
+            <label data-i18n="dn_template_label">Template de DN direct (optionnel, saute la recherche)</label>
             <input id="ldap-user-dn-template" type="text" placeholder="uid={username},ou=people,dc=example,dc=com" autocomplete="off" />
-            <label>Groupe requis (optionnel)</label>
+            <label data-i18n="required_group_label">Groupe requis (optionnel)</label>
             <input id="ldap-require-group" type="text" placeholder="cn=claude-proxy-users,ou=groups,dc=example,dc=com" autocomplete="off" />
-            <label id="ldap-ssl-toggle"><input id="ldap-use-ssl" type="checkbox" /> Connexion SSL (ldaps://)</label>
+            <label id="ldap-ssl-toggle"><input id="ldap-use-ssl" type="checkbox" /> <span data-i18n="ssl_connection">Connexion SSL (ldaps://)</span></label>
           </div>
           <p id="admin-ldap-error" class="error-text" hidden></p>
           <p id="admin-ldap-result" hidden></p>
           <div class="profile-actions">
-            <button id="admin-ldap-test-btn" type="button" class="ghost-btn">Tester la connexion</button>
-            <button id="admin-ldap-save-btn" type="button" class="primary-btn">Enregistrer</button>
+            <button id="admin-ldap-test-btn" type="button" class="ghost-btn" data-i18n="test_connection">Tester la connexion</button>
+            <button id="admin-ldap-save-btn" type="button" class="primary-btn" data-i18n="save">Enregistrer</button>
           </div>
+
+          <h3 style="margin-top:28px;" data-i18n="tenants_title">Tenants (multi-groupes)</h3>
+          <p class="settings-hint" data-i18n="tenants_hint">Plusieurs groupes LDAP, chacun avec sa propre limite de sièges (sous-allocation indépendante de la limite globale de licence).</p>
+          <div id="tenants-add-row">
+            <input id="tenant-name-input" type="text" placeholder="Nom (ex: Support)" data-i18n-placeholder="tenant_name_placeholder" autocomplete="off" />
+            <input id="tenant-dn-input" type="text" placeholder="cn=support,ou=groups,dc=example,dc=com" autocomplete="off" />
+            <input id="tenant-seats-input" type="number" min="1" placeholder="Sièges max" data-i18n-placeholder="max_seats_placeholder" autocomplete="off" />
+            <button id="tenant-add-btn" type="button" class="primary-btn" data-i18n="add">Ajouter</button>
+          </div>
+          <p id="tenants-error" class="error-text" hidden></p>
+          <div id="tenants-list"></div>
         </div>
         <div id="admin-tab-benchmark" class="admin-tab-panel" hidden>
-          <p class="settings-hint">Colle de vrais logs. Un scanner externe repère ce qui ressemble à une donnée sensible, puis vérifie si elle a vraiment disparu. Un score mesuré, pas une estimation.</p>
-          <textarea id="benchmark-input" rows="7" placeholder="Colle tes logs ici..."></textarea>
+          <p class="settings-hint" data-i18n="benchmark_hint">Colle de vrais logs. Un scanner externe repère ce qui ressemble à une donnée sensible, puis vérifie si elle a vraiment disparu. Un score mesuré, pas une estimation.</p>
+          <textarea id="benchmark-input" rows="7" placeholder="Colle tes logs ici..." data-i18n-placeholder="paste_logs"></textarea>
           <div class="profile-actions">
-            <button id="benchmark-run-btn" type="button" class="primary-btn">Analyser</button>
+            <button id="benchmark-run-btn" type="button" class="primary-btn" data-i18n="analyze">Analyser</button>
           </div>
           <p id="benchmark-error" class="error-text" hidden></p>
           <div id="benchmark-results" hidden>
@@ -1949,31 +2176,31 @@
             </div>
             <div id="benchmark-bars"></div>
             <div id="benchmark-leaks" hidden>
-              <p class="settings-hint" style="margin-bottom:8px;">Fuites détectées (aperçu masqué, pas la vraie valeur) :</p>
+              <p class="settings-hint" style="margin-bottom:8px;" data-i18n="leaks_detected">Fuites détectées (aperçu masqué, pas la vraie valeur) :</p>
               <div id="benchmark-leaks-list"></div>
             </div>
             <div id="benchmark-candidates" hidden>
               <p class="settings-hint" style="margin-bottom:8px;">
-                Candidats à vérifier à l'œil (détecteur volontairement large, beaucoup de faux positifs possibles —
-                <strong>pas compté dans le score</strong>, juste un coup de pouce sur le gap noms-en-texte-libre) :
+                <span data-i18n="candidates_intro">Candidats à vérifier à l'œil (détecteur volontairement large, beaucoup de faux positifs possibles —</span>
+                <strong data-i18n="not_counted_in_score">pas compté dans le score</strong><span data-i18n="freetext_gap_hint">, juste un coup de pouce sur le gap noms-en-texte-libre) :</span>
               </p>
               <div id="benchmark-candidates-list"></div>
             </div>
             <div class="profile-actions">
-              <button id="benchmark-copy-report-btn" type="button" class="ghost-btn">Copier le rapport pour Claude</button>
+              <button id="benchmark-copy-report-btn" type="button" class="ghost-btn" data-i18n="copy_report">Copier le rapport pour Claude</button>
             </div>
           </div>
 
           <div id="fuzz-section">
             <p class="settings-hint">
-              <strong>Fuzzing aléatoire</strong> : génère des lignes synthétiques avec données placées au hasard,
+              <strong data-i18n="random_fuzzing">Fuzzing aléatoire</strong><span data-i18n="fuzzing_desc"> : génère des lignes synthétiques avec données placées au hasard,
               seed différente à chaque clic. Personne ne connaît les cas à l'avance — la mesure honnête, pas le
-              score "vendeur" sur des cas déjà connus.
+              score "vendeur" sur des cas déjà connus.</span>
             </p>
             <div id="fuzz-controls">
-              <label for="fuzz-n-input">Nombre de lignes</label>
+              <label for="fuzz-n-input" data-i18n="line_count">Nombre de lignes</label>
               <input id="fuzz-n-input" type="number" min="100" max="20000" step="100" value="2000" />
-              <button id="fuzz-run-btn" type="button" class="primary-btn">Lancer le fuzzing</button>
+              <button id="fuzz-run-btn" type="button" class="primary-btn" data-i18n="run_fuzzing">Lancer le fuzzing</button>
             </div>
             <p id="fuzz-error" class="error-text" hidden></p>
             <div id="fuzz-results" hidden>
@@ -1985,7 +2212,7 @@
                 </div>
               </div>
               <div id="fuzz-examples" hidden>
-                <p class="settings-hint" style="margin-bottom:8px;">Exemples de fuites (données 100% synthétiques, aperçu masqué) :</p>
+                <p class="settings-hint" style="margin-bottom:8px;" data-i18n="leak_examples">Exemples de fuites (données 100% synthétiques, aperçu masqué) :</p>
                 <div id="fuzz-examples-list"></div>
               </div>
             </div>
@@ -1993,7 +2220,7 @@
         </div>
 
         <div id="admin-tab-audit" class="admin-tab-panel" hidden>
-          <p class="settings-hint">
+          <p class="settings-hint" data-i18n="audit_hint">
             Une ligne par message anonymisé : qui, quand, combien de données par catégorie.
             <strong>Jamais la valeur réelle ni le contenu du message</strong> — uniquement les compteurs,
             pour prouver que l'anonymisation a eu lieu sans recréer un risque dans le journal lui-même.
@@ -2003,22 +2230,28 @@
         </div>
 
         <div id="admin-tab-license" class="admin-tab-panel" hidden>
-          <p class="settings-hint">Statut de la licence TokenVeil de cette instance.</p>
+          <p class="settings-hint" data-i18n="license_status_hint">Statut de la licence TokenVeil de cette instance.</p>
           <div id="license-status-box"></div>
-          <p class="settings-hint" style="margin-top:18px;">Renouveler ou remplacer la licence (colle le nouveau token reçu du fournisseur) :</p>
-          <textarea id="license-token-input" rows="3" placeholder="Token de licence (.lic)"></textarea>
+          <p class="settings-hint" style="margin-top:18px;" data-i18n="renew_license_hint">Renouveler ou remplacer la licence (colle le nouveau token reçu du fournisseur) :</p>
+          <textarea id="license-token-input" rows="3" placeholder="Token de licence (.lic)" data-i18n-placeholder="license_token_placeholder"></textarea>
           <p id="license-error" class="error-text" hidden></p>
           <div class="profile-actions">
-            <button id="license-install-btn" type="button" class="primary-btn">Installer</button>
+            <button id="license-install-btn" type="button" class="primary-btn" data-i18n="install">Installer</button>
           </div>
-          <p class="settings-hint" style="margin-top:22px;">
+          <p class="settings-hint" style="margin-top:22px;" data-i18n="migration_hint">
             Migration vers un nouveau serveur : retire la licence d'ici proprement avant de l'installer
             ailleurs. Le license_id reste valable, mais ton fournisseur doit débloquer le rattachement
             (reset-instance) côté serveur de licences pour que la nouvelle instance soit acceptée.
           </p>
           <div class="profile-actions">
-            <button id="license-revoke-btn" type="button" class="ghost-btn" style="color: var(--danger);">Retirer la licence de cette instance</button>
+            <button id="license-revoke-btn" type="button" class="ghost-btn" style="color: var(--danger);" data-i18n="revoke_license">Retirer la licence de cette instance</button>
           </div>
+        </div>
+
+        <div id="admin-tab-entities" class="admin-tab-panel" hidden>
+          <p class="settings-hint" data-i18n="entities_hint">Désactive les catégories que tu ne veux pas anonymiser pour ce déploiement. Les mots-clés custom (onglet Mots-clés) ne sont pas concernés.</p>
+          <div id="entities-list"></div>
+          <p id="entities-error" class="error-text" hidden></p>
         </div>
       </div>
     </div>
@@ -2029,31 +2262,31 @@
       <div id="empty-state">
         <div class="greeting">
           <svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4 4 12l6 8"/><path d="M14 4l6 8-6 8"/></g><rect x="9.5" y="10.6" width="5" height="2.8" rx="1.4" fill="currentColor" stroke="none"/></svg>
-          <p class="howto-title">Bienvenue sur TokenVeil</p>
+          <p class="howto-title" data-i18n="welcome_default">Bienvenue sur TokenVeil</p>
         </div>
-        <p class="lead">Trois étapes, et tu peux coller n'importe quel log sans rien exposer.</p>
+        <p class="lead" data-i18n="howto_lead">Trois étapes, et tu peux coller n'importe quel log sans rien exposer.</p>
         <div id="howto-steps">
           <div class="howto-step">
             <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
-            <p class="title">Lie ton compte IA</p>
-            <p class="txt">Dans <strong>Préférences &gt; Comptes IA</strong>, connecte le ou les comptes IA de ton choix. Une seule fois, ensuite c'est réglé.</p>
+            <p class="title" data-i18n="howto_step1_title">Lie ton compte IA</p>
+            <p class="txt" data-i18n="howto_step1_txt">Dans <strong>Préférences &gt; Comptes IA</strong>, connecte le ou les comptes IA de ton choix. Une seule fois, ensuite c'est réglé.</p>
           </div>
           <div class="howto-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
           <div class="howto-step">
             <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
-            <p class="title">Active "Message sensible"</p>
-            <p class="txt">Elle est activée par défaut. Décoche-la sous le champ de saisie seulement si ton message ne contient rien de sensible.</p>
+            <p class="title" data-i18n="howto_step2_title">Active "Message sensible"</p>
+            <p class="txt" data-i18n="howto_step2_txt">Elle est activée par défaut. Décoche-la sous le champ de saisie seulement si ton message ne contient rien de sensible.</p>
           </div>
           <div class="howto-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
           <div class="howto-step">
             <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
-            <p class="title">Pose ta question</p>
-            <p class="txt">L'IA ne voit jamais la vraie donnée. Elle revient automatiquement dans sa réponse.</p>
+            <p class="title" data-i18n="howto_step3_title">Pose ta question</p>
+            <p class="txt" data-i18n="howto_step3_txt">L'IA ne voit jamais la vraie donnée. Elle revient automatiquement dans sa réponse.</p>
           </div>
         </div>
         <p class="howto-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>
-          Désactive "Message sensible" quand ton message n'a rien à cacher : tu retrouves l'IA choisie sans aucun filtre.
+          <span data-i18n="howto_note">Désactive "Message sensible" quand ton message n'a rien à cacher : tu retrouves l'IA choisie sans aucun filtre.</span>
         </p>
       </div>
     </div>
@@ -2087,7 +2320,7 @@
           <div id="input-toolbar-left">
             <button id="anon-toggle-btn" type="button" aria-pressed="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-              <span id="anon-toggle-label">Message sensible</span>
+              <span id="anon-toggle-label" data-i18n="sensitive_message">Message sensible</span>
             </button>
             <button id="show-preview-btn" type="button" aria-label="Voir l'aperçu anonymisé" title="Voir l'aperçu anonymisé" disabled>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S5.5 5 12 5s9.5 7 9.5 7-3 7-9.5 7-9.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -2099,42 +2332,464 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
             </button>
             <div id="model-select-menu" hidden>
-              <div class="model-group-label">Claude</div>
-              <button class="model-option" type="button" data-provider="claude" data-model="claude-opus-4-8" data-label="Opus 4.8">
-                <span class="model-name">Opus 4.8</span>
-                <span class="model-desc">Pour les raisonnements complexes</span>
-              </button>
-              <button class="model-option" type="button" data-provider="claude" data-model="claude-sonnet-4-6" data-label="Sonnet 4.6">
-                <span class="model-name">Sonnet 4.6</span>
-                <span class="model-desc">Le plus efficace au quotidien</span>
-              </button>
-              <button class="model-option" type="button" data-provider="claude" data-model="claude-haiku-4-5-20251001" data-label="Haiku 4.5">
-                <span class="model-name">Haiku 4.5</span>
-                <span class="model-desc">Le plus rapide</span>
-              </button>
-              <div class="model-group-separator"></div>
-              <div class="model-group-label">Gemini</div>
-              <button class="model-option" type="button" data-provider="gemini" data-model="gemini-2.5-flash" data-label="Gemini 2.5 Flash">
-                <span class="model-name">Gemini 2.5 Flash</span>
-                <span class="model-desc">Gratuit · rapide</span>
-              </button>
-              <button class="model-option" type="button" data-provider="gemini" data-model="gemini-2.5-flash-lite" data-label="Gemini 2.5 Flash-Lite">
-                <span class="model-name">Gemini 2.5 Flash-Lite</span>
-                <span class="model-desc">Gratuit · le plus rapide</span>
-              </button>
-              <button class="model-option" type="button" data-provider="gemini" data-model="gemini-2.5-pro" data-label="Gemini 2.5 Pro">
-                <span class="model-name">Gemini 2.5 Pro</span>
-                <span class="model-desc">Nécessite facturation activée (plus gratuit)</span>
-              </button>
+              <div class="model-provider-group" data-provider-group="claude">
+                <div class="model-group-label">Claude</div>
+                <button class="model-option" type="button" data-provider="claude" data-model="claude-opus-4-8" data-label="Opus 4.8">
+                  <span class="model-name">Opus 4.8</span>
+                  <span class="model-desc" data-i18n="model_opus_desc">Pour les raisonnements complexes</span>
+                </button>
+                <button class="model-option" type="button" data-provider="claude" data-model="claude-sonnet-4-6" data-label="Sonnet 4.6">
+                  <span class="model-name">Sonnet 4.6</span>
+                  <span class="model-desc" data-i18n="model_sonnet_desc">Le plus efficace au quotidien</span>
+                </button>
+                <button class="model-option" type="button" data-provider="claude" data-model="claude-haiku-4-5-20251001" data-label="Haiku 4.5">
+                  <span class="model-name">Haiku 4.5</span>
+                  <span class="model-desc" data-i18n="model_haiku_desc">Le plus rapide</span>
+                </button>
+              </div>
+              <div class="model-provider-group" data-provider-group="gemini">
+                <div class="model-group-separator"></div>
+                <div class="model-group-label">Gemini</div>
+                <button class="model-option" type="button" data-provider="gemini" data-model="gemini-2.5-flash" data-label="Gemini 2.5 Flash">
+                  <span class="model-name">Gemini 2.5 Flash</span>
+                  <span class="model-desc" data-i18n="model_flash_desc">Gratuit · rapide</span>
+                </button>
+                <button class="model-option" type="button" data-provider="gemini" data-model="gemini-2.5-flash-lite" data-label="Gemini 2.5 Flash-Lite">
+                  <span class="model-name">Gemini 2.5 Flash-Lite</span>
+                  <span class="model-desc" data-i18n="model_flashlite_desc">Gratuit · le plus rapide</span>
+                </button>
+                <button class="model-option" type="button" data-provider="gemini" data-model="gemini-2.5-pro" data-label="Gemini 2.5 Pro">
+                  <span class="model-name">Gemini 2.5 Pro</span>
+                  <span class="model-desc" data-i18n="model_pro_desc">Nécessite facturation activée (plus gratuit)</span>
+                </button>
+              </div>
+              <div class="model-provider-group" data-provider-group="vertex">
+                <div class="model-group-separator"></div>
+                <div class="model-group-label">Vertex AI</div>
+                <button class="model-option" type="button" data-provider="vertex" data-model="claude-sonnet-4-5@20250929" data-label="Claude (Vertex)">
+                  <span class="model-name">Claude Sonnet</span>
+                  <span class="model-desc" data-i18n="model_vertex_desc">Claude facturé sur ton cloud GCP</span>
+                </button>
+              </div>
+              <div class="model-provider-group" data-provider-group="bedrock">
+                <div class="model-group-separator"></div>
+                <div class="model-group-label">Amazon Bedrock</div>
+                <button class="model-option" type="button" data-provider="bedrock" data-model="anthropic.claude-sonnet-4-5-20250929-v1:0" data-label="Claude (Bedrock)">
+                  <span class="model-name">Claude Sonnet</span>
+                  <span class="model-desc" data-i18n="model_bedrock_desc">Claude facturé sur ton cloud AWS</span>
+                </button>
+              </div>
+              <div class="model-provider-group" data-provider-group="openai">
+                <div class="model-group-separator"></div>
+                <div class="model-group-label">OpenAI</div>
+                <button class="model-option" type="button" data-provider="openai" data-model="gpt-5.1" data-label="GPT-5.1">
+                  <span class="model-name">GPT-5.1</span>
+                  <span class="model-desc" data-i18n="model_gpt51_desc">Pour les raisonnements complexes</span>
+                </button>
+                <button class="model-option" type="button" data-provider="openai" data-model="gpt-5.1-mini" data-label="GPT-5.1 Mini">
+                  <span class="model-name">GPT-5.1 Mini</span>
+                  <span class="model-desc" data-i18n="model_gpt51mini_desc">Le plus rapide</span>
+                </button>
+              </div>
+              <div class="model-provider-group" data-provider-group="mistral">
+                <div class="model-group-separator"></div>
+                <div class="model-group-label">Mistral AI</div>
+                <button class="model-option" type="button" data-provider="mistral" data-model="mistral-large-3" data-label="Mistral Large">
+                  <span class="model-name">Mistral Large</span>
+                  <span class="model-desc" data-i18n="model_mistrallarge_desc">Pour les raisonnements complexes</span>
+                </button>
+                <button class="model-option" type="button" data-provider="mistral" data-model="mistral-small-3.2" data-label="Mistral Small">
+                  <span class="model-name">Mistral Small</span>
+                  <span class="model-desc" data-i18n="model_mistralsmall_desc">Le plus rapide</span>
+                </button>
+              </div>
+              <p id="model-select-empty" class="settings-hint" hidden data-i18n="no_ai_linked_yet" style="padding:14px;"></p>
             </div>
           </div>
         </div>
       </div>
-      <div id="input-hint">Anonymisation activée par défaut. Désactive "Message sensible" si tu n'en as pas besoin.</div>
+      <div id="input-hint" data-i18n="input_hint">Anonymisation activée par défaut. Désactive "Message sensible" si tu n'en as pas besoin.</div>
     </div>
   </main>
 
 <script>
+const I18N = {
+  fr: {
+    conv_history_label: "Historique", admin: "Administration",
+    keywords_to_anonymize: "Mots-clés à anonymiser", logout: "Déconnexion",
+    profile: "Profil", claude_not_linked: "Compte Claude non lié",
+    preferences: "Préférences", display_name: "Nom d'affichage",
+    appearance: "Apparence", theme: "Thème", theme_system: "Système",
+    theme_light: "Clair", theme_dark: "Sombre", compact_mode: "Mode compact",
+    compact_mode_hint: "Messages plus rapprochés, pour voir plus de conversation à l'écran.",
+    behavior: "Comportement", auto_preview: "Aperçu automatique",
+    auto_preview_hint: "Affiche l'anonymisation en temps réel pendant la frappe. Toujours accessible via l'œil sinon.",
+    sensitive_default: '"Message sensible" activé par défaut',
+    sensitive_default_hint: "Désactive si tes messages n'ont en général rien à cacher. Reste modifiable à tout moment sous le champ de saisie.",
+    general_tab: "Général", history_tab: "Historique", ai_accounts_tab: "Comptes IA",
+    history_hint: "Gère toutes tes conversations d'un coup : sélection multiple pour supprimer, mettre en favoris ou retirer des favoris en masse.",
+    select_all: "Tout sélectionner", add_to_favorites: "Ajouter aux favoris",
+    remove_from_favorites: "Retirer des favoris", delete_selection: "Supprimer la sélection",
+    checking_claude_link: "Vérification du lien Claude…",
+    link_claude_account: "Lier mon compte Claude Pro/Max",
+    start_chatting: "Commencer à discuter", unlink_account: "Délier mon compte",
+    open_link_authorize: "Ouvre ce lien, connecte-toi avec ton compte Claude Pro ou Max, puis autorise l'accès :",
+    paste_code_here: "Une fois autorisé, colle ici le code affiché :",
+    validation_code: "Code de validation", validate: "Valider", cancel: "Annuler",
+    account_linked_success: "Compte lié avec succès",
+    messages_via_subscription: "Tes messages passent désormais par ton abonnement Claude Pro/Max, sans clé API facturée.",
+    checking_gemini_link: "Vérification du lien Gemini…",
+    gemini_api_key: "Clé API Gemini", link_gemini_key: "Lier ma clé Gemini",
+    unlink_gemini: "Délier mon compte Gemini",
+    keywords: "Mots-clés", auto_detection: "Auto-détection",
+    keywords_hint: "Ajoute tes mots-clés internes (codenames, noms de projets...) : ils seront <strong>toujours remplacés par un token</strong> avant d'arriver chez l'IA.",
+    term_example: "Ex : Projet Phoenix", label_optional: "Étiquette (optionnel)",
+    add: "Ajouter", lock_selection: "Verrouiller la sélection",
+    unlock_selection: "Déverrouiller la sélection", import_btn: "Importer",
+    export_json: "Exporter (JSON)", step_download_script: "<strong>Télécharge</strong> le script ci-dessous.",
+    step_run_script: "<strong>Lance-le</strong> sur le serveur à protéger (pas celui de la webapp) :",
+    step_paste_result: "<strong>Colle son résultat</strong> ici, ci-dessous.",
+    download_script: "Télécharger le script (scan_infra.py)", analyze: "Analyser",
+    add_selection: "Ajouter la sélection",
+    users: "Utilisateurs", audit_log: "Journal d'audit", license: "Licence",
+    entities: "Entités", entities_hint: "Désactive les catégories que tu ne veux pas anonymiser pour ce déploiement. Les mots-clés custom (onglet Mots-clés) ne sont pas concernés.",
+    entity_person: "Personnes (noms)", entity_email: "Emails", entity_phone: "Téléphones",
+    entity_ip: "Adresses IP (publiques)", entity_mac: "Adresses MAC", entity_hostname: "Hostnames internes",
+    entity_customer_ref: "Références client/ticket", entity_location: "Lieux", entity_organization: "Organisations",
+    entity_iban: "IBAN", entity_credit_card: "Cartes bancaires", entity_ssn: "Numéros de sécurité sociale (US)",
+    entity_log_identity: "Identités dans les logs (user=, login=...)", entity_api_secret: "Clés API / secrets",
+    entity_transaction_amount: "Montants de transaction", entity_system_user: "Comptes système",
+    entity_ip_internal: "Adresses IP internes",
+    tenants_title: "Tenants (multi-groupes)",
+    tenants_hint: "Plusieurs groupes LDAP, chacun avec sa propre limite de sièges (sous-allocation indépendante de la limite globale de licence).",
+    tenant_name_placeholder: "Nom (ex: Support)", max_seats_placeholder: "Sièges max",
+    no_tenants_yet: "Aucun tenant pour l'instant.", tenant_fields_required: "Nom, DN de groupe et sièges max requis.",
+    ai_accounts_intro_prefix: "Connecté en tant que", ai_accounts_intro_suffix: "Lie un ou plusieurs comptes IA ci-dessous, change de modèle à tout moment dans le sélecteur du chat.",
+    not_linked: "Non lié", claude_method_oauth: "Abonnement Pro/Max", claude_method_apikey: "Clé API",
+    claude_oauth_linked: "Lié · abonnement Pro/Max", claude_apikey_linked: "Lié · clé API",
+    claude_apikey_hint: "Colle une clé API générée sur console.anthropic.com. Facturée à l'usage, indépendante d'un abonnement Pro/Max.",
+    link_claude_apikey: "Lier cette clé",
+    gemini_apikey_hint: 'Colle une clé API générée sur <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com</a> (connexion avec ton compte Google). Gratuit sur les modèles Flash, sans carte bancaire ; Gemini 2.5 Pro nécessite la facturation activée côté Google.',
+    vertex_hint: 'Claude facturé sur ton compte Google Cloud. Colle le JSON de clé d\'un service account avec le rôle <code>aiplatform.user</code>.',
+    project_id_label: "Project ID", region_label: "Région", service_account_json_label: "JSON du service account",
+    link_vertex: "Lier ce compte", unlink_vertex: "Délier Vertex AI", vertex_linked: "Lié",
+    vertex_fields_required: "Project ID, région et JSON du service account requis.",
+    confirm_unlink_vertex: "Délier ton compte Vertex AI ?",
+    bedrock_hint: 'Claude facturé sur ton compte AWS. Identifiants d\'un utilisateur IAM avec la permission <code>bedrock:InvokeModel</code>.',
+    aws_access_key_label: "Access key ID", aws_secret_key_label: "Secret access key", aws_region_label: "Région",
+    link_bedrock: "Lier ce compte", unlink_bedrock: "Délier Bedrock", bedrock_linked: "Lié",
+    bedrock_fields_required: "Access key, secret key et région requis.",
+    confirm_unlink_bedrock: "Délier ton compte Bedrock ?",
+    model_vertex_desc: "Claude facturé sur ton cloud GCP", model_bedrock_desc: "Claude facturé sur ton cloud AWS",
+    model_gpt51_desc: "Pour les raisonnements complexes", model_gpt51mini_desc: "Le plus rapide",
+    openai_hint: "Colle une clé API générée sur platform.openai.com. Pas d'abonnement ChatGPT Plus possible ici : OpenAI sépare strictement abonnement consumer et facturation API.",
+    link_openai: "Lier cette clé", unlink_openai: "Délier OpenAI", openai_linked: "Lié",
+    confirm_unlink_openai: "Délier ton compte OpenAI ?",
+    model_mistrallarge_desc: "Pour les raisonnements complexes", model_mistralsmall_desc: "Le plus rapide",
+    mistral_hint: "Colle une clé API générée sur console.mistral.ai. Pas d'abonnement Le Chat Pro possible ici : Mistral sépare strictement abonnement consumer et facturation API.",
+    link_mistral: "Lier cette clé", unlink_mistral: "Délier Mistral", mistral_linked: "Lié",
+    confirm_unlink_mistral: "Délier ton compte Mistral ?",
+    no_ai_linked_yet: "Aucun compte IA lié pour l'instant. Lie-en un dans Préférences > Comptes IA.",
+    users_hint: "Crée des comptes locaux et choisis qui a accès à l'administration.",
+    username: "Identifiant", password: "Mot de passe", role_user: "Utilisateur",
+    role_admin: "Admin", create: "Créer",
+    ldap_config_hint: "Configurable ici, ou via les mêmes variables dans le fichier <code>.env</code> — l'UI prend le pas si les deux sont définis.",
+    connection_method: "Méthode de connexion :", local_accounts: "Comptes locaux",
+    ldap_server_label: "Serveur (ldap:// ou ldaps://)", base_dn_label: "Base DN",
+    search_filter_label: "Filtre de recherche",
+    service_account_dn_label: "DN du compte de service (vide = recherche anonyme)",
+    service_account_password_label: "Mot de passe du compte de service",
+    dn_template_label: "Template de DN direct (optionnel, saute la recherche)",
+    required_group_label: "Groupe requis (optionnel)", ssl_connection: "Connexion SSL (ldaps://)",
+    test_connection: "Tester la connexion", save: "Enregistrer",
+    benchmark_hint: "Colle de vrais logs. Un scanner externe repère ce qui ressemble à une donnée sensible, puis vérifie si elle a vraiment disparu. Un score mesuré, pas une estimation.",
+    paste_logs: "Colle tes logs ici...", leaks_detected: "Fuites détectées (aperçu masqué, pas la vraie valeur) :",
+    not_counted_in_score: "pas compté dans le score",
+    freetext_gap_hint: ", juste un coup de pouce sur le gap noms-en-texte-libre) :",
+    candidates_intro: "Candidats à vérifier à l'œil (détecteur volontairement large, beaucoup de faux positifs possibles —",
+    copy_report: "Copier le rapport pour Claude",
+    random_fuzzing: "Fuzzing aléatoire",
+    fuzzing_desc: " : génère des lignes synthétiques avec données placées au hasard, seed différente à chaque clic. Personne ne connaît les cas à l'avance — la mesure honnête, pas le score \"vendeur\" sur des cas déjà connus.",
+    line_count: "Nombre de lignes", run_fuzzing: "Lancer le fuzzing",
+    leak_examples: "Exemples de fuites (données 100% synthétiques, aperçu masqué) :",
+    audit_hint: "Une ligne par message anonymisé : qui, quand, combien de données par catégorie. <strong>Jamais la valeur réelle ni le contenu du message</strong> — uniquement les compteurs, pour prouver que l'anonymisation a eu lieu sans recréer un risque dans le journal lui-même.",
+    license_status_hint: "Statut de la licence TokenVeil de cette instance.",
+    renew_license_hint: "Renouveler ou remplacer la licence (colle le nouveau token reçu du fournisseur) :",
+    license_token_placeholder: "Token de licence (.lic)", install: "Installer",
+    migration_hint: "Migration vers un nouveau serveur : retire la licence d'ici proprement avant de l'installer ailleurs. Le license_id reste valable, mais ton fournisseur doit débloquer le rattachement (reset-instance) côté serveur de licences pour que la nouvelle instance soit acceptée.",
+    revoke_license: "Retirer la licence de cette instance",
+    welcome_default: "Bienvenue sur TokenVeil",
+    howto_lead: "Trois étapes, et tu peux coller n'importe quel log sans rien exposer.",
+    howto_step1_title: "Lie ton compte IA",
+    howto_step1_txt: "Dans <strong>Préférences &gt; Comptes IA</strong>, connecte le ou les comptes IA de ton choix. Une seule fois, ensuite c'est réglé.",
+    howto_step2_title: 'Active "Message sensible"',
+    howto_step2_txt: "Elle est activée par défaut. Décoche-la sous le champ de saisie seulement si ton message ne contient rien de sensible.",
+    howto_step3_title: "Pose ta question",
+    howto_step3_txt: "L'IA ne voit jamais la vraie donnée. Elle revient automatiquement dans sa réponse.",
+    howto_note: 'Désactive "Message sensible" quand ton message n\'a rien à cacher : tu retrouves l\'IA choisie sans aucun filtre.',
+    sensitive_message: "Message sensible",
+    model_opus_desc: "Pour les raisonnements complexes", model_sonnet_desc: "Le plus efficace au quotidien",
+    model_haiku_desc: "Le plus rapide", model_flash_desc: "Gratuit · rapide",
+    model_flashlite_desc: "Gratuit · le plus rapide", model_pro_desc: "Nécessite facturation activée (plus gratuit)",
+    input_hint: 'Anonymisation activée par défaut. Désactive "Message sensible" si tu n\'en as pas besoin.',
+    // --- chaînes dynamiques (JS) ---
+    write_to: "Écris à", preview_sent_to: "Aperçu envoyé à", preview_anonymized_rt: "(anonymisé en temps réel)",
+    you: "Toi", anonymized: "Anonymisé", see_sent_version: "Voir la version envoyée", hide_sent_version: "Masquer la version envoyée",
+    resend: "Renvoyer", copy_message: "Copier le message", copy_anonymized_version: "Copier la version anonymisée",
+    copy_markdown: "Copier (markdown)", copy: "Copier", copied: "Copié", copy_failed: "Échec — copie manuelle",
+    new_conversation: "Nouvelle conversation", conversation_options: "Options de la conversation",
+    rename: "Renommer", delete: "Supprimer", confirm_delete_conversation: "Supprimer cette conversation ?",
+    today: "Aujourd'hui", yesterday: "Hier", this_week: "Cette semaine", last_week: "Semaine dernière",
+    last_month: "Mois dernier", older: "Plus ancien", loading: "Chargement…",
+    new_discussion: "Nouvelle discussion", new_discussion_query: 'Nouvelle discussion : "{q}"',
+    welcome_named: "Bienvenue {name} sur TokenVeil", error_prefix: "Erreur",
+    no_custom_terms_yet: "Aucun mot-clé custom pour l'instant.", unlock: "Déverrouiller", lock: "Verrouiller",
+    locked_by_admin: "Verrouillé par un administrateur", added_by: "Ajouté par", private_scope: "privé",
+    deploy: "Déployer", term_cannot_be_empty: "Le terme ne peut pas être vide.",
+    for_everyone: "Pour tout le monde", only_to_creator: "Uniquement à {name} (créateur)",
+    or_to_specific_user: "Ou à un utilisateur précis", invalid_file: "Fichier invalide : ",
+    imported_count: "{n} terme(s) importé(s)", skipped_count: ", {n} ignoré(s)",
+    favorite: "Favori",
+    confirm_delete_user: 'Supprimer le compte "{name}" ?', username_password_required: "Identifiant et mot de passe requis.",
+    config_saved: "Configuration enregistrée.", connection_success: "Connexion réussie.",
+    connection_failed: "Échec : ", expired_since: "expirée depuis {n} jour(s)", expires_today: "expire aujourd'hui",
+    days_remaining: "{n} jour(s) restant(s)", no_license_installed: "Aucune licence installée ou licence invalide",
+    phone_home_not_checked: "pas encore vérifié", phone_home_revoked: "révoquée",
+    phone_home_mismatch: "alerte : utilisée depuis une autre instance", phone_home_expired: "expirée",
+    customer: "Client", license_label: "Licence", seats: "Sièges", expiration: "Expiration",
+    network_check: "Vérification réseau", global_status: "Statut global", valid: "✓ valide",
+    invalid_blocked: "✗ invalide / bloquée", expiring_soon_warning: "Expire dans moins de 30 jours — contacte ton fournisseur pour renouveler à temps.",
+    paste_license_token: "Colle un token de licence.",
+    confirm_revoke_license: "Retirer la licence de cette instance ?\n\nL'application repassera en délai de grâce de 15 jours puis sera bloquée tant qu'aucune licence valide n'est réinstallée. À faire seulement si tu migres vers un nouveau serveur — contacte ton fournisseur pour qu'il débloque la licence pour la nouvelle instance.",
+    no_events_yet: "Aucun événement pour l'instant.", data_replaced: "donnée(s) remplacée(s)", conversation_hash: "conversation #",
+    generating_link: "Génération du lien…", verifying: "Vérification…",
+    confirm_unlink_claude: "Délier ce compte Claude ?", confirm_unlink_gemini: "Délier ton compte Gemini ?",
+    invalid_json: "JSON invalide — copie bien la sortie complète du script.", no_candidates_found: "Aucun candidat trouvé dans ce JSON.",
+    check_one_term: "Coche au moins un terme à ajouter.", added_terms_count: "{a}/{t} terme(s) ajouté(s).",
+    no_conversation_yet: "Aucune conversation pour l'instant.", confirm_delete_n_conversations: "Supprimer {n} conversation(s) ? Action irréversible.",
+    auth_method: "Méthode d'authentification", provider: "Fournisseur", claude_oauth: "Abonnement Claude (OAuth)",
+    unknown: "Inconnu", direct_anthropic: "Anthropic (direct)", see_usage_detail: "Voir le détail d'usage sur claude.ai →",
+    claude_linked: "Compte Claude lié", gemini_key_linked: "Clé API Gemini liée.", no_gemini_linked: "Aucun compte Gemini lié.",
+    link_claude_to_chat: "Lie ton compte Claude Pro ou Max pour pouvoir prompter.",
+    claude_linked_desc: "Ton compte Claude Pro/Max est lié. Les messages passent par ton abonnement, pas par une clé API facturée.",
+    fuzzing_in_progress: "Fuzzing en cours…", no_leak_in_sample: "Aucune fuite sur l'échantillon",
+    leaks_on_sample: "{n} fuite(s) sur {total}", lines_generated: "{n} lignes générées aléatoirement · seed {seed} · sur-anonymisation {rate}%",
+    no_leak_detected: "Aucune fuite détectée", leaks_detected_count: "{n} fuite(s) détectée(s)",
+    sensitive_data_found: "{n} donnée(s) sensible(s) repérée(s) dans le texte original",
+    no_sensitive_data_in_text: "Aucune donnée sensible détectée dans ce texte.",
+    line_label: "ligne", paste_logs_first: "Colle d'abord des logs à analyser.",
+    copy_report_btn: "Copier le rapport pour Claude",
+    copied_exclaim: "Copié !", copy_failed_msg: "Échec de la copie",
+    benchmark_report_title: "Benchmark TokenVeil — couverture mesurée : {pct}%",
+    benchmark_report_summary: "{found} donnée(s) sensible(s) repérée(s), {leaked} fuite(s).",
+    by_category_label: "Par catégorie :", anonymized_count: "anonymisé(s)",
+    leaks_to_fix: "Fuites à corriger :", preview_label: "aperçu",
+    freetext_candidates_title: "Candidats noms en texte libre à vérifier (non comptés dans le score) :",
+  },
+  en: {
+    conv_history_label: "History", admin: "Administration",
+    keywords_to_anonymize: "Keywords to anonymize", logout: "Sign out",
+    profile: "Profile", claude_not_linked: "Claude account not linked",
+    preferences: "Preferences", display_name: "Display name",
+    appearance: "Appearance", theme: "Theme", theme_system: "System",
+    theme_light: "Light", theme_dark: "Dark", compact_mode: "Compact mode",
+    compact_mode_hint: "Tighter message spacing, to see more of the conversation on screen.",
+    behavior: "Behavior", auto_preview: "Auto preview",
+    auto_preview_hint: "Shows anonymization in real time while typing. Always available via the eye icon otherwise.",
+    sensitive_default: '"Sensitive message" enabled by default',
+    sensitive_default_hint: "Turn off if your messages generally have nothing to hide. Stays adjustable anytime below the input field.",
+    general_tab: "General", history_tab: "History", ai_accounts_tab: "AI accounts",
+    history_hint: "Manage all your conversations at once: select multiple to delete, favorite, or unfavorite in bulk.",
+    select_all: "Select all", add_to_favorites: "Add to favorites",
+    remove_from_favorites: "Remove from favorites", delete_selection: "Delete selection",
+    checking_claude_link: "Checking Claude link…",
+    link_claude_account: "Link my Claude Pro/Max account",
+    start_chatting: "Start chatting", unlink_account: "Unlink my account",
+    open_link_authorize: "Open this link, sign in with your Claude Pro or Max account, then authorize access:",
+    paste_code_here: "Once authorized, paste the displayed code here:",
+    validation_code: "Validation code", validate: "Validate", cancel: "Cancel",
+    account_linked_success: "Account linked successfully",
+    messages_via_subscription: "Your messages now go through your Claude Pro/Max subscription, with no metered API key.",
+    checking_gemini_link: "Checking Gemini link…",
+    gemini_api_key: "Gemini API key", link_gemini_key: "Link my Gemini key",
+    unlink_gemini: "Unlink my Gemini account",
+    keywords: "Keywords", auto_detection: "Auto-detection",
+    keywords_hint: "Add your internal keywords (codenames, project names...): they'll <strong>always be replaced by a token</strong> before reaching the AI.",
+    term_example: "E.g.: Project Phoenix", label_optional: "Label (optional)",
+    add: "Add", lock_selection: "Lock selection",
+    unlock_selection: "Unlock selection", import_btn: "Import",
+    export_json: "Export (JSON)", step_download_script: "<strong>Download</strong> the script below.",
+    step_run_script: "<strong>Run it</strong> on the server you want to protect (not the webapp's server):",
+    step_paste_result: "<strong>Paste its output</strong> below.",
+    download_script: "Download the script (scan_infra.py)", analyze: "Analyze",
+    add_selection: "Add selection",
+    users: "Users", audit_log: "Audit log", license: "License",
+    entities: "Entities", entities_hint: "Turn off categories you don't want anonymized for this deployment. Custom keywords (Keywords tab) aren't affected.",
+    entity_person: "People (names)", entity_email: "Emails", entity_phone: "Phone numbers",
+    entity_ip: "IP addresses (public)", entity_mac: "MAC addresses", entity_hostname: "Internal hostnames",
+    entity_customer_ref: "Customer/ticket references", entity_location: "Locations", entity_organization: "Organizations",
+    entity_iban: "IBANs", entity_credit_card: "Credit card numbers", entity_ssn: "Social security numbers (US)",
+    entity_log_identity: "Log identities (user=, login=...)", entity_api_secret: "API keys / secrets",
+    entity_transaction_amount: "Transaction amounts", entity_system_user: "System accounts",
+    entity_ip_internal: "Internal IP addresses",
+    tenants_title: "Tenants (multi-group)",
+    tenants_hint: "Multiple LDAP groups, each with its own seat limit (sub-allocation independent of the global license limit).",
+    tenant_name_placeholder: "Name (e.g. Support)", max_seats_placeholder: "Max seats",
+    no_tenants_yet: "No tenants yet.", tenant_fields_required: "Name, group DN, and max seats are required.",
+    ai_accounts_intro_prefix: "Signed in as", ai_accounts_intro_suffix: "Link one or more AI accounts below, switch models anytime in the chat selector.",
+    not_linked: "Not linked", claude_method_oauth: "Pro/Max subscription", claude_method_apikey: "API key",
+    claude_oauth_linked: "Linked · Pro/Max subscription", claude_apikey_linked: "Linked · API key",
+    claude_apikey_hint: "Paste an API key generated on console.anthropic.com. Billed by usage, independent of a Pro/Max subscription.",
+    link_claude_apikey: "Link this key",
+    gemini_apikey_hint: 'Paste an API key generated on <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com</a> (sign in with your Google account). Free on Flash models, no credit card needed; Gemini 2.5 Pro requires billing enabled on the Google side.',
+    vertex_hint: 'Claude billed to your Google Cloud account. Paste the key JSON for a service account with the <code>aiplatform.user</code> role.',
+    project_id_label: "Project ID", region_label: "Region", service_account_json_label: "Service account JSON",
+    link_vertex: "Link this account", unlink_vertex: "Unlink Vertex AI", vertex_linked: "Linked",
+    vertex_fields_required: "Project ID, region, and service account JSON are required.",
+    confirm_unlink_vertex: "Unlink your Vertex AI account?",
+    bedrock_hint: 'Claude billed to your AWS account. Credentials for an IAM user with the <code>bedrock:InvokeModel</code> permission.',
+    aws_access_key_label: "Access key ID", aws_secret_key_label: "Secret access key", aws_region_label: "Region",
+    link_bedrock: "Link this account", unlink_bedrock: "Unlink Bedrock", bedrock_linked: "Linked",
+    bedrock_fields_required: "Access key, secret key, and region are required.",
+    confirm_unlink_bedrock: "Unlink your Bedrock account?",
+    model_vertex_desc: "Claude billed to your GCP cloud", model_bedrock_desc: "Claude billed to your AWS cloud",
+    model_gpt51_desc: "For complex reasoning", model_gpt51mini_desc: "The fastest",
+    openai_hint: "Paste an API key generated on platform.openai.com. No ChatGPT Plus subscription possible here: OpenAI strictly separates consumer subscriptions from API billing.",
+    link_openai: "Link this key", unlink_openai: "Unlink OpenAI", openai_linked: "Linked",
+    confirm_unlink_openai: "Unlink your OpenAI account?",
+    model_mistrallarge_desc: "For complex reasoning", model_mistralsmall_desc: "The fastest",
+    mistral_hint: "Paste an API key generated on console.mistral.ai. No Le Chat Pro subscription possible here: Mistral strictly separates consumer subscriptions from API billing.",
+    link_mistral: "Link this key", unlink_mistral: "Unlink Mistral", mistral_linked: "Linked",
+    confirm_unlink_mistral: "Unlink your Mistral account?",
+    no_ai_linked_yet: "No AI account linked yet. Link one in Preferences > AI accounts.",
+    users_hint: "Create local accounts and choose who has access to administration.",
+    username: "Username", password: "Password", role_user: "User",
+    role_admin: "Admin", create: "Create",
+    ldap_config_hint: "Configurable here, or via the same variables in the <code>.env</code> file — the UI takes precedence if both are set.",
+    connection_method: "Connection method:", local_accounts: "Local accounts",
+    ldap_server_label: "Server (ldap:// or ldaps://)", base_dn_label: "Base DN",
+    search_filter_label: "Search filter",
+    service_account_dn_label: "Service account DN (empty = anonymous search)",
+    service_account_password_label: "Service account password",
+    dn_template_label: "Direct DN template (optional, skips search)",
+    required_group_label: "Required group (optional)", ssl_connection: "SSL connection (ldaps://)",
+    test_connection: "Test connection", save: "Save",
+    benchmark_hint: "Paste real logs. An external scanner finds what looks like sensitive data, then checks whether it really disappeared. A measured score, not an estimate.",
+    paste_logs: "Paste your logs here...", leaks_detected: "Leaks detected (preview masked, not the real value):",
+    not_counted_in_score: "not counted in the score",
+    freetext_gap_hint: ", just a nudge on the free-text-names gap):",
+    candidates_intro: "Candidates to eyeball (deliberately broad detector, many false positives possible —",
+    copy_report: "Copy report for Claude",
+    random_fuzzing: "Random fuzzing",
+    fuzzing_desc: ": generates synthetic lines with data placed randomly, different seed on every click. No one knows the test cases in advance — an honest measurement, not a \"vendor\" score on already-known cases.",
+    line_count: "Number of lines", run_fuzzing: "Run fuzzing",
+    leak_examples: "Leak examples (100% synthetic data, preview masked):",
+    audit_hint: "One line per anonymized message: who, when, how much data per category. <strong>Never the real value or message content</strong> — only counters, to prove anonymization happened without recreating a risk in the log itself.",
+    license_status_hint: "License status for this TokenVeil instance.",
+    renew_license_hint: "Renew or replace the license (paste the new token received from the vendor):",
+    license_token_placeholder: "License token (.lic)", install: "Install",
+    migration_hint: "Migrating to a new server: cleanly remove the license from here before installing it elsewhere. The license_id stays valid, but your vendor must unlock the binding (reset-instance) on the license server for the new instance to be accepted.",
+    revoke_license: "Remove the license from this instance",
+    welcome_default: "Welcome to TokenVeil",
+    howto_lead: "Three steps, and you can paste any log without exposing anything.",
+    howto_step1_title: "Link your AI account",
+    howto_step1_txt: "In <strong>Preferences &gt; AI accounts</strong>, connect the AI account(s) of your choice. Just once, then it's set.",
+    howto_step2_title: 'Turn on "Sensitive message"',
+    howto_step2_txt: "It's on by default. Uncheck it below the input field only when your message has nothing sensitive in it.",
+    howto_step3_title: "Ask your question",
+    howto_step3_txt: "The AI never sees the real data. It comes back automatically in its reply.",
+    howto_note: 'Turn off "Sensitive message" when your message has nothing to hide: you get the chosen AI back with no filter.',
+    sensitive_message: "Sensitive message",
+    model_opus_desc: "For complex reasoning", model_sonnet_desc: "The most efficient for daily use",
+    model_haiku_desc: "The fastest", model_flash_desc: "Free · fast",
+    model_flashlite_desc: "Free · the fastest", model_pro_desc: "Requires billing enabled (no longer free)",
+    input_hint: 'Anonymization enabled by default. Turn off "Sensitive message" if you don\'t need it.',
+    write_to: "Message", preview_sent_to: "Preview sent to", preview_anonymized_rt: "(anonymized in real time)",
+    you: "You", anonymized: "Anonymized", see_sent_version: "See the version sent", hide_sent_version: "Hide the version sent",
+    resend: "Resend", copy_message: "Copy message", copy_anonymized_version: "Copy anonymized version",
+    copy_markdown: "Copy (markdown)", copy: "Copy", copied: "Copied", copy_failed: "Failed — copy manually",
+    new_conversation: "New conversation", conversation_options: "Conversation options",
+    rename: "Rename", delete: "Delete", confirm_delete_conversation: "Delete this conversation?",
+    today: "Today", yesterday: "Yesterday", this_week: "This week", last_week: "Last week",
+    last_month: "Last month", older: "Older", loading: "Loading…",
+    new_discussion: "New discussion", new_discussion_query: 'New discussion: "{q}"',
+    welcome_named: "Welcome {name} to TokenVeil", error_prefix: "Error",
+    no_custom_terms_yet: "No custom keywords yet.", unlock: "Unlock", lock: "Lock",
+    locked_by_admin: "Locked by an administrator", added_by: "Added by", private_scope: "private",
+    deploy: "Deploy", term_cannot_be_empty: "The term cannot be empty.",
+    for_everyone: "For everyone", only_to_creator: "Only to {name} (creator)",
+    or_to_specific_user: "Or to a specific user", invalid_file: "Invalid file: ",
+    imported_count: "{n} term(s) imported", skipped_count: ", {n} skipped",
+    favorite: "Favorite",
+    confirm_delete_user: 'Delete account "{name}"?', username_password_required: "Username and password required.",
+    config_saved: "Configuration saved.", connection_success: "Connection successful.",
+    connection_failed: "Failed: ", expired_since: "expired {n} day(s) ago", expires_today: "expires today",
+    days_remaining: "{n} day(s) remaining", no_license_installed: "No license installed or invalid license",
+    phone_home_not_checked: "not checked yet", phone_home_revoked: "revoked",
+    phone_home_mismatch: "alert: used from another instance", phone_home_expired: "expired",
+    customer: "Customer", license_label: "License", seats: "Seats", expiration: "Expiration",
+    network_check: "Network check", global_status: "Overall status", valid: "✓ valid",
+    invalid_blocked: "✗ invalid / blocked", expiring_soon_warning: "Expires in less than 30 days — contact your vendor to renew in time.",
+    paste_license_token: "Paste a license token.",
+    confirm_revoke_license: "Remove the license from this instance?\n\nThe app will fall back to a 15-day grace period then be blocked until a valid license is reinstalled. Only do this if you're migrating to a new server — contact your vendor so they can unlock the license for the new instance.",
+    no_events_yet: "No events yet.", data_replaced: "data point(s) replaced", conversation_hash: "conversation #",
+    generating_link: "Generating link…", verifying: "Verifying…",
+    confirm_unlink_claude: "Unlink this Claude account?", confirm_unlink_gemini: "Unlink your Gemini account?",
+    invalid_json: "Invalid JSON — make sure you copied the script's full output.", no_candidates_found: "No candidates found in this JSON.",
+    check_one_term: "Check at least one term to add.", added_terms_count: "{a}/{t} term(s) added.",
+    no_conversation_yet: "No conversations yet.", confirm_delete_n_conversations: "Delete {n} conversation(s)? This cannot be undone.",
+    auth_method: "Authentication method", provider: "Provider", claude_oauth: "Claude subscription (OAuth)",
+    unknown: "Unknown", direct_anthropic: "Anthropic (direct)", see_usage_detail: "See usage details on claude.ai →",
+    claude_linked: "Claude account linked", gemini_key_linked: "Gemini API key linked.", no_gemini_linked: "No Gemini account linked.",
+    link_claude_to_chat: "Link your Claude Pro or Max account to start prompting.",
+    claude_linked_desc: "Your Claude Pro/Max account is linked. Messages go through your subscription, not a metered API key.",
+    fuzzing_in_progress: "Fuzzing in progress…", no_leak_in_sample: "No leak in the sample",
+    leaks_on_sample: "{n} leak(s) out of {total}", lines_generated: "{n} randomly generated lines · seed {seed} · over-redaction {rate}%",
+    no_leak_detected: "No leak detected", leaks_detected_count: "{n} leak(s) detected",
+    sensitive_data_found: "{n} sensitive data point(s) found in the original text",
+    no_sensitive_data_in_text: "No sensitive data detected in this text.",
+    line_label: "line", paste_logs_first: "Paste some logs to analyze first.",
+    copy_report_btn: "Copy report for Claude",
+    copied_exclaim: "Copied!", copy_failed_msg: "Copy failed",
+    benchmark_report_title: "TokenVeil benchmark — measured coverage: {pct}%",
+    benchmark_report_summary: "{found} sensitive data point(s) found, {leaked} leak(s).",
+    by_category_label: "By category:", anonymized_count: "anonymized",
+    leaks_to_fix: "Leaks to fix:", preview_label: "preview",
+    freetext_candidates_title: "Free-text name candidates to check (not counted in the score):",
+  },
+};
+let currentLang = localStorage.getItem("cached_language") || (navigator.language.startsWith("en") ? "en" : "fr");
+
+function t(key, vars) {
+  let s = (I18N[currentLang] && I18N[currentLang][key]) ?? I18N.fr[key] ?? key;
+  if (vars) for (const [k, v] of Object.entries(vars)) s = s.replace(`{${k}}`, v);
+  return s;
+}
+
+function applyStaticI18n() {
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll("[data-i18n]").forEach((el) => { el.innerHTML = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+  document.querySelectorAll("[data-i18n-title]").forEach((el) => { el.title = t(el.dataset.i18nTitle); });
+  document.querySelectorAll("[data-i18n-aria-label]").forEach((el) => { el.setAttribute("aria-label", t(el.dataset.i18nAriaLabel)); });
+}
+
+async function setLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem("cached_language", lang);
+  applyStaticI18n();
+  applySelectedModel();
+  if (!currentConvId) showHowto();
+  if (typeof savePreferences === "function") savePreferences({ language: lang });
+  const langSelect = document.getElementById("pref-lang-select");
+  if (langSelect && langSelect.value !== lang) {
+    langSelect.value = lang;
+    langSelect.dispatchEvent(new Event("change"));
+  }
+}
+
+applyStaticI18n();
+
 (function initTheme() {
   const saved = localStorage.getItem("theme");
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -2217,7 +2872,7 @@ function enhanceCodeBlocks(container) {
     wrapper.className = "code-block";
     const header = document.createElement("div");
     header.className = "code-block-header";
-    header.innerHTML = `<span class="code-lang">${escapeHtml(lang)}</span><button class="copy-btn" type="button">${ICONS.copy}<span>Copier</span></button>`;
+    header.innerHTML = `<span class="code-lang">${escapeHtml(lang)}</span><button class="copy-btn" type="button">${ICONS.copy}<span>${t("copy")}</span></button>`;
 
     preEl.replaceWith(wrapper);
     wrapper.appendChild(header);
@@ -2228,11 +2883,11 @@ function enhanceCodeBlocks(container) {
         const btn = header.querySelector(".copy-btn");
         btn.classList.add(ok ? "copied" : "copy-failed");
         btn.innerHTML = ok
-          ? `${ICONS.check}<span>Copié</span>`
-          : `${ICONS.copy}<span>Échec — copie manuelle</span>`;
+          ? `${ICONS.check}<span>${t("copied")}</span>`
+          : `${ICONS.copy}<span>${t("copy_failed")}</span>`;
         setTimeout(() => {
           btn.classList.remove("copied", "copy-failed");
-          btn.innerHTML = `${ICONS.copy}<span>Copier</span>`;
+          btn.innerHTML = `${ICONS.copy}<span>${t("copy")}</span>`;
         }, 1800);
       });
     });
@@ -2321,11 +2976,11 @@ function openConvMenu(btn, item, c) {
   convContextMenu.innerHTML = `
     <button type="button" class="conv-menu-option" data-action="favorite">
       ${c.favorite ? ICONS.starFilled : ICONS.star}
-      <span>${c.favorite ? "Retirer des favoris" : "Ajouter aux favoris"}</span>
+      <span>${c.favorite ? t("remove_from_favorites") : t("add_to_favorites")}</span>
     </button>
-    <button type="button" class="conv-menu-option" data-action="rename">${ICONS.pencil}<span>Renommer</span></button>
+    <button type="button" class="conv-menu-option" data-action="rename">${ICONS.pencil}<span>${t("rename")}</span></button>
     <div class="conv-menu-separator"></div>
-    <button type="button" class="conv-menu-option danger" data-action="delete">${ICONS.trash}<span>Supprimer</span></button>
+    <button type="button" class="conv-menu-option danger" data-action="delete">${ICONS.trash}<span>${t("delete")}</span></button>
   `;
   convContextMenu.querySelector('[data-action="favorite"]').onclick = async () => {
     closeConvMenu();
@@ -2342,7 +2997,7 @@ function openConvMenu(btn, item, c) {
   };
   convContextMenu.querySelector('[data-action="delete"]').onclick = async () => {
     closeConvMenu();
-    if (confirm("Supprimer cette conversation ?")) {
+    if (confirm(t("confirm_delete_conversation"))) {
       await api(`/api/conversations/${c.id}`, { method: "DELETE" });
       if (currentConvId === c.id) { currentConvId = null; renderMessages([]); }
       loadConversations();
@@ -2361,7 +3016,7 @@ async function loadConversations() {
   for (const c of convs) {
     const item = document.createElement("div");
     item.className = "conv-item" + (c.id === currentConvId ? " active" : "");
-    item.innerHTML = `${c.favorite ? `<span class="conv-star-icon" aria-hidden="true">${ICONS.starFilled}</span>` : ""}<span class="title">${escapeHtml(c.title)}</span><button class="conv-menu-btn" aria-label="Options de la conversation">${ICONS.dots}</button>`;
+    item.innerHTML = `${c.favorite ? `<span class="conv-star-icon" aria-hidden="true">${ICONS.starFilled}</span>` : ""}<span class="title">${escapeHtml(c.title)}</span><button class="conv-menu-btn" aria-label="${t("conversation_options")}">${ICONS.dots}</button>`;
     item.querySelector(".title").onclick = () => openConversation(c.id);
     item.querySelector(".conv-menu-btn").onclick = (e) => {
       e.stopPropagation();
@@ -2386,19 +3041,19 @@ let searchHighlightIndex = -1;
 
 function relativeDateLabel(ts) {
   const diffDays = Math.floor((Date.now() / 1000 - ts) / 86400);
-  if (diffDays <= 0) return "Aujourd'hui";
-  if (diffDays === 1) return "Hier";
-  if (diffDays < 7) return "Cette semaine";
-  if (diffDays < 14) return "Semaine dernière";
-  if (diffDays < 60) return "Mois dernier";
-  return "Plus ancien";
+  if (diffDays <= 0) return t("today");
+  if (diffDays === 1) return t("yesterday");
+  if (diffDays < 7) return t("this_week");
+  if (diffDays < 14) return t("last_week");
+  if (diffDays < 60) return t("last_month");
+  return t("older");
 }
 
 async function createConversationFromSearch(query) {
   const conv = await api("/api/conversations", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title: query || "Nouvelle conversation" }),
+    body: JSON.stringify({ title: query || t("new_conversation") }),
   });
   await loadConversations();
   await openConversation(conv.id);
@@ -2417,7 +3072,7 @@ function renderSearchResults(items, query) {
     searchResults.innerHTML = `
       <div class="search-result-row highlighted" id="search-create-new">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-        <span class="search-result-title">${query ? `Nouvelle discussion : "${escapeHtml(query)}"` : "Nouvelle discussion"}</span>
+        <span class="search-result-title">${query ? t("new_discussion_query", { q: escapeHtml(query) }) : t("new_discussion")}</span>
       </div>`;
     document.getElementById("search-create-new").onclick = () => createConversationFromSearch(query);
     return;
@@ -2443,7 +3098,7 @@ async function openSearchOverlay() {
   searchOverlay.hidden = false;
   searchInput.value = "";
   searchInput.focus();
-  searchResults.innerHTML = `<div id="search-empty">Chargement…</div>`;
+  searchResults.innerHTML = `<div id="search-empty">${t("loading")}</div>`;
   try {
     searchConvCache = await api("/api/conversations");
     renderSearchResults(searchConvCache);
@@ -2500,35 +3155,40 @@ function highlightTokens(s) {
   return escapeHtml(s).replace(/&lt;([A-Z_]+_\d+)&gt;/g, '<span class="tok">&lt;$1&gt;</span>');
 }
 
-const PROVIDER_LABELS = { claude: "Claude", gemini: "Gemini" };
+const PROVIDER_LABELS = { claude: "Claude", gemini: "Gemini", vertex: "Claude (Vertex)", bedrock: "Claude (Bedrock)", openai: "OpenAI" };
 // texte brut/anonymisé de chaque message utilisateur, hors du DOM (le body
 // affiché est rendu en markdown) : sert au renvoi et aux copies de la barre
 // d'actions au survol.
 const msgRawText = new WeakMap();
 
+function sentVersionLabel(hide, prep, name) {
+  if (currentLang === "en") return `${hide ? "Hide" : "See"} the version sent to ${name}`;
+  return `${hide ? "Masquer" : "Voir"} la version envoyée ${prep} ${name}`;
+}
+
 function messageRowHtml(role, contentHtml, anonymizedRaw, provider) {
   const isUser = role === "user";
   const providerLabel = PROVIDER_LABELS[provider] || PROVIDER_LABELS[selectedProvider] || "Claude";
-  const label = isUser ? "Toi" : providerLabel;
+  const label = isUser ? t("you") : providerLabel;
   const isRevealable = anonymizedRaw && anonymizedRaw !== true;
   const showLock = !!anonymizedRaw;
   const lockBadge = showLock
-    ? `<span class="lock-badge">${ICONS.lock}Anonymisé</span>`
+    ? `<span class="lock-badge">${ICONS.lock}${t("anonymized")}</span>`
     : "";
   const preposition = isUser ? "à" : "par";
   const revealBtn = isRevealable
-    ? `<button class="reveal-anon-btn" type="button" aria-expanded="false" data-provider-label="${escapeHtml(providerLabel)}" data-preposition="${preposition}">Voir la version envoyée ${preposition} ${escapeHtml(providerLabel)}</button>
+    ? `<button class="reveal-anon-btn" type="button" aria-expanded="false" data-provider-label="${escapeHtml(providerLabel)}" data-preposition="${preposition}">${sentVersionLabel(false, preposition, escapeHtml(providerLabel))}</button>
        <div class="anon-revealed" hidden>${highlightTokens(anonymizedRaw)}</div>`
     : "";
   const actionsBar = isUser
     ? `<div class="msg-actions">
-         <button class="msg-action-btn msg-resend-btn" type="button" title="Renvoyer">${ICONS.retry}</button>
-         <button class="msg-action-btn msg-copy-raw-btn" type="button" title="Copier le message">${ICONS.copy}</button>
-         ${isRevealable ? `<button class="msg-action-btn msg-copy-anon-btn" type="button" title="Copier la version anonymisée">${ICONS.lock}</button>` : ""}
+         <button class="msg-action-btn msg-resend-btn" type="button" title="${t("resend")}">${ICONS.retry}</button>
+         <button class="msg-action-btn msg-copy-raw-btn" type="button" title="${t("copy_message")}">${ICONS.copy}</button>
+         ${isRevealable ? `<button class="msg-action-btn msg-copy-anon-btn" type="button" title="${t("copy_anonymized_version")}">${ICONS.lock}</button>` : ""}
        </div>`
     : `<div class="msg-actions">
-         <button class="msg-action-btn msg-copy-md-btn" type="button" title="Copier (markdown)">${ICONS.copy}</button>
-         ${isRevealable ? `<button class="msg-action-btn msg-copy-anon-btn" type="button" title="Copier la version anonymisée">${ICONS.lock}</button>` : ""}
+         <button class="msg-action-btn msg-copy-md-btn" type="button" title="${t("copy_markdown")}">${ICONS.copy}</button>
+         ${isRevealable ? `<button class="msg-action-btn msg-copy-anon-btn" type="button" title="${t("copy_anonymized_version")}">${ICONS.lock}</button>` : ""}
        </div>`;
   return `
     <div class="msg-row ${role}">
@@ -2567,36 +3227,36 @@ function capitalize(s) {
 function howtoHtml() {
   const displayName = (userPrefs && userPrefs.display_name) || capitalize(displayFirstName(currentUsername));
   const hello = displayName
-    ? `Bienvenue <em>${escapeHtml(displayName)}</em> sur TokenVeil`
-    : "Bienvenue sur TokenVeil";
+    ? t("welcome_named", { name: `<em>${escapeHtml(displayName)}</em>` })
+    : t("welcome_default");
   return `<div id="empty-state">
     <div class="greeting">
       <svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4 4 12l6 8"/><path d="M14 4l6 8-6 8"/></g><rect x="9.5" y="10.6" width="5" height="2.8" rx="1.4" fill="currentColor" stroke="none"/></svg>
       <p class="howto-title">${hello}</p>
     </div>
-    <p class="lead">Trois étapes, et tu peux coller n'importe quel log sans rien exposer.</p>
+    <p class="lead">${t("howto_lead")}</p>
     <div id="howto-steps">
       <div class="howto-step">
         <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
-        <p class="title">Lie ton compte IA</p>
-        <p class="txt">Dans <strong>Préférences &gt; Comptes IA</strong>, connecte le ou les comptes IA de ton choix. Une seule fois, ensuite c'est réglé.</p>
+        <p class="title">${t("howto_step1_title")}</p>
+        <p class="txt">${t("howto_step1_txt")}</p>
       </div>
       <div class="howto-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
       <div class="howto-step">
         <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
-        <p class="title">Active "Message sensible"</p>
-        <p class="txt">Elle est activée par défaut. Décoche-la sous le champ de saisie seulement si ton message ne contient rien de sensible.</p>
+        <p class="title">${t("howto_step2_title")}</p>
+        <p class="txt">${t("howto_step2_txt")}</p>
       </div>
       <div class="howto-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
       <div class="howto-step">
         <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
-        <p class="title">Pose ta question</p>
-        <p class="txt">L'IA ne voit jamais la vraie donnée. Elle revient automatiquement dans sa réponse.</p>
+        <p class="title">${t("howto_step3_title")}</p>
+        <p class="txt">${t("howto_step3_txt")}</p>
       </div>
     </div>
     <p class="howto-note">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>
-      Désactive "Message sensible" quand ton message n'a rien à cacher : tu retrouves l'IA choisie sans aucun filtre.
+      ${t("howto_note")}
     </p>
   </div>`;
 }
@@ -2632,7 +3292,7 @@ document.getElementById("messages").addEventListener("click", (e) => {
   btn.setAttribute("aria-expanded", String(open));
   const providerLabel = btn.dataset.providerLabel || "Claude";
   const preposition = btn.dataset.preposition || "par";
-  btn.textContent = open ? `Masquer la version envoyée ${preposition} ${providerLabel}` : `Voir la version envoyée ${preposition} ${providerLabel}`;
+  btn.textContent = sentVersionLabel(open, preposition, providerLabel);
 });
 
 function flashCopied(btn, icon) {
@@ -2689,7 +3349,7 @@ document.getElementById("new-chat-btn").onclick = async () => {
   const conv = await api("/api/conversations", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title: "Nouvelle conversation" }),
+    body: JSON.stringify({ title: t("new_conversation") }),
   });
   await loadConversations();
   await openConversation(conv.id);
@@ -2765,10 +3425,53 @@ function applySelectedModel() {
     if (isSel) modelSelectLabel.textContent = opt.dataset.label;
   });
   const providerLabel = PROVIDER_LABELS[selectedProvider] || "Claude";
-  document.getElementById("msg-input").placeholder = `Écris à ${providerLabel}...`;
-  document.getElementById("anon-preview-title").textContent = `Aperçu envoyé à ${providerLabel} (anonymisé en temps réel)`;
+  document.getElementById("msg-input").placeholder = `${t("write_to")} ${providerLabel}...`;
+  document.getElementById("anon-preview-title").textContent = `${t("preview_sent_to")} ${providerLabel} ${t("preview_anonymized_rt")}`;
 }
 applySelectedModel();
+
+// Ne montre dans le sélecteur que les providers réellement liés : un
+// modèle qu'on ne peut pas utiliser (pas de compte/clé lié) n'a rien à
+// faire dans la liste, ça ne fait que pousser à cliquer pour rien.
+function updateModelMenuVisibility(status) {
+  const linkedByProvider = {
+    claude: !!status.linked,
+    gemini: !!status.gemini_linked,
+    vertex: !!status.vertex_linked,
+    bedrock: !!status.bedrock_linked,
+    openai: !!status.openai_linked,
+    mistral: !!status.mistral_linked,
+  };
+  let firstVisible = null;
+  document.querySelectorAll(".model-provider-group").forEach((group) => {
+    const provider = group.dataset.providerGroup;
+    const linked = linkedByProvider[provider];
+    group.hidden = !linked;
+    if (linked && !firstVisible) firstVisible = group;
+  });
+  // pas de séparateur orphelin en haut du premier groupe visible
+  document.querySelectorAll(".model-provider-group .model-group-separator").forEach((sep) => {
+    sep.style.display = "";
+  });
+  if (firstVisible) {
+    const sep = firstVisible.querySelector(".model-group-separator");
+    if (sep) sep.style.display = "none";
+  }
+  document.getElementById("model-select-empty").hidden = !!firstVisible;
+
+  // si le provider actuellement sélectionné vient d'être délié, retombe
+  // sur le premier modèle d'un provider encore lié
+  if (!linkedByProvider[selectedProvider] && firstVisible) {
+    const firstOption = firstVisible.querySelector(".model-option");
+    if (firstOption) {
+      selectedModel = firstOption.dataset.model;
+      selectedProvider = firstOption.dataset.provider;
+      localStorage.setItem("claude_model", selectedModel);
+      localStorage.setItem("ai_provider", selectedProvider);
+      applySelectedModel();
+    }
+  }
+}
 
 modelSelectBtn.onclick = () => {
   const open = modelSelectMenu.hidden;
@@ -2869,7 +3572,7 @@ async function sendMessage() {
     const conv = await api("/api/conversations", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: "Nouvelle conversation" }),
+      body: JSON.stringify({ title: t("new_conversation") }),
     });
     currentConvId = conv.id;
   }
@@ -2902,7 +3605,7 @@ async function sendMessage() {
       body: JSON.stringify({ content: text, anonymize, provider: selectedProvider, model: selectedModel }),
     });
     if (res.status === 401) { window.location.href = "/login.html"; return; }
-    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || `Erreur ${res.status}`);
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || `${t("error_prefix")} ${res.status}`);
 
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
@@ -2966,7 +3669,7 @@ async function sendMessage() {
       }
     }
   } catch (err) {
-    thinkingRow.querySelector(".body").innerHTML = `Erreur : ${escapeHtml(err.message)}`;
+    thinkingRow.querySelector(".body").innerHTML = `${t("error_prefix")} : ${escapeHtml(err.message)}`;
   } finally {
     const stayBottom = isNearBottom();
     loadConversations();
@@ -2982,7 +3685,7 @@ function addRevealPanel(row, anonymizedRaw, provider) {
   const preposition = row.classList.contains("user") ? "à" : "par";
   content.insertAdjacentHTML(
     "beforeend",
-    `<button class="reveal-anon-btn" type="button" aria-expanded="false" data-provider-label="${escapeHtml(providerLabel)}" data-preposition="${preposition}">Voir la version envoyée ${preposition} ${escapeHtml(providerLabel)}</button>
+    `<button class="reveal-anon-btn" type="button" aria-expanded="false" data-provider-label="${escapeHtml(providerLabel)}" data-preposition="${preposition}">${sentVersionLabel(false, preposition, escapeHtml(providerLabel))}</button>
      <div class="anon-revealed" hidden>${highlightTokens(anonymizedRaw)}</div>`
   );
 }
@@ -3000,7 +3703,6 @@ document.getElementById("theme-toggle-btn").onclick = () => {
 
 // --- Profil / liaison compte Claude Pro-Max ---
 const profileOverlay = document.getElementById("profile-overlay");
-const profileLinkState = document.getElementById("profile-link-state");
 const profileLinkBtn = document.getElementById("profile-link-btn");
 const profileUnlinkBtn = document.getElementById("profile-unlink-btn");
 const profileStepStatus = document.getElementById("profile-step-status");
@@ -3019,6 +3721,13 @@ function clearProfileError() {
   profileError.textContent = "";
 }
 
+function setAiCardStatus(provider, linked, label) {
+  const dot = document.getElementById(`${provider}-status-dot`);
+  const text = document.getElementById(`${provider}-status-text`);
+  dot.classList.toggle("linked", linked);
+  text.textContent = label;
+}
+
 async function refreshProfileStatus() {
   const status = await api("/api/account");
   currentUsername = status.username;
@@ -3030,42 +3739,62 @@ async function refreshProfileStatus() {
   document.getElementById("profile-username").textContent = status.username;
   document.getElementById("profile-modal-username").textContent = status.username;
   const dot = document.getElementById("profile-dot");
+
+  // sélecteur de méthode Claude : reflète la méthode active, et bascule
+  // l'affichage entre le panneau OAuth et le panneau clé API
+  const claudeMethod = status.claude_link_method || "oauth_token";
+  document.querySelectorAll("#claude-method-switch button").forEach((b) => {
+    b.classList.toggle("active", b.dataset.claudeMethod === claudeMethod);
+  });
+  document.getElementById("claude-oauth-panel").hidden = claudeMethod !== "oauth_token";
+  document.getElementById("claude-apikey-panel").hidden = claudeMethod === "oauth_token";
+
   if (status.linked) {
-    document.getElementById("profile-status").textContent = "Compte Claude lié";
     dot.classList.add("linked");
-    profileLinkState.textContent = "Ton compte Claude Pro/Max est lié. Les messages passent par ton abonnement, pas par une clé API facturée.";
     profileLinkBtn.hidden = true;
-    document.getElementById("profile-status-start-btn").hidden = false;
     profileUnlinkBtn.hidden = false;
     const authInfo = document.getElementById("profile-auth-info");
-    const methodLabel = status.auth_method === "oauth_token" ? "Abonnement Claude (OAuth)" : (status.auth_method || "Inconnu");
-    const providerLabel = status.api_provider === "firstParty" ? "Anthropic (direct)" : (status.api_provider || "Inconnu");
-    authInfo.innerHTML = `
-      <div class="row"><span>Méthode d'authentification</span><span>${escapeHtml(methodLabel)}</span></div>
-      <div class="row"><span>Fournisseur</span><span>${escapeHtml(providerLabel)}</span></div>
-      <a href="https://claude.ai/settings/usage" target="_blank" rel="noopener">Voir le détail d'usage sur claude.ai →</a>`;
-    authInfo.hidden = false;
+    if (claudeMethod === "api_key") {
+      setAiCardStatus("claude", true, t("claude_apikey_linked"));
+      authInfo.hidden = true;
+    } else {
+      document.getElementById("profile-status").textContent = t("claude_linked");
+      setAiCardStatus("claude", true, t("claude_oauth_linked"));
+      const methodLabel = status.auth_method === "oauth_token" ? t("claude_oauth") : (status.auth_method || t("unknown"));
+      const providerLabel = status.api_provider === "firstParty" ? t("direct_anthropic") : (status.api_provider || t("unknown"));
+      authInfo.innerHTML = `
+        <div class="row"><span>${t("auth_method")}</span><span>${escapeHtml(methodLabel)}</span></div>
+        <div class="row"><span>${t("provider")}</span><span>${escapeHtml(providerLabel)}</span></div>
+        <a href="https://claude.ai/settings/usage" target="_blank" rel="noopener">${t("see_usage_detail")}</a>`;
+      authInfo.hidden = false;
+    }
+    document.getElementById("profile-status").textContent = t("claude_linked");
   } else {
-    document.getElementById("profile-status").textContent = "Compte Claude non lié";
+    document.getElementById("profile-status").textContent = t("claude_not_linked");
     dot.classList.remove("linked");
-    profileLinkState.textContent = "Lie ton compte Claude Pro ou Max pour pouvoir prompter.";
     profileLinkBtn.hidden = false;
-    document.getElementById("profile-status-start-btn").hidden = true;
     profileUnlinkBtn.hidden = true;
     document.getElementById("profile-auth-info").hidden = true;
+    setAiCardStatus("claude", false, t("not_linked"));
   }
 
-  const geminiDot = document.getElementById("gemini-status-dot");
-  const geminiText = document.getElementById("gemini-status-text");
-  if (status.gemini_linked) {
-    geminiDot.classList.add("linked");
-    geminiText.textContent = "Clé API Gemini liée.";
-    document.getElementById("gemini-unlink-btn").hidden = false;
-  } else {
-    geminiDot.classList.remove("linked");
-    geminiText.textContent = "Aucun compte Gemini lié.";
-    document.getElementById("gemini-unlink-btn").hidden = true;
-  }
+  setAiCardStatus("gemini", status.gemini_linked, status.gemini_linked ? t("gemini_key_linked") : t("not_linked"));
+  document.getElementById("gemini-unlink-btn").hidden = !status.gemini_linked;
+
+  setAiCardStatus("vertex", status.vertex_linked, status.vertex_linked ? t("vertex_linked") : t("not_linked"));
+  document.getElementById("vertex-unlink-btn").hidden = !status.vertex_linked;
+
+  setAiCardStatus("bedrock", status.bedrock_linked, status.bedrock_linked ? t("bedrock_linked") : t("not_linked"));
+  document.getElementById("bedrock-unlink-btn").hidden = !status.bedrock_linked;
+
+  setAiCardStatus("openai", status.openai_linked, status.openai_linked ? t("openai_linked") : t("not_linked"));
+  document.getElementById("openai-unlink-btn").hidden = !status.openai_linked;
+
+  setAiCardStatus("mistral", status.mistral_linked, status.mistral_linked ? t("mistral_linked") : t("not_linked"));
+  document.getElementById("mistral-unlink-btn").hidden = !status.mistral_linked;
+
+  updateModelMenuVisibility(status);
+
   return status;
 }
 
@@ -3115,25 +3844,25 @@ async function loadHistoryTab() {
   const listEl = document.getElementById("history-list");
   errEl.hidden = true;
   historySelected.clear();
-  listEl.innerHTML = "<p class=\"settings-hint\">Chargement…</p>";
+  listEl.innerHTML = `<p class="settings-hint">${t("loading")}</p>`;
   try {
     const convs = await api("/api/conversations");
     if (convs.length === 0) {
-      listEl.innerHTML = "<p class=\"settings-hint\">Aucune conversation pour l'instant.</p>";
+      listEl.innerHTML = `<p class="settings-hint">${t("no_conversation_yet")}</p>`;
       updateHistoryBulkBar();
       return;
     }
     listEl.innerHTML = convs.map((c) => {
-      const date = new Date(c.created_at * 1000).toLocaleDateString("fr-FR");
+      const date = new Date(c.created_at * 1000).toLocaleDateString(currentLang === "en" ? "en-US" : "fr-FR");
       return `<div class="history-row" data-id="${c.id}">
         <input type="checkbox" class="history-checkbox" />
-        <button type="button" class="history-star-btn${c.favorite ? " active" : ""}" aria-label="Favori">
+        <button type="button" class="history-star-btn${c.favorite ? " active" : ""}" aria-label="${t("favorite")}">
           ${c.favorite ? ICONS.starFilled : ICONS.star}
         </button>
         <span class="history-title">${escapeHtml(c.title)}</span>
         <span class="history-date">${date}</span>
-        <button type="button" class="history-icon-btn" aria-label="Renommer">${ICONS.pencil}</button>
-        <button type="button" class="history-icon-btn danger" aria-label="Supprimer">${ICONS.trash}</button>
+        <button type="button" class="history-icon-btn" data-action="rename" aria-label="${t("rename")}">${ICONS.pencil}</button>
+        <button type="button" class="history-icon-btn danger" data-action="delete" aria-label="${t("delete")}">${ICONS.trash}</button>
       </div>`;
     }).join("");
 
@@ -3154,7 +3883,7 @@ async function loadHistoryTab() {
         loadHistoryTab();
         loadConversations();
       };
-      row.querySelector('[aria-label="Renommer"]').onclick = () => {
+      row.querySelector('[data-action="rename"]').onclick = () => {
         const titleSpan = row.querySelector(".history-title");
         const current = titleSpan.textContent;
         const input = document.createElement("input");
@@ -3182,8 +3911,8 @@ async function loadHistoryTab() {
         });
         input.addEventListener("blur", commit);
       };
-      row.querySelector('[aria-label="Supprimer"]').onclick = async () => {
-        if (!confirm("Supprimer cette conversation ?")) return;
+      row.querySelector('[data-action="delete"]').onclick = async () => {
+        if (!confirm(t("confirm_delete_conversation"))) return;
         await api(`/api/conversations/${id}`, { method: "DELETE" });
         if (currentConvId === id) { currentConvId = null; renderMessages([]); }
         loadHistoryTab();
@@ -3211,7 +3940,7 @@ document.getElementById("history-select-all").onchange = (e) => {
 
 document.getElementById("history-bulk-delete-btn").onclick = async () => {
   if (historySelected.size === 0) return;
-  if (!confirm(`Supprimer ${historySelected.size} conversation(s) ? Action irréversible.`)) return;
+  if (!confirm(t("confirm_delete_n_conversations", { n: historySelected.size }))) return;
   await Promise.all([...historySelected].map((id) => {
     if (currentConvId === id) { currentConvId = null; renderMessages([]); }
     return api(`/api/conversations/${id}`, { method: "DELETE" });
@@ -3333,6 +4062,11 @@ document.querySelectorAll("#pref-theme-segmented button").forEach((btn) => {
   btn.onclick = () => setThemeChoice(btn.dataset.themeChoice);
 });
 
+const prefLangSelect = document.getElementById("pref-lang-select");
+prefLangSelect.value = currentLang;
+prefLangSelect.onchange = () => setLanguage(prefLangSelect.value);
+enhanceSelect(prefLangSelect);
+
 const prefCompactToggle = document.getElementById("pref-compact-toggle");
 prefCompactToggle.onchange = async () => {
   document.body.classList.toggle("compact-mode", prefCompactToggle.checked);
@@ -3379,6 +4113,13 @@ async function loadPreferences() {
   applyAvatarEverywhere();
   buildAvatarPicker();
   updateThemeSegmented();
+  if (userPrefs.language && userPrefs.language !== currentLang) {
+    currentLang = userPrefs.language;
+    localStorage.setItem("cached_language", currentLang);
+    applyStaticI18n();
+    applySelectedModel();
+  }
+  prefLangSelect.value = currentLang;
   const compact = userPrefs.compact_mode === "true";
   prefCompactToggle.checked = compact;
   document.body.classList.toggle("compact-mode", compact);
@@ -3412,30 +4153,30 @@ const UNLOCK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 const DEPLOY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg>';
 let _lastCustomTerms = [];
 
-function termRowHtml(t) {
+function termRowHtml(term) {
   const isAdmin = currentUserRole === "admin";
-  const canDelete = isAdmin || !t.locked;
-  const isPrivate = !!t.scope_username;
+  const canDelete = isAdmin || !term.locked;
+  const isPrivate = !!term.scope_username;
   const lockBtn = isAdmin
-    ? `<button class="term-lock-btn" type="button" aria-label="${t.locked ? "Déverrouiller" : "Verrouiller"}" title="${t.locked ? "Déverrouiller" : "Verrouiller"}">${t.locked ? LOCK_ICON : UNLOCK_ICON}</button>`
-    : (t.locked ? `<span class="term-lock-static" title="Verrouillé par un administrateur">${LOCK_ICON}</span>` : "");
+    ? `<button class="term-lock-btn" type="button" aria-label="${term.locked ? t("unlock") : t("lock")}" title="${term.locked ? t("unlock") : t("lock")}">${term.locked ? LOCK_ICON : UNLOCK_ICON}</button>`
+    : (term.locked ? `<span class="term-lock-static" title="${t("locked_by_admin")}">${LOCK_ICON}</span>` : "");
   const checkbox = isAdmin ? `<input type="checkbox" class="term-checkbox" />` : "";
-  const creator = isAdmin && t.created_by
-    ? `<span class="term-creator" title="Ajouté par ${escapeHtml(t.created_by)}">${escapeHtml(t.created_by)}${isPrivate ? ` · privé (${escapeHtml(t.scope_username)})` : ""}</span>`
+  const creator = isAdmin && term.created_by
+    ? `<span class="term-creator" title="${t("added_by")} ${escapeHtml(term.created_by)}">${escapeHtml(term.created_by)}${isPrivate ? ` · ${t("private_scope")} (${escapeHtml(term.scope_username)})` : ""}</span>`
     : "";
   const deployBtn = isAdmin
-    ? `<button class="term-deploy-btn" type="button" aria-label="Déployer" title="Déployer">${DEPLOY_ICON}</button>`
+    ? `<button class="term-deploy-btn" type="button" aria-label="${t("deploy")}" title="${t("deploy")}">${DEPLOY_ICON}</button>`
     : "";
   return `
-    <div class="term-row" data-id="${t.id}" data-locked="${t.locked ? 1 : 0}" data-private="${isPrivate ? 1 : 0}" data-creator="${escapeHtml(t.created_by || "")}">
+    <div class="term-row" data-id="${term.id}" data-locked="${term.locked ? 1 : 0}" data-private="${isPrivate ? 1 : 0}" data-creator="${escapeHtml(term.created_by || "")}">
       ${checkbox}
-      <span class="term-label">${escapeHtml(t.label)}</span>
-      <span class="term-text">${escapeHtml(t.term)}</span>
-      ${t.is_regex ? '<span class="term-regex-badge">regex</span>' : ""}
+      <span class="term-label">${escapeHtml(term.label)}</span>
+      <span class="term-text">${escapeHtml(term.term)}</span>
+      ${term.is_regex ? '<span class="term-regex-badge">regex</span>' : ""}
       ${creator}
       ${deployBtn}
       ${lockBtn}
-      <button class="term-delete-btn" type="button" aria-label="Supprimer" ${canDelete ? "" : 'disabled style="opacity:.3;cursor:default"'}>${ICONS.trash}</button>
+      <button class="term-delete-btn" type="button" aria-label="${t("delete")}" ${canDelete ? "" : 'disabled style="opacity:.3;cursor:default"'}>${ICONS.trash}</button>
     </div>`;
 }
 
@@ -3444,7 +4185,7 @@ async function refreshCustomTerms() {
   _lastCustomTerms = terms;
   settingsList.innerHTML = terms.length
     ? terms.map(termRowHtml).join("")
-    : `<div id="settings-empty">Aucun mot-clé custom pour l'instant.</div>`;
+    : `<div id="settings-empty">${t("no_custom_terms_yet")}</div>`;
   const adminBar = document.getElementById("settings-admin-bar");
   adminBar.hidden = currentUserRole !== "admin";
   document.getElementById("settings-select-all").checked = false;
@@ -3491,7 +4232,7 @@ settingsList.addEventListener("click", async (e) => {
 
 document.getElementById("settings-add-btn").onclick = async () => {
   const term = settingsTermInput.value.trim();
-  if (!term) { showSettingsError("Le terme ne peut pas être vide."); return; }
+  if (!term) { showSettingsError(t("term_cannot_be_empty")); return; }
   clearSettingsError();
   try {
     await api("/api/custom-terms", {
@@ -3570,11 +4311,11 @@ termsImportFile.addEventListener("change", async () => {
     });
     await refreshCustomTerms();
     settingsError.style.color = "var(--accent)";
-    settingsError.textContent = `${res.imported} terme(s) importé(s)${res.skipped ? `, ${res.skipped} ignoré(s)` : ""}.`;
+    settingsError.textContent = `${t("imported_count", { n: res.imported })}${res.skipped ? t("skipped_count", { n: res.skipped }) : ""}.`;
     settingsError.hidden = false;
     setTimeout(() => { settingsError.style.color = ""; }, 3000);
   } catch (err) {
-    showSettingsError("Fichier invalide : " + err.message);
+    showSettingsError(t("invalid_file") + err.message);
   } finally {
     termsImportFile.value = "";
   }
@@ -3597,9 +4338,9 @@ async function openDeployMenu(btn, row) {
       .join("");
   } catch (e) {}
   deployMenu.innerHTML = `
-    <button data-scope="all">Pour tout le monde</button>
-    ${creator ? `<button data-scope="creator">Uniquement à ${escapeHtml(creator)} (créateur)</button>` : ""}
-    ${usersHtml ? `<div class="deploy-section-label">Ou à un utilisateur précis</div>${usersHtml}` : ""}
+    <button data-scope="all">${t("for_everyone")}</button>
+    ${creator ? `<button data-scope="creator">${t("only_to_creator", { name: escapeHtml(creator) })}</button>` : ""}
+    ${usersHtml ? `<div class="deploy-section-label">${t("or_to_specific_user")}</div>${usersHtml}` : ""}
   `;
   const rect = btn.getBoundingClientRect();
   deployMenu.style.top = `${rect.bottom + 6}px`;
@@ -3669,10 +4410,10 @@ function userRowHtml(u) {
     <div class="user-row" data-username="${escapeHtml(u.username)}">
       <span class="user-name">${escapeHtml(u.username)}</span>
       <select class="role-select" ${isMe ? "disabled" : ""}>
-        <option value="user" ${u.role === "user" ? "selected" : ""}>Utilisateur</option>
-        <option value="admin" ${u.role === "admin" ? "selected" : ""}>Admin</option>
+        <option value="user" ${u.role === "user" ? "selected" : ""}>${t("role_user")}</option>
+        <option value="admin" ${u.role === "admin" ? "selected" : ""}>${t("role_admin")}</option>
       </select>
-      <button class="user-delete-btn" type="button" aria-label="Supprimer" ${isMe ? "disabled style=\"opacity:.3;cursor:default\"" : ""}>${ICONS.trash}</button>
+      <button class="user-delete-btn" type="button" aria-label="${t("delete")}" ${isMe ? "disabled style=\"opacity:.3;cursor:default\"" : ""}>${ICONS.trash}</button>
     </div>`;
 }
 
@@ -3703,7 +4444,7 @@ adminUsersList.addEventListener("click", async (e) => {
   const btn = e.target.closest(".user-delete-btn");
   if (!btn || btn.disabled) return;
   const row = btn.closest(".user-row");
-  if (!confirm(`Supprimer le compte "${row.dataset.username}" ?`)) return;
+  if (!confirm(t("confirm_delete_user", { name: row.dataset.username }))) return;
   try {
     await api(`/api/admin/users/${row.dataset.username}`, { method: "DELETE" });
     await refreshAdminUsers();
@@ -3719,7 +4460,7 @@ document.getElementById("admin-add-user-btn").onclick = async () => {
   const role = document.getElementById("admin-role-input").value;
   adminUsersError.hidden = true;
   if (!username || !password) {
-    adminUsersError.textContent = "Identifiant et mot de passe requis.";
+    adminUsersError.textContent = t("username_password_required");
     adminUsersError.hidden = false;
     return;
   }
@@ -3767,7 +4508,73 @@ async function refreshAdminLdap() {
     document.getElementById(id).value = cfg[key] || "";
   }
   document.getElementById("ldap-use-ssl").checked = String(cfg.LDAP_USE_SSL).toLowerCase() === "true";
+  await loadTenants();
 }
+
+async function loadTenants() {
+  const listEl = document.getElementById("tenants-list");
+  const errEl = document.getElementById("tenants-error");
+  errEl.hidden = true;
+  listEl.innerHTML = `<p class="settings-hint">${t("loading")}</p>`;
+  try {
+    const tenants = await api("/api/admin/ldap-tenants");
+    listEl.innerHTML = tenants.length
+      ? tenants.map((tn) => `
+        <div class="term-row" data-id="${tn.id}">
+          <span class="term-label">${escapeHtml(tn.name)}</span>
+          <span class="term-text">${escapeHtml(tn.group_dn)}</span>
+          <span class="term-text">${tn.current_count === null ? "?" : tn.current_count} / ${tn.max_seats}</span>
+          <button class="term-delete-btn" type="button" aria-label="${t("delete")}" data-action="delete-tenant">${ICONS.trash}</button>
+        </div>`).join("")
+      : `<div id="settings-empty">${t("no_tenants_yet")}</div>`;
+    listEl.querySelectorAll('[data-action="delete-tenant"]').forEach((btn) => {
+      btn.onclick = async () => {
+        const row = btn.closest(".term-row");
+        try {
+          await api(`/api/admin/ldap-tenants/${row.dataset.id}`, { method: "DELETE" });
+          await loadTenants();
+        } catch (err) {
+          errEl.textContent = err.message;
+          errEl.hidden = false;
+        }
+      };
+    });
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.hidden = false;
+    listEl.innerHTML = "";
+  }
+}
+
+document.getElementById("tenant-add-btn").onclick = async () => {
+  const nameInput = document.getElementById("tenant-name-input");
+  const dnInput = document.getElementById("tenant-dn-input");
+  const seatsInput = document.getElementById("tenant-seats-input");
+  const errEl = document.getElementById("tenants-error");
+  errEl.hidden = true;
+  const name = nameInput.value.trim();
+  const groupDn = dnInput.value.trim();
+  const maxSeats = Number(seatsInput.value);
+  if (!name || !groupDn || !maxSeats) {
+    errEl.textContent = t("tenant_fields_required");
+    errEl.hidden = false;
+    return;
+  }
+  try {
+    await api("/api/admin/ldap-tenants", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, group_dn: groupDn, max_seats: maxSeats }),
+    });
+    nameInput.value = "";
+    dnInput.value = "";
+    seatsInput.value = "";
+    await loadTenants();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.hidden = false;
+  }
+};
 
 document.getElementById("admin-auth-backend-select").onchange = async (e) => {
   try {
@@ -3790,7 +4597,7 @@ document.getElementById("admin-ldap-save-btn").onclick = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(collectLdapForm()),
     });
-    adminLdapResult.textContent = "Configuration enregistrée.";
+    adminLdapResult.textContent = t("config_saved");
     adminLdapResult.className = "ok";
     adminLdapResult.hidden = false;
   } catch (err) {
@@ -3808,7 +4615,7 @@ document.getElementById("admin-ldap-test-btn").onclick = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(collectLdapForm()),
     });
-    adminLdapResult.textContent = res.ok ? "Connexion réussie." : `Échec : ${res.error}`;
+    adminLdapResult.textContent = res.ok ? t("connection_success") : `${t("connection_failed")}${res.error}`;
     adminLdapResult.className = res.ok ? "ok" : "fail";
     adminLdapResult.hidden = false;
   } catch (err) {
@@ -3841,43 +4648,94 @@ document.querySelectorAll(".admin-tab-btn").forEach((btn) => {
     document.getElementById(`admin-tab-${btn.dataset.adminTab}`).hidden = false;
     if (btn.dataset.adminTab === "audit") loadAuditLog();
     if (btn.dataset.adminTab === "license") loadLicenseStatus();
+    if (btn.dataset.adminTab === "entities") loadEntitySettings();
   };
 });
 
+const ENTITY_LABEL_KEYS = {
+  PERSON: "entity_person", EMAIL_ADDRESS: "entity_email", PHONE_NUMBER: "entity_phone",
+  IP_ADDRESS: "entity_ip", MAC_ADDRESS: "entity_mac", HOSTNAME: "entity_hostname",
+  CUSTOMER_REF: "entity_customer_ref", LOCATION: "entity_location", ORGANIZATION: "entity_organization",
+  IBAN_CODE: "entity_iban", CREDIT_CARD: "entity_credit_card", US_SSN: "entity_ssn",
+  LOG_IDENTITY: "entity_log_identity", API_SECRET: "entity_api_secret",
+  TRANSACTION_AMOUNT: "entity_transaction_amount", SYSTEM_USER: "entity_system_user",
+  IP_INTERNAL: "entity_ip_internal",
+};
+
+async function loadEntitySettings() {
+  const listEl = document.getElementById("entities-list");
+  const errEl = document.getElementById("entities-error");
+  errEl.hidden = true;
+  listEl.innerHTML = `<p class="settings-hint">${t("loading")}</p>`;
+  try {
+    const { available, disabled } = await api("/api/admin/entity-settings");
+    const disabledSet = new Set(disabled);
+    listEl.innerHTML = available.map((entity) => `
+      <div class="pref-row">
+        <span class="pref-row-label">${t(ENTITY_LABEL_KEYS[entity] || entity)}</span>
+        <label class="pref-switch">
+          <input type="checkbox" class="entity-toggle" data-entity="${entity}" ${disabledSet.has(entity) ? "" : "checked"} />
+          <span class="pref-switch-track"></span>
+        </label>
+      </div>`).join("");
+    listEl.querySelectorAll(".entity-toggle").forEach((toggle) => {
+      toggle.onchange = async () => {
+        const currentlyDisabled = [...listEl.querySelectorAll(".entity-toggle")]
+          .filter((cb) => !cb.checked).map((cb) => cb.dataset.entity);
+        try {
+          await api("/api/admin/entity-settings", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ disabled: currentlyDisabled }),
+          });
+        } catch (err) {
+          errEl.textContent = err.message;
+          errEl.hidden = false;
+          toggle.checked = !toggle.checked;
+        }
+      };
+    });
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.hidden = false;
+    listEl.innerHTML = "";
+  }
+}
+
 function formatDaysUntil(isoDate) {
   const days = Math.ceil((new Date(isoDate) - new Date()) / (1000 * 60 * 60 * 24));
-  if (days < 0) return `expirée depuis ${Math.abs(days)} jour(s)`;
-  if (days === 0) return "expire aujourd'hui";
-  return `${days} jour(s) restant(s)`;
+  if (days < 0) return t("expired_since", { n: Math.abs(days) });
+  if (days === 0) return t("expires_today");
+  return t("days_remaining", { n: days });
 }
 
 async function loadLicenseStatus() {
   const box = document.getElementById("license-status-box");
-  box.innerHTML = "<p class=\"settings-hint\">Chargement…</p>";
+  box.innerHTML = `<p class="settings-hint">${t("loading")}</p>`;
   try {
     const s = await api("/api/admin/license");
     if (!s.license_id) {
-      box.innerHTML = `<p class="error-text">Aucune licence installée ou licence invalide${s.error ? ` (${escapeHtml(s.error)})` : ""}.</p>`;
+      box.innerHTML = `<p class="error-text">${t("no_license_installed")}${s.error ? ` (${escapeHtml(s.error)})` : ""}.</p>`;
       return;
     }
     const daysLeft = formatDaysUntil(s.expires_at);
     const expiringSoon = (new Date(s.expires_at) - new Date()) < 1000 * 60 * 60 * 24 * 30;
     const phoneHomeLabel = {
-      ok: "OK", not_checked: "pas encore vérifié", revoked: "révoquée",
-      instance_mismatch: "alerte : utilisée depuis une autre instance", expired: "expirée",
+      ok: "OK", not_checked: t("phone_home_not_checked"), revoked: t("phone_home_revoked"),
+      instance_mismatch: t("phone_home_mismatch"), expired: t("phone_home_expired"),
     }[s.phone_home_status] || s.phone_home_status;
     box.innerHTML = `
       <div class="license-info-grid">
-        <div><strong>Client</strong><br/>${escapeHtml(s.customer || "—")}</div>
-        <div><strong>Licence</strong><br/>${escapeHtml(s.license_id)}</div>
-        <div><strong>Sièges</strong><br/>${s.seats_used} / ${s.max_seats}</div>
-        <div><strong>Expiration</strong><br/>${escapeHtml(s.expires_at)}<br/>
+        <div><strong>${t("customer")}</strong><br/>${escapeHtml(s.customer || "—")}</div>
+        <div><strong>${t("license_label")}</strong><br/>${escapeHtml(s.license_id)}</div>
+        <div><strong>${t("seats")}</strong><br/>${s.seats_used} / ${s.max_seats}</div>
+        <div><strong>${t("expiration")}</strong><br/>${escapeHtml(s.expires_at)}<br/>
           <span class="${s.valid ? (expiringSoon ? "warning-text" : "") : "error-text"}">${daysLeft}</span></div>
-        <div><strong>Vérification réseau</strong><br/>${escapeHtml(phoneHomeLabel)}</div>
-        <div><strong>Statut global</strong><br/>
-          <span class="${s.valid ? "" : "error-text"}">${s.valid ? "✓ valide" : "✗ invalide / bloquée"}</span></div>
+        <div><strong>${t("network_check")}</strong><br/>${escapeHtml(phoneHomeLabel)}</div>
+        <div><strong>${t("global_status")}</strong><br/>
+          <span class="${s.valid ? "" : "error-text"}">${s.valid ? t("valid") : t("invalid_blocked")}</span></div>
       </div>
-      ${expiringSoon && s.valid ? `<p class="warning-text" style="margin-top:10px;">Expire dans moins de 30 jours — contacte ton fournisseur pour renouveler à temps.</p>` : ""}
+      ${expiringSoon && s.valid ? `<p class="warning-text" style="margin-top:10px;">${t("expiring_soon_warning")}</p>` : ""}
     `;
   } catch (e) {
     box.innerHTML = `<p class="error-text">${escapeHtml(e.message)}</p>`;
@@ -3888,7 +4746,7 @@ document.getElementById("license-install-btn").onclick = async () => {
   const errEl = document.getElementById("license-error");
   errEl.hidden = true;
   const token = document.getElementById("license-token-input").value.trim();
-  if (!token) { errEl.textContent = "Colle un token de licence."; errEl.hidden = false; return; }
+  if (!token) { errEl.textContent = t("paste_license_token"); errEl.hidden = false; return; }
   try {
     await api("/api/admin/license", {
       method: "POST",
@@ -3904,13 +4762,7 @@ document.getElementById("license-install-btn").onclick = async () => {
 };
 
 document.getElementById("license-revoke-btn").onclick = async () => {
-  if (!confirm(
-    "Retirer la licence de cette instance ?\n\n" +
-    "L'application repassera en délai de grâce de 15 jours puis sera bloquée " +
-    "tant qu'aucune licence valide n'est réinstallée. À faire seulement si tu " +
-    "migres vers un nouveau serveur — contacte ton fournisseur pour qu'il " +
-    "débloque la licence pour la nouvelle instance."
-  )) return;
+  if (!confirm(t("confirm_revoke_license"))) return;
   const errEl = document.getElementById("license-error");
   errEl.hidden = true;
   try {
@@ -3926,22 +4778,22 @@ async function loadAuditLog() {
   const listEl = document.getElementById("audit-log-list");
   const errEl = document.getElementById("audit-error");
   errEl.hidden = true;
-  listEl.innerHTML = "<p class=\"settings-hint\">Chargement…</p>";
+  listEl.innerHTML = `<p class="settings-hint">${t("loading")}</p>`;
   try {
     const events = await api("/api/admin/audit-log?limit=200");
     if (events.length === 0) {
-      listEl.innerHTML = "<p class=\"settings-hint\">Aucun événement pour l'instant.</p>";
+      listEl.innerHTML = `<p class="settings-hint">${t("no_events_yet")}</p>`;
       return;
     }
     listEl.innerHTML = events.map((ev) => {
-      const date = new Date(ev.created_at * 1000).toLocaleString("fr-FR");
+      const date = new Date(ev.created_at * 1000).toLocaleString(currentLang === "en" ? "en-US" : "fr-FR");
       const chips = Object.entries(ev.entity_counts)
         .map(([cat, n]) => `<span class="audit-count-chip">${escapeHtml(cat)} ×${n}</span>`)
         .join("");
       return `<div class="audit-row">
         <span class="audit-user">${escapeHtml(ev.username)}</span>
         <span class="audit-time">${date}</span>
-        <span>${ev.total_replaced} donnée(s) remplacée(s)${ev.conversation_id ? ` · conversation #${ev.conversation_id}` : ""}</span>
+        <span>${ev.total_replaced} ${t("data_replaced")}${ev.conversation_id ? ` · ${t("conversation_hash")}${ev.conversation_id}` : ""}</span>
         <div class="audit-counts">${chips}</div>
       </div>`;
     }).join("");
@@ -4045,7 +4897,7 @@ document.getElementById("fuzz-run-btn").onclick = async () => {
   const btn = document.getElementById("fuzz-run-btn");
   errEl.hidden = true;
   btn.disabled = true;
-  btn.textContent = "Fuzzing en cours…";
+  btn.textContent = t("fuzzing_in_progress");
   try {
     const r = await api("/api/admin/fuzz", {
       method: "POST",
@@ -4058,9 +4910,9 @@ document.getElementById("fuzz-run-btn").onclick = async () => {
     circle.className = benchScoreClass(coverage);
     document.getElementById("fuzz-score-value").textContent = `${coverage}%`;
     document.getElementById("fuzz-score-label").textContent =
-      r.total_leaked === 0 ? "Aucune fuite sur l'échantillon" : `${r.total_leaked} fuite(s) sur ${r.total_sensitive}`;
+      r.total_leaked === 0 ? t("no_leak_in_sample") : t("leaks_on_sample", { n: r.total_leaked, total: r.total_sensitive });
     document.getElementById("fuzz-score-sub").textContent =
-      `${r.n} lignes générées aléatoirement · seed ${r.seed} · sur-anonymisation ${r.over_redaction_rate}%`;
+      t("lines_generated", { n: r.n, seed: r.seed, rate: r.over_redaction_rate });
 
     const examplesBox = document.getElementById("fuzz-examples");
     examplesBox.hidden = !r.leak_examples || r.leak_examples.length === 0;
@@ -4074,7 +4926,7 @@ document.getElementById("fuzz-run-btn").onclick = async () => {
     errEl.hidden = false;
   } finally {
     btn.disabled = false;
-    btn.textContent = "Lancer le fuzzing";
+    btn.textContent = t("run_fuzzing");
   }
 };
 
@@ -4086,9 +4938,9 @@ function renderBenchmarkResults(report) {
   circle.className = benchScoreClass(report.coverage_pct);
   document.getElementById("benchmark-score-value").textContent = `${report.coverage_pct}%`;
   document.getElementById("benchmark-score-label").textContent =
-    report.total_leaked === 0 ? "Aucune fuite détectée" : `${report.total_leaked} fuite(s) détectée(s)`;
+    report.total_leaked === 0 ? t("no_leak_detected") : t("leaks_detected_count", { n: report.total_leaked });
   document.getElementById("benchmark-score-sub").textContent =
-    `${report.total_found} donnée(s) sensible(s) repérée(s) dans le texte original`;
+    t("sensitive_data_found", { n: report.total_found });
 
   const bars = document.getElementById("benchmark-bars");
   const maxFound = Math.max(1, ...Object.values(report.by_category).map((c) => c.found));
@@ -4102,14 +4954,14 @@ function renderBenchmarkResults(report) {
           <div class="bench-bar-track"><div class="bench-bar-fill ${c.leaked ? "has-leak" : ""}" style="width:${pct}%"></div></div>
           <span class="bench-bar-count">${c.found - c.leaked}/${c.found}</span>
         </div>`;
-    }).join("") || `<p class="settings-hint">Aucune donnée sensible détectée dans ce texte.</p>`;
+    }).join("") || `<p class="settings-hint">${t("no_sensitive_data_in_text")}</p>`;
 
   const leaksBox = document.getElementById("benchmark-leaks");
   leaksBox.hidden = report.leaks.length === 0;
   document.getElementById("benchmark-leaks-list").innerHTML = report.leaks.map((l) => `
     <div class="bench-leak-row">
       <span class="leak-cat">${escapeHtml(CATEGORY_LABELS[l.category] || l.category)}</span>
-      <span class="leak-line">ligne ${l.line}</span>
+      <span class="leak-line">${t("line_label")} ${l.line}</span>
       <span class="leak-preview">${escapeHtml(l.preview)}</span>
     </div>`).join("");
 
@@ -4118,7 +4970,7 @@ function renderBenchmarkResults(report) {
   candidatesBox.hidden = candidates.length === 0;
   document.getElementById("benchmark-candidates-list").innerHTML = candidates.map((c) => `
     <div class="bench-leak-row">
-      <span class="leak-line">ligne ${c.line}</span>
+      <span class="leak-line">${t("line_label")} ${c.line}</span>
       <span class="leak-preview">${escapeHtml(c.preview)}</span>
     </div>`).join("");
 }
@@ -4128,7 +4980,7 @@ document.getElementById("benchmark-run-btn").onclick = async () => {
   const errEl = document.getElementById("benchmark-error");
   errEl.hidden = true;
   if (!text.trim()) {
-    errEl.textContent = "Colle d'abord des logs à analyser.";
+    errEl.textContent = t("paste_logs_first");
     errEl.hidden = false;
     return;
   }
@@ -4149,26 +5001,26 @@ document.getElementById("benchmark-copy-report-btn").onclick = (e) => {
   if (!_lastBenchmarkReport) return;
   const r = _lastBenchmarkReport;
   const lines = [
-    `Benchmark TokenVeil — couverture mesurée : ${r.coverage_pct}%`,
-    `${r.total_found} donnée(s) sensible(s) repérée(s), ${r.total_leaked} fuite(s).`,
+    t("benchmark_report_title", { pct: r.coverage_pct }),
+    t("benchmark_report_summary", { found: r.total_found, leaked: r.total_leaked }),
     "",
-    "Par catégorie :",
+    t("by_category_label"),
     ...Object.entries(r.by_category)
       .filter(([, c]) => c.found > 0)
-      .map(([cat, c]) => `  - ${CATEGORY_LABELS[cat] || cat} : ${c.found - c.leaked}/${c.found} anonymisé(s)`),
+      .map(([cat, c]) => `  - ${CATEGORY_LABELS[cat] || cat} : ${c.found - c.leaked}/${c.found} ${t("anonymized_count")}`),
   ];
   if (r.leaks.length) {
-    lines.push("", "Fuites à corriger :");
-    r.leaks.forEach((l) => lines.push(`  - [${CATEGORY_LABELS[l.category] || l.category}] ligne ${l.line}, aperçu : ${l.preview}`));
+    lines.push("", t("leaks_to_fix"));
+    r.leaks.forEach((l) => lines.push(`  - [${CATEGORY_LABELS[l.category] || l.category}] ${t("line_label")} ${l.line}, ${t("preview_label")} : ${l.preview}`));
   }
   if (r.name_candidates && r.name_candidates.length) {
-    lines.push("", "Candidats noms en texte libre à vérifier (non comptés dans le score) :");
-    r.name_candidates.forEach((c) => lines.push(`  - ligne ${c.line}, aperçu : ${c.preview}`));
+    lines.push("", t("freetext_candidates_title"));
+    r.name_candidates.forEach((c) => lines.push(`  - ${t("line_label")} ${c.line}, ${t("preview_label")} : ${c.preview}`));
   }
   const btn = e.currentTarget;
   copyToClipboard(lines.join("\n")).then((ok) => {
-    btn.textContent = ok ? "Copié !" : "Échec de la copie";
-    setTimeout(() => { btn.textContent = "Copier le rapport pour Claude"; }, 1800);
+    btn.textContent = ok ? t("copied_exclaim") : t("copy_failed_msg");
+    setTimeout(() => { btn.textContent = t("copy_report_btn"); }, 1800);
   });
 };
 
@@ -4198,12 +5050,12 @@ document.getElementById("auto-detect-analyze-btn").onclick = () => {
   try {
     data = JSON.parse(autoDetectInput.value.trim());
   } catch (e) {
-    showAutoDetectError("JSON invalide — copie bien la sortie complète du script.");
+    showAutoDetectError(t("invalid_json"));
     return;
   }
   const candidates = data.candidates || [];
   if (!Array.isArray(candidates) || !candidates.length) {
-    showAutoDetectError("Aucun candidat trouvé dans ce JSON.");
+    showAutoDetectError(t("no_candidates_found"));
     autoDetectResults.hidden = true;
     return;
   }
@@ -4221,7 +5073,7 @@ document.getElementById("auto-detect-add-btn").onclick = async () => {
   const candidates = autoDetectList._candidates || [];
   const checked = [...autoDetectList.querySelectorAll('input[type="checkbox"]:checked')]
     .map((cb) => candidates[Number(cb.dataset.idx)]);
-  if (!checked.length) { showAutoDetectError("Coche au moins un terme à ajouter."); return; }
+  if (!checked.length) { showAutoDetectError(t("check_one_term")); return; }
   autoDetectError.hidden = true;
   let added = 0;
   for (const c of checked) {
@@ -4240,7 +5092,7 @@ document.getElementById("auto-detect-add-btn").onclick = async () => {
   autoDetectInput.value = "";
   document.querySelector('.settings-tab-btn[data-tab="manual"]').click();
   await refreshCustomTerms();
-  settingsError.textContent = `${added}/${checked.length} terme(s) ajouté(s).`;
+  settingsError.textContent = t("added_terms_count", { a: added, t: checked.length });
   settingsError.style.color = "var(--accent)";
   settingsError.hidden = false;
   setTimeout(() => { settingsError.style.color = ""; }, 3000);
@@ -4249,7 +5101,7 @@ document.getElementById("auto-detect-add-btn").onclick = async () => {
 profileLinkBtn.onclick = async () => {
   clearProfileError();
   profileLinkBtn.disabled = true;
-  profileLinkBtn.textContent = "Génération du lien…";
+  profileLinkBtn.textContent = t("generating_link");
   try {
     const { url } = await api("/api/account/link/start", { method: "POST" });
     profileAuthLink.href = url;
@@ -4261,7 +5113,7 @@ profileLinkBtn.onclick = async () => {
     showProfileError(e.message);
   } finally {
     profileLinkBtn.disabled = false;
-    profileLinkBtn.textContent = "Lier mon compte Claude Pro/Max";
+    profileLinkBtn.textContent = t("link_claude_account");
   }
 };
 
@@ -4271,7 +5123,7 @@ document.getElementById("profile-submit-code-btn").onclick = async () => {
   clearProfileError();
   const btn = document.getElementById("profile-submit-code-btn");
   btn.disabled = true;
-  btn.textContent = "Validation…";
+  btn.textContent = t("verifying");
   try {
     await api("/api/account/link/submit", {
       method: "POST",
@@ -4285,7 +5137,7 @@ document.getElementById("profile-submit-code-btn").onclick = async () => {
     showProfileError(e.message);
   } finally {
     btn.disabled = false;
-    btn.textContent = "Valider";
+    btn.textContent = t("validate");
   }
 };
 
@@ -4295,18 +5147,9 @@ document.getElementById("profile-cancel-link-btn").onclick = async () => {
   profileStepStatus.hidden = false;
 };
 
-async function startChattingFromProfile() {
-  await closeProfileModal();
-  if (!currentConvId) {
-    document.getElementById("new-chat-btn").click();
-  }
-  input.focus();
-}
-document.getElementById("profile-start-btn").onclick = startChattingFromProfile;
-document.getElementById("profile-status-start-btn").onclick = startChattingFromProfile;
 
 profileUnlinkBtn.onclick = async () => {
-  if (!confirm("Délier ce compte Claude ?")) return;
+  if (!confirm(t("confirm_unlink_claude"))) return;
   await api("/api/account/link", { method: "DELETE" });
   await refreshProfileStatus();
 };
@@ -4323,7 +5166,7 @@ document.getElementById("gemini-link-btn").onclick = async () => {
   const apiKey = input.value.trim();
   if (!apiKey) return;
   btn.disabled = true;
-  btn.textContent = "Vérification…";
+  btn.textContent = t("verifying");
   try {
     await api("/api/account/gemini/link", {
       method: "POST",
@@ -4337,19 +5180,238 @@ document.getElementById("gemini-link-btn").onclick = async () => {
     errEl.hidden = false;
   } finally {
     btn.disabled = false;
-    btn.textContent = "Lier ma clé Gemini";
+    btn.textContent = t("link_gemini_key");
   }
 };
 
 document.getElementById("gemini-unlink-btn").onclick = async () => {
-  if (!confirm("Délier ton compte Gemini ?")) return;
+  if (!confirm(t("confirm_unlink_gemini"))) return;
   await api("/api/account/gemini/link", { method: "DELETE" });
+  await refreshProfileStatus();
+};
+
+// --- Cartes Comptes IA : un seul pli ouvert à la fois, déplié par défaut
+// la première fois si rien n'est encore lié, sinon tout replié au chargement ---
+document.querySelectorAll(".ai-provider-header").forEach((header) => {
+  header.onclick = () => {
+    const card = header.closest(".ai-provider-card");
+    const wasExpanded = card.classList.contains("expanded");
+    document.querySelectorAll(".ai-provider-card").forEach((c) => {
+      c.classList.remove("expanded");
+      c.querySelector(".ai-provider-header").setAttribute("aria-expanded", "false");
+    });
+    if (!wasExpanded) {
+      card.classList.add("expanded");
+      header.setAttribute("aria-expanded", "true");
+    }
+  };
+});
+
+document.querySelectorAll("#claude-method-switch button").forEach((btn) => {
+  btn.onclick = (e) => {
+    e.stopPropagation();
+    document.querySelectorAll("#claude-method-switch button").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("claude-oauth-panel").hidden = btn.dataset.claudeMethod !== "oauth_token";
+    document.getElementById("claude-apikey-panel").hidden = btn.dataset.claudeMethod === "oauth_token";
+  };
+});
+
+document.getElementById("claude-apikey-link-btn").onclick = async () => {
+  const input = document.getElementById("claude-api-key-input");
+  const errEl = document.getElementById("profile-error");
+  const btn = document.getElementById("claude-apikey-link-btn");
+  errEl.hidden = true;
+  const apiKey = input.value.trim();
+  if (!apiKey) return;
+  btn.disabled = true;
+  btn.textContent = t("verifying");
+  try {
+    await api("/api/account/claude/api-key", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ api_key: apiKey }),
+    });
+    input.value = "";
+    await refreshProfileStatus();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = t("link_claude_apikey");
+  }
+};
+
+document.getElementById("vertex-link-btn").onclick = async () => {
+  const errEl = document.getElementById("vertex-error");
+  const btn = document.getElementById("vertex-link-btn");
+  errEl.hidden = true;
+  const projectId = document.getElementById("vertex-project-input").value.trim();
+  const region = document.getElementById("vertex-region-input").value.trim();
+  const serviceAccountJson = document.getElementById("vertex-sa-input").value.trim();
+  if (!projectId || !region || !serviceAccountJson) {
+    errEl.textContent = t("vertex_fields_required");
+    errEl.hidden = false;
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = t("verifying");
+  try {
+    await api("/api/account/vertex/link", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ project_id: projectId, region, service_account_json: serviceAccountJson }),
+    });
+    document.getElementById("vertex-sa-input").value = "";
+    await refreshProfileStatus();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = t("link_vertex");
+  }
+};
+
+document.getElementById("vertex-unlink-btn").onclick = async () => {
+  if (!confirm(t("confirm_unlink_vertex"))) return;
+  await api("/api/account/vertex/link", { method: "DELETE" });
+  await refreshProfileStatus();
+};
+
+document.getElementById("bedrock-link-btn").onclick = async () => {
+  const errEl = document.getElementById("bedrock-error");
+  const btn = document.getElementById("bedrock-link-btn");
+  errEl.hidden = true;
+  const awsAccessKey = document.getElementById("bedrock-access-key-input").value.trim();
+  const awsSecretKey = document.getElementById("bedrock-secret-key-input").value.trim();
+  const awsRegion = document.getElementById("bedrock-region-input").value.trim();
+  if (!awsAccessKey || !awsSecretKey || !awsRegion) {
+    errEl.textContent = t("bedrock_fields_required");
+    errEl.hidden = false;
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = t("verifying");
+  try {
+    await api("/api/account/bedrock/link", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ aws_access_key: awsAccessKey, aws_secret_key: awsSecretKey, aws_region: awsRegion }),
+    });
+    document.getElementById("bedrock-secret-key-input").value = "";
+    await refreshProfileStatus();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = t("link_bedrock");
+  }
+};
+
+document.getElementById("bedrock-unlink-btn").onclick = async () => {
+  if (!confirm(t("confirm_unlink_bedrock"))) return;
+  await api("/api/account/bedrock/link", { method: "DELETE" });
+  await refreshProfileStatus();
+};
+
+document.getElementById("openai-link-btn").onclick = async () => {
+  const input = document.getElementById("openai-api-key-input");
+  const errEl = document.getElementById("openai-error");
+  const btn = document.getElementById("openai-link-btn");
+  errEl.hidden = true;
+  const apiKey = input.value.trim();
+  if (!apiKey) return;
+  btn.disabled = true;
+  btn.textContent = t("verifying");
+  try {
+    await api("/api/account/openai/link", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ api_key: apiKey }),
+    });
+    input.value = "";
+    await refreshProfileStatus();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = t("link_openai");
+  }
+};
+
+document.getElementById("openai-unlink-btn").onclick = async () => {
+  if (!confirm(t("confirm_unlink_openai"))) return;
+  await api("/api/account/openai/link", { method: "DELETE" });
+  await refreshProfileStatus();
+};
+
+document.getElementById("mistral-link-btn").onclick = async () => {
+  const input = document.getElementById("mistral-api-key-input");
+  const errEl = document.getElementById("mistral-error");
+  const btn = document.getElementById("mistral-link-btn");
+  errEl.hidden = true;
+  const apiKey = input.value.trim();
+  if (!apiKey) return;
+  btn.disabled = true;
+  btn.textContent = t("verifying");
+  try {
+    await api("/api/account/mistral/link", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ api_key: apiKey }),
+    });
+    input.value = "";
+    await refreshProfileStatus();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = t("link_mistral");
+  }
+};
+
+document.getElementById("mistral-unlink-btn").onclick = async () => {
+  if (!confirm(t("confirm_unlink_mistral"))) return;
+  await api("/api/account/mistral/link", { method: "DELETE" });
   await refreshProfileStatus();
 };
 
 refreshProfileStatus().catch(() => {});
 loadPreferences().catch(() => {});
 loadConversations();
+
+// Échap ferme le plus "haut" élément ouvert (menu avant modal, modal avant
+// rien) : un seul niveau fermé par appui, jamais tout d'un coup.
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  if (!convContextMenu.hidden) { closeConvMenu(); return; }
+  if (!deployMenu.hidden) { deployMenu.hidden = true; return; }
+  if (!_customSelectMenu.hidden) {
+    _customSelectMenu.hidden = true;
+    if (_customSelectActive) _customSelectActive.setAttribute("aria-expanded", "false");
+    return;
+  }
+  if (!modelSelectMenu.hidden) {
+    modelSelectMenu.hidden = true;
+    modelSelectBtn.setAttribute("aria-expanded", "false");
+    return;
+  }
+  if (anonPreview.classList.contains("open")) {
+    previewRequestId++;
+    clearTimeout(previewDebounce);
+    anonPreview.classList.remove("open");
+    return;
+  }
+  if (!searchOverlay.hidden) { closeSearchOverlay(); return; }
+  if (!adminOverlay.hidden) { closeAdminModal(); return; }
+  if (!settingsOverlay.hidden) { closeSettingsModal(); return; }
+  if (!profileOverlay.hidden) { closeProfileModal(); return; }
+});
 </script>
 </body>
 </html>
