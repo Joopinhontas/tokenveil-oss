@@ -4,6 +4,12 @@
 
 <h1 align="center">TokenVeil</h1>
 
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-ELv2-blue.svg" alt="Licence : Elastic License 2.0"></a>
+  <a href="../../releases"><img src="https://img.shields.io/github/v/release/Joopinhontas/tokenveil-oss?include_prereleases" alt="Dernière release"></a>
+  <a href="Dockerfile"><img src="https://img.shields.io/badge/python-3.12%2B-blue.svg" alt="Python 3.12+"></a>
+</p>
+
 **Statut : Alpha (build de test interne), dépôt vitrine public**
 
 Une interface de chat auto-hébergée pour Claude, Gemini, Vertex AI, Bedrock, OpenAI et Mistral qui anonymise automatiquement les données sensibles (PII, IP internes, clés API/secrets, références clients, IBAN, numéros de carte bancaire...) avant qu'elles n'atteignent le LLM, et restaure de façon transparente les vraies valeurs dans la réponse affichée à l'utilisateur. Les données réelles ne quittent jamais votre infrastructure.
