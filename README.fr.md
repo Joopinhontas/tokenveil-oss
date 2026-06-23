@@ -4,17 +4,17 @@
 
 <h1 align="center">TokenVeil</h1>
 
-**Statut : Alpha (build de test interne) — dépôt vitrine public**
+**Statut : Alpha (build de test interne), dépôt vitrine public**
 
 Une interface de chat auto-hébergée pour Claude qui anonymise automatiquement les données sensibles (PII, IP internes, clés API/secrets, références clients, IBAN, numéros de carte bancaire...) avant qu'elles n'atteignent Claude, et restaure de façon transparente les vraies valeurs dans la réponse affichée à l'utilisateur. Les données réelles ne quittent jamais votre infrastructure.
 
-> **Ceci est une copie vitrine.** Tout ici est du vrai code de prod (auth, système de licence, frontend, déploiement Docker) sauf `anon_engine.py` — le moteur de détection/anonymisation réel — remplacé par un stub respectant son interface publique. Voir [ARCHITECTURE.md](ARCHITECTURE.md) §4 pour ce qu'il fait sans exposer comment. Code source complet disponible sous licence commerciale : [marc.bourrel81@gmail.com](mailto:marc.bourrel81@gmail.com).
+> **Ceci est une copie vitrine.** Tout ici est du vrai code de prod (auth, système de licence, frontend, déploiement Docker) sauf `anon_engine.py`, le moteur de détection/anonymisation réel, remplacé par un stub respectant son interface publique. Voir [ARCHITECTURE.md](ARCHITECTURE.md) §4 pour ce qu'il fait sans exposer comment. Code source complet disponible sous licence commerciale : [contact@tokenveil.eu](mailto:contact@tokenveil.eu).
 
 > Non affilié à, ni approuvé ni sponsorisé par Anthropic ou Google. "Claude" est une marque déposée d'Anthropic PBC, "Gemini" une marque de Google LLC. Ce projet est un client indépendant qui utilise ces modèles via l'abonnement/accès API propre de chaque utilisateur.
 
 ## Licence
 
-Code source disponible sous [Elastic License 2.0](LICENSE). Tu peux le lire, l'auditer, l'auto-héberger. Tu ne peux **pas** : le proposer en service hébergé/managé à des tiers, ni contourner/désactiver le système de licence. Pour une licence commerciale de déploiement, contacte [marc.bourrel81@gmail.com](mailto:marc.bourrel81@gmail.com).
+Code source disponible sous [Elastic License 2.0](LICENSE). Tu peux le lire, l'auditer, l'auto-héberger. Tu ne peux **pas** : le proposer en service hébergé/managé à des tiers, ni contourner/désactiver le système de licence. Pour une licence commerciale de déploiement, contacte [contact@tokenveil.eu](mailto:contact@tokenveil.eu).
 
 > 🇬🇧 English version: [README.md](README.md)
 
@@ -22,9 +22,9 @@ Code source disponible sous [Elastic License 2.0](LICENSE). Tu peux le lire, l'a
 
 ## 1. Le problème
 
-Les équipes collent des données de production réelles dans des outils de chat IA au quotidien — logs avec IP internes, clés API qui fuitent, noms de clients, références de tickets, données financières. Ces données partent ensuite chez un fournisseur de modèle tiers, sont stockées de son côté, et potentiellement utilisées pour l'entraînement ou conservées dans des logs.
+Les équipes collent des données de production réelles dans des outils de chat IA au quotidien : logs avec IP internes, clés API qui fuitent, noms de clients, références de tickets, données financières. Ces données partent ensuite chez un fournisseur de modèle tiers, sont stockées de son côté, et potentiellement utilisées pour l'entraînement ou conservées dans des logs.
 
-**TokenVeil** s'intercale entre votre équipe et Claude : il retire tout ce qui est sensible *avant* que la requête ne quitte votre serveur, et le remet *après* réception de la réponse. Du point de vue de l'utilisateur, rien ne change — il colle un vrai log, il reçoit une vraie réponse exploitable. Claude lui-même ne voit que des placeholders opaques comme `<IP_ADDRESS_1>`, `<API_SECRET_2>`, `<CUSTOMER_REF_3>`.
+**TokenVeil** s'intercale entre votre équipe et Claude : il retire tout ce qui est sensible *avant* que la requête ne quitte votre serveur, et le remet *après* réception de la réponse. Du point de vue de l'utilisateur, rien ne change. Il colle un vrai log, il reçoit une vraie réponse exploitable. Claude lui-même ne voit que des placeholders opaques comme `<IP_ADDRESS_1>`, `<API_SECRET_2>`, `<CUSTOMER_REF_3>`.
 
 ## 2. Fonctionnement
 
@@ -50,7 +50,7 @@ flowchart LR
 
 ### Facturation par utilisateur (pas de clé API partagée)
 
-Chaque utilisateur lie **son propre** abonnement Claude Pro/Max via un flow OAuth intégré à l'UI (page Profil → "Lier mon compte Claude"). Le backend pilote `claude setup-token` (commande officielle du CLI Claude Code) via un pseudo-terminal, capture le token OAuth longue durée généré, et le stocke chiffré (Fernet) sur disque, isolé par utilisateur (`CLAUDE_CONFIG_DIR` par username). Chaque prompt de cet utilisateur est ensuite exécuté via le CLI Claude Code authentifié avec son propre token — **facturé sur son abonnement personnel, pas sur une clé API partagée et facturée au token.**
+Chaque utilisateur lie **son propre** abonnement Claude Pro/Max via un flow OAuth intégré à l'UI (page Profil → "Lier mon compte Claude"). Le backend pilote `claude setup-token` (commande officielle du CLI Claude Code) via un pseudo-terminal, capture le token OAuth longue durée généré, et le stocke chiffré (Fernet) sur disque, isolé par utilisateur (`CLAUDE_CONFIG_DIR` par username). Chaque prompt de cet utilisateur est ensuite exécuté via le CLI Claude Code authentifié avec son propre token : **facturé sur son abonnement personnel, pas sur une clé API partagée et facturée au token.**
 
 ### Ce qui est détecté et anonymisé
 
@@ -70,7 +70,7 @@ La détection combine :
 
 ### Transparence en temps réel
 
-L'UI affiche, en temps réel pendant la frappe, exactement ce qui serait envoyé à Claude sous forme anonymisée (aperçu avec léger délai). Chaque message envoyé dispose aussi d'un bouton "Voir la version envoyée à Claude" qui révèle le payload tokenisé réellement sorti du serveur — rien n'est caché à l'utilisateur final sur ce que fait concrètement l'anonymisation.
+L'UI affiche, en temps réel pendant la frappe, exactement ce qui serait envoyé à Claude sous forme anonymisée (aperçu avec léger délai). Chaque message envoyé dispose aussi d'un bouton "Voir la version envoyée à Claude" qui révèle le payload tokenisé réellement sorti du serveur. Rien n'est caché à l'utilisateur final sur ce que fait concrètement l'anonymisation.
 
 ## 3. Données au repos
 
@@ -123,7 +123,7 @@ uvicorn app:app --host 0.0.0.0 --port 8500
 
 Prérequis dans ce cas : `claude` (Claude Code CLI) installé et dans le `PATH` à la main (l'image Docker
 s'en occupe automatiquement). Chaque utilisateur lie son propre abonnement depuis le panneau
-**Préférences** de l'UI — aucune clé API n'est nécessaire dans la config pour Claude ; Gemini se lie via
+**Préférences** de l'UI. Aucune clé API n'est nécessaire dans la config pour Claude ; Gemini se lie via
 une clé API personnelle (aistudio.google.com), gratuite sur les modèles Flash.
 
 ## 6. Stack technique
@@ -147,4 +147,4 @@ Ce build valide le mécanisme central de bout en bout : de vrais logs du homelab
 
 ---
 
-*Alpha interne — construit pour évaluation, pas encore durci pour un déploiement multi-tenant en production.*
+*Alpha interne, construit pour évaluation, pas encore durci pour un déploiement multi-tenant en production.*
