@@ -1,16 +1,19 @@
+# TokenVeil Community Edition — dependencies.
+# The Community anonymization engine is regex-based and pulls in NO ML stack:
+# no Presidio, no spaCy, no ~1 GB of language models. It installs in seconds
+# and runs anywhere. (The Enterprise engine adds Presidio + spaCy NER; it drops
+# in behind the same interface under a commercial license.)
 fastapi==0.137.2
 uvicorn==0.49.0
 pydantic==2.13.4
 python-dotenv==1.2.2
 cryptography==49.0.0
 httpx==0.28.1
+python-multipart==0.0.20
+# AI provider SDKs (only the ones you configure are actually used at runtime)
 google-genai==2.9.0
 anthropic[vertex,bedrock]==0.69.0
 openai==1.99.4
 mistralai==1.9.11
+# Authentication backend (local accounts work out of the box; LDAP/AD optional)
 ldap3==2.9.1
-presidio_analyzer==2.2.362
-presidio_anonymizer==2.2.362
-spacy==3.8.14
-fr_core_news_lg @ https://github.com/explosion/spacy-models/releases/download/fr_core_news_lg-3.8.0/fr_core_news_lg-3.8.0-py3-none-any.whl
-en_core_web_lg @ https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0-py3-none-any.whl

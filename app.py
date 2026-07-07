@@ -31,15 +31,25 @@ db.init_db()
 
 app = FastAPI(title="TokenVeil")
 
+# COOKIE_SECURE: send the session cookie over HTTPS only, and enable HSTS.
+# Defaults to false in the Community edition so a plain-HTTP local trial works
+# out of the box; set it to "true" behind a TLS reverse proxy in production.
+COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "false").strip().lower() == "true"
+
+# Cross-cutting middlewares (see middleware.py): security headers on every
+# response (CSP, anti-clickjacking, HSTS when behind TLS) + an anti-abuse rate
+# limiter. Mounted early so they cover every route, static files included.
+from middleware import RateLimitMiddleware, SecurityHeadersMiddleware
+
+app.add_middleware(RateLimitMiddleware)
+app.add_middleware(SecurityHeadersMiddleware, hsts=COOKIE_SECURE)
+
 
 @app.on_event("startup")
 def _warm_up_anon_engine():
-    # charge les modèles spaCy (fr+en) au démarrage du serveur plutôt qu'à la
-    # première requête : sans ça, le tout premier appel à l'aperçu temps réel
-    # (ou n'importe quel envoi de message) après un restart paie le coût de
-    # chargement à froid — mesuré à ~5-9s — et donne l'impression que la
-    # fonctionnalité elle-même est lente, alors qu'elle est instantanée une
-    # fois le modèle chaud (~8ms).
+    # No-op in the Community edition (the regex engine has no model to warm up).
+    # Kept so startup stays identical to the Enterprise edition, whose engine
+    # loads spaCy models here.
     import anon_engine
     anon_engine.get_analyzer()
 
@@ -294,7 +304,7 @@ def api_login(payload: LoginPayload, response: Response):
     token = secrets.token_urlsafe(32)
     _sessions[token] = payload.username
     response.set_cookie(
-        SESSION_COOKIE, token, httponly=True, samesite="lax", max_age=60 * 60 * 24 * 30
+        SESSION_COOKIE, token, httponly=True, samesite="lax", secure=COOKIE_SECURE, max_age=60 * 60 * 24 * 30
     )
     return {"username": payload.username}
 

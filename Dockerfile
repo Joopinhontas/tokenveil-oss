@@ -1,12 +1,11 @@
-# Image volontairement plus lourde que la moyenne FastAPI : les modèles
-# spaCy fr+en (large) pèsent ~1 Go à eux seuls, et le CLI Claude Code a
-# besoin de Node.js en plus de Python. C'est le prix de tourner le moteur
-# d'anonymisation et la liaison OAuth Claude entièrement self-hosted.
+# TokenVeil Community Edition image.
+# Light by design: the Community anonymization engine is regex-based, so there
+# are no spaCy models to download. The only non-Python dependency is Node.js,
+# needed by claude_account.py for the Claude Code CLI (Claude subscription
+# OAuth). If you only use API-key providers (Gemini, OpenAI, Mistral...), Node
+# is unused at runtime but harmless.
 FROM python:3.12-slim
 
-# Node.js : nécessaire pour `claude` (Claude Code CLI), utilisé par
-# claude_account.py pour la liaison OAuth et l'envoi des prompts. Gemini
-# (clé API, google-genai) n'a besoin d'aucun binaire externe.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         curl gnupg \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
@@ -14,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && npm install -g @anthropic-ai/claude-code \
     && apt-get purge -y gnupg && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
-# curl est gardé : utilisé par le HEALTHCHECK ci-dessous
+# curl is kept: used by the HEALTHCHECK below.
 
 WORKDIR /app
 
@@ -23,10 +22,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# dossier de données : conversations, mapping chiffré, comptes liés Claude/
-# Gemini — toujours monté en volume en production (voir docker-compose.yml),
-# jamais laissé seulement dans la couche d'image.
+# Data dir: conversations, encrypted mapping, linked AI accounts. Always mounted
+# as a volume in production (see docker-compose.yml), never left only in the image.
 RUN mkdir -p data
+
+# Run as non-root (defense in depth). uid 1000 matches the most common host user
+# on a first Docker deployment, so files created in ./data stay host-editable.
+RUN useradd -m -u 1000 tokenveil && chown -R tokenveil:tokenveil /app
+USER tokenveil
 
 EXPOSE 8500
 

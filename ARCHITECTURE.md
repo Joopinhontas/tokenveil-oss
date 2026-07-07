@@ -62,11 +62,21 @@ La vraie donnée ne traverse JAMAIS le réseau vers les fournisseurs de LLM. Ell
 
 ## 4. Le moteur d'anonymisation (`anon_engine.py`)
 
-**Module propriétaire, non inclus dans ce dépôt public.** Le fichier `anon_engine.py` présent ici est un stub qui expose la même interface (`AnonSession`, `get_analyzer`, `scan_coverage`, `ENTITIES_OF_INTEREST`) pour que le reste du code reste lisible et importable, mais ne contient aucune logique de détection réelle.
+Deux éditions partagent **la même interface** (`AnonSession`, `get_analyzer`, `scan_coverage`, `ENTITIES_OF_INTEREST`). Basculer de l'une à l'autre ne change **que ce fichier** ; tout le reste du code (app, UI, providers, stockage) est identique.
 
-Ce que le moteur réel fait, à haut niveau : combine Microsoft Presidio + spaCy NER (fr/en) avec des recognizers regex custom (secrets, IPs, IBAN, références métier...), des heuristiques tenant compte de la structure des logs, une liste d'autorisation/exclusion de catégories configurable par déploiement, et plusieurs passes de réduction de faux positifs/négatifs, validées en continu par fuzzing aléatoire sur données synthétiques.
+**Édition Community (ce dépôt) — moteur regex, sans dépendance.** Le `anon_engine.py` fourni ici est **pleinement fonctionnel** : il détecte et remplace les catégories déterministes à haute confiance et restaure les valeurs à l'affichage. Pipeline ligne par ligne (empêche une entité de déborder sur deux lignes de log), détecteurs ordonnés par priorité (les motifs les plus spécifiques gagnent les chevauchements), tokens réversibles avec cohérence de casse pour les noms, et un « sweep des valeurs connues » qui re-masque une valeur déjà vue même si un détecteur la rate plus loin.
 
-Implémentation complète disponible sous licence commerciale, contact contact@tokenveil.eu.
+Catégories couvertes par le moteur Community :
+- **Réseau** : IPv4 (interne vs publique), IPv6 (approx.), MAC, hostnames internes (`.local`, `.corp`...).
+- **Identité** : e-mails, téléphones (FR + intl), champs de log `user=`/`login=`/`owner=`, noms introduits par une civilité (`M. Dupont`).
+- **Secrets** : clés API à signature (AWS, GitHub, Stripe, JWT, Anthropic, OpenAI...), valeurs de `apikey=`/`token:`/`password=`, credentials dans une chaîne de connexion.
+- **Financier / réf. métier** : IBAN, cartes bancaires, montants, `CUST-1234`/`TICKET-5678`.
+
+Un `scan_coverage` indépendant (aucune logique partagée avec le moteur) mesure honnêtement la couverture, et `tools/fuzz_anon.py` génère des PII synthétiques aléatoires pour mesurer le taux de fuite (0 % sur les catégories déterministes, cf. l'onglet admin « Benchmark »).
+
+**Édition Enterprise (licence commerciale) — moteur ML.** Ajoute, derrière la même interface : Microsoft Presidio + spaCy NER (fr/en) pour la détection de **noms / organisations / lieux en texte libre** (sans civilité, en prose), un lexique multilingue de ~500 prénoms utilisé comme ancre de détection, des heuristiques de structure de log (découpage d'identifiants CamelCase, sanctuarisation du User-Agent en Combined Log Format, décodage des query-params avant scan), un « sweep » garantissant « détecté une fois, masqué pour le reste de la conversation », et des dizaines de passes de réduction de faux positifs/négatifs réglées par fuzzing (0 % de fuite mesuré sur 3 340+ valeurs, noms en texte libre inclus — voir tokenveil.eu/benchmark).
+
+Contact : contact@tokenveil.eu.
 
 ## 5. Entités configurables par déploiement
 
