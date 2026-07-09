@@ -54,6 +54,10 @@ TokenVeil ships in two editions that share the **exact same product** (UI, auth,
 | **Free-text names / organizations / locations** (no title, in prose) | ❌ | ✅ |
 | First-name lexicon anchor, CamelCase/User-Agent/query-param heuristics | ❌ | ✅ |
 | Measured leak rate | ~0% on the deterministic categories | **0%** over 3,340+ values incl. free-text names ([benchmark](https://tokenveil.eu/benchmark)) |
+| Multi-provider chat, local accounts, admin, audit log | ✅ | ✅ |
+| File anonymization (attach .docx/.xlsx/.pdf, OCR) | ❌ | ✅ |
+| LDAP / Active Directory auth + multi-tenant seat quotas | ❌ | ✅ |
+| Licensing / seat enforcement | None (free, no lockout) | Licensed |
 | Support & license | Self-serve, ELv2 | Commercial license + support |
 
 The Community engine is genuinely useful and lets you evaluate the whole product. The Enterprise engine is where the accuracy on hard, real-world cases (a customer name buried in a stack trace, an org in free prose) comes from. It drops in behind the same interface — nothing else in the codebase changes.

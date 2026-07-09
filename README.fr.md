@@ -54,6 +54,10 @@ TokenVeil se décline en deux éditions qui partagent **exactement le même prod
 | **Noms / organisations / lieux en texte libre** (sans titre, en prose) | ❌ | ✅ |
 | Lexique de prénoms, heuristiques CamelCase/User-Agent/query-param | ❌ | ✅ |
 | Taux de fuite mesuré | ~0 % sur les catégories déterministes | **0 %** sur 3 340+ valeurs, noms en texte libre inclus ([benchmark](https://tokenveil.eu/benchmark)) |
+| Chat multi-providers, comptes locaux, admin, journal d'audit | ✅ | ✅ |
+| Anonymisation de fichiers (joindre .docx/.xlsx/.pdf, OCR) | ❌ | ✅ |
+| Auth LDAP / Active Directory + quotas de sièges multi-tenant | ❌ | ✅ |
+| Licence / limite de sièges | Aucune (gratuit, jamais bloqué) | Sous licence |
 | Support & licence | Autonome, ELv2 | Licence commerciale + support |
 
 Le moteur Community est réellement utile et permet d'évaluer tout le produit. Le moteur Enterprise apporte la précision sur les cas réels difficiles (un nom de client noyé dans une stack trace, une organisation en prose). Il se branche derrière la même interface — rien d'autre ne change dans le code.

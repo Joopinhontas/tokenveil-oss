@@ -1639,6 +1639,84 @@
     color: var(--text);
   }
   .anon-revealed .tok { color: var(--accent); font-weight: 600; }
+  /* === Community Edition : marquage gratuit + upsell Entreprise === */
+  #edition-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    padding: 1px 7px;
+    border-radius: 999px;
+    margin-left: 6px;
+    flex-shrink: 0;
+  }
+  /* petite pastille "Entreprise" collée à un libellé grisé */
+  .premium-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    padding: 1px 6px;
+    border-radius: 999px;
+    vertical-align: middle;
+  }
+  .premium-pill svg { width: 10px; height: 10px; }
+  /* carte d'upsell qui remplace une fonctionnalité réservée */
+  .premium-notice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    padding: 32px 24px;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-md, 12px);
+    background: var(--bg);
+    color: var(--text-dim);
+  }
+  .premium-notice .lock {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .premium-notice .lock svg { width: 22px; height: 22px; }
+  .premium-notice h3 { font-size: 15.5px; color: var(--text); margin: 0; }
+  .premium-notice p { font-size: 13px; max-width: 46ch; margin: 0; line-height: 1.5; }
+  .premium-notice .tag {
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+    color: var(--accent); background: var(--accent-soft); border: 1px solid var(--accent);
+    padding: 3px 10px; border-radius: 999px;
+  }
+  .premium-notice a {
+    color: var(--accent); text-decoration: none; font-weight: 600; font-size: 13px;
+  }
+  .premium-notice a:hover { text-decoration: underline; }
+  /* option grisée dans un select / une liste */
+  .premium-disabled { color: var(--text-faint); }
+  /* petit bandeau d'info scope (anonymisation réduite) */
+  .community-scope {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 12px 14px; margin-bottom: 14px;
+    border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm); background: var(--bg);
+    font-size: 12.5px; color: var(--text-dim); line-height: 1.5;
+  }
+  .community-scope svg { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+  .community-scope strong { color: var(--text); }
 </style>
 </head>
 <body>
@@ -1647,7 +1725,8 @@
       <span class="mark" aria-hidden="true">
         <svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4 4 12l6 8"/><path d="M14 4l6 8-6 8"/></g><rect x="9.5" y="10.6" width="5" height="2.8" rx="1.4" fill="currentColor" stroke="none"/></svg>
       </span>
-      <span class="wordmark">TokenVeil<span class="sub">multi-IA</span></span>
+      <span class="wordmark">TokenVeil<span class="sub" data-i18n="edition_community">Community · gratuit</span></span>
+      <span id="edition-badge" title="Édition open-source gratuite" data-i18n="free_label">Gratuit</span>
       <button id="search-conv-btn" type="button" aria-label="Rechercher dans les conversations" title="Rechercher (Ctrl+K)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
       </button>
@@ -2116,6 +2195,14 @@
           <div id="admin-users-list"></div>
         </div>
         <div id="admin-tab-ldap" class="admin-tab-panel" hidden>
+          <div class="premium-notice">
+            <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+            <span class="tag" data-i18n="enterprise_only">Version Entreprise</span>
+            <h3 data-i18n="ldap_premium_title">Authentification LDAP / Active Directory</h3>
+            <p data-i18n="ldap_premium_desc">Connectez TokenVeil à votre annuaire d'entreprise (OpenLDAP, Active Directory), avec restriction par groupe et quotas de sièges multi-tenant. L'édition Community utilise les comptes locaux.</p>
+            <a href="mailto:contact@tokenveil.eu" data-i18n="upgrade_cta">Passer à l'édition Entreprise →</a>
+          </div>
+          <div id="ldap-enterprise-form" hidden>
           <p class="settings-hint" data-i18n="ldap_config_hint">Configurable ici, ou via les mêmes variables dans le fichier <code>.env</code> — l'UI prend le pas si les deux sont définis.</p>
           <div id="admin-backend-row">
             <label data-i18n="connection_method">Méthode de connexion :</label>
@@ -2158,6 +2245,7 @@
           </div>
           <p id="tenants-error" class="error-text" hidden></p>
           <div id="tenants-list"></div>
+          </div>
         </div>
         <div id="admin-tab-benchmark" class="admin-tab-panel" hidden>
           <p class="settings-hint" data-i18n="benchmark_hint">Colle de vrais logs. Un scanner externe repère ce qui ressemble à une donnée sensible, puis vérifie si elle a vraiment disparu. Un score mesuré, pas une estimation.</p>
@@ -2230,6 +2318,10 @@
         </div>
 
         <div id="admin-tab-license" class="admin-tab-panel" hidden>
+          <div class="community-scope">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+            <span data-i18n="license_community_note"><strong>Édition Community :</strong> aucune licence requise, aucune limite de sièges, aucun blocage. La gestion de licence ci-dessous ne concerne que l'édition Entreprise.</span>
+          </div>
           <p class="settings-hint" data-i18n="license_status_hint">Statut de la licence TokenVeil de cette instance.</p>
           <div id="license-status-box"></div>
           <p class="settings-hint" style="margin-top:18px;" data-i18n="renew_license_hint">Renouveler ou remplacer la licence (colle le nouveau token reçu du fournisseur) :</p>
@@ -2249,6 +2341,10 @@
         </div>
 
         <div id="admin-tab-entities" class="admin-tab-panel" hidden>
+          <div class="community-scope">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <span data-i18n="anon_scope_note"><strong>Moteur Community :</strong> détection déterministe (e-mails, IP, MAC, IBAN, cartes, téléphones, secrets/clés API, montants, noms après civilité). La détection avancée de noms / organisations / lieux en texte libre (NER + ML) est réservée à l'édition Entreprise.</span>
+          </div>
           <p class="settings-hint" data-i18n="entities_hint">Désactive les catégories que tu ne veux pas anonymiser pour ce déploiement. Les mots-clés custom (onglet Mots-clés) ne sont pas concernés.</p>
           <div id="entities-list"></div>
           <p id="entities-error" class="error-text" hidden></p>
@@ -2415,6 +2511,12 @@
 <script>
 const I18N = {
   fr: {
+    edition_community: "Community · gratuit", free_label: "Gratuit", enterprise_only: "Version Entreprise",
+    ldap_premium_title: "Authentification LDAP / Active Directory",
+    ldap_premium_desc: "Connectez TokenVeil à votre annuaire d'entreprise (OpenLDAP, Active Directory), avec restriction par groupe et quotas de sièges multi-tenant. L'édition Community utilise les comptes locaux.",
+    upgrade_cta: "Passer à l'édition Entreprise →",
+    anon_scope_note: "<strong>Moteur Community :</strong> détection déterministe (e-mails, IP, MAC, IBAN, cartes, téléphones, secrets/clés API, montants, noms après civilité). La détection avancée de noms / organisations / lieux en texte libre (NER + ML) est réservée à l'édition Entreprise.",
+    license_community_note: "<strong>Édition Community :</strong> aucune licence requise, aucune limite de sièges, aucun blocage. La gestion de licence ci-dessous ne concerne que l'édition Entreprise.",
     conv_history_label: "Historique", admin: "Administration",
     keywords_to_anonymize: "Mots-clés à anonymiser", logout: "Déconnexion",
     profile: "Profil", claude_not_linked: "Compte Claude non lié",
@@ -2587,6 +2689,12 @@ const I18N = {
     freetext_candidates_title: "Candidats noms en texte libre à vérifier (non comptés dans le score) :",
   },
   en: {
+    edition_community: "Community · free", free_label: "Free", enterprise_only: "Enterprise Edition",
+    ldap_premium_title: "LDAP / Active Directory authentication",
+    ldap_premium_desc: "Connect TokenVeil to your corporate directory (OpenLDAP, Active Directory), with per-group restriction and multi-tenant seat quotas. The Community edition uses local accounts.",
+    upgrade_cta: "Upgrade to the Enterprise edition →",
+    anon_scope_note: "<strong>Community engine:</strong> deterministic detection (emails, IPs, MAC, IBANs, cards, phones, secrets/API keys, amounts, names after a civility title). Advanced free-text name / organization / location detection (NER + ML) is Enterprise-only.",
+    license_community_note: "<strong>Community edition:</strong> no license required, no seat limit, no lockout. The license management below only applies to the Enterprise edition.",
     conv_history_label: "History", admin: "Administration",
     keywords_to_anonymize: "Keywords to anonymize", logout: "Sign out",
     profile: "Profile", claude_not_linked: "Claude account not linked",

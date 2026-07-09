@@ -36,6 +36,13 @@ app = FastAPI(title="TokenVeil")
 # out of the box; set it to "true" behind a TLS reverse proxy in production.
 COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "false").strip().lower() == "true"
 
+# Édition Community (open-source, gratuite) : PAS d'enforcement de licence ni de
+# limite de sièges. L'utilisateur qui auto-héberge cette édition ne doit jamais
+# être bloqué (ni après un délai de grâce, ni sur un plafond de sièges). Le
+# système de licence reste présent dans le code (vitrine de l'édition Entreprise)
+# mais neutralisé ici. Mettre TOKENVEIL_EDITION=enterprise réactive l'enforcement.
+COMMUNITY_EDITION = os.environ.get("TOKENVEIL_EDITION", "community").strip().lower() != "enterprise"
+
 # Cross-cutting middlewares (see middleware.py): security headers on every
 # response (CSP, anti-clickjacking, HSTS when behind TLS) + an anti-abuse rate
 # limiter. Mounted early so they cover every route, static files included.
@@ -127,7 +134,7 @@ def check_auth(request: Request, anon_session: str = Cookie(default=None)) -> st
     username = _sessions.get(anon_session) if anon_session else None
     if not username:
         raise HTTPException(status_code=401, detail="Unauthorized")
-    if request.url.path not in LICENSE_EXEMPT_PATHS and license_mod.grace_exhausted():
+    if not COMMUNITY_EDITION and request.url.path not in LICENSE_EXEMPT_PATHS and license_mod.grace_exhausted():
         raise HTTPException(
             status_code=403,
             detail="Aucune licence TokenVeil valide (délai de grâce de 15 jours dépassé). "
@@ -282,7 +289,7 @@ def api_login(payload: LoginPayload, response: Response):
     # par endpoint dans check_auth (tout sauf /api/admin/license), pour que
     # n'importe quel admin puisse toujours se connecter et réparer.
     is_new_session = payload.username not in _sessions.values()
-    if is_new_session and license_mod.over_seat_limit():
+    if not COMMUNITY_EDITION and is_new_session and license_mod.over_seat_limit():
         raise HTTPException(
             status_code=403,
             detail=f"Limite de licence atteinte ({license_mod.state.max_seats} utilisateurs max). "
@@ -633,9 +640,9 @@ def api_admin_create_user(payload: NewLocalUser, _: str = Depends(require_admin)
         raise HTTPException(status_code=400, detail="Rôle invalide.")
     if db.user_exists_local(username):
         raise HTTPException(status_code=409, detail="Ce compte existe déjà.")
-    if not license_mod.state.is_valid:
+    if not COMMUNITY_EDITION and not license_mod.state.is_valid:
         raise HTTPException(status_code=403, detail="Licence invalide ou expirée : impossible de créer un compte.")
-    if not license_mod.seat_available():
+    if not COMMUNITY_EDITION and not license_mod.seat_available():
         raise HTTPException(
             status_code=403,
             detail=f"Limite de sièges atteinte ({license_mod.state.max_seats}). Contactez votre fournisseur pour étendre la licence.",
