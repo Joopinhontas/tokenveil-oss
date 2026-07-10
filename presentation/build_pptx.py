@@ -406,5 +406,6 @@ add_text(s, Inches(0.8), Inches(3.9), Inches(11), Inches(0.6),
           size=18, color=ACCENT)
 footer(s, 12, dark_bg=True)
 
-prs.save("tokenveil/presentation/TokenVeil_RSSI.pptx")
+import os
+prs.save(os.path.join(os.path.dirname(__file__), "TokenVeil_RSSI.pptx"))
 print("OK")

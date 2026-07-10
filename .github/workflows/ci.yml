@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  engine:
+    name: Anonymization engine (0-leak gate)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The Community engine is pure-regex and depends only on the standard
+      # library, so there is nothing to install to exercise it.
+      - name: Smoke-import the engine
+        run: |
+          python - <<'PY'
+          from anon_engine import AnonSession, scan_coverage, ENTITIES_OF_INTEREST
+          s = AnonSession(language="fr")
+          anon = s.anonymize("contact luc@corp.com from 10.0.0.5 apikey=sk-live-0123456789abcdefghij")
+          assert "luc@corp.com" not in anon and "10.0.0.5" not in anon
+          assert s.deanonymize(anon).count("luc@corp.com") == 1  # reversible
+          print("engine OK:", anon)
+          PY
+
+      - name: Random-seed fuzz (fails on any leak)
+        run: python tools/fuzz_anon.py --n 3000

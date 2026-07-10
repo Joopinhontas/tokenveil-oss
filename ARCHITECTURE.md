@@ -64,7 +64,7 @@ La vraie donnée ne traverse JAMAIS le réseau vers les fournisseurs de LLM. Ell
 
 Deux éditions partagent **la même interface** (`AnonSession`, `get_analyzer`, `scan_coverage`, `ENTITIES_OF_INTEREST`). Basculer de l'une à l'autre ne change **que ce fichier** ; tout le reste du code (app, UI, providers, stockage) est identique.
 
-**Édition Community (ce dépôt) — moteur regex, sans dépendance.** Le `anon_engine.py` fourni ici est **pleinement fonctionnel** : il détecte et remplace les catégories déterministes à haute confiance et restaure les valeurs à l'affichage. Pipeline ligne par ligne (empêche une entité de déborder sur deux lignes de log), détecteurs ordonnés par priorité (les motifs les plus spécifiques gagnent les chevauchements), tokens réversibles avec cohérence de casse pour les noms, et un « sweep des valeurs connues » qui re-masque une valeur déjà vue même si un détecteur la rate plus loin.
+**Édition Community (ce dépôt), moteur regex sans dépendance.** Le `anon_engine.py` fourni ici est **pleinement fonctionnel** : il détecte et remplace les catégories déterministes à haute confiance et restaure les valeurs à l'affichage. Pipeline ligne par ligne (empêche une entité de déborder sur deux lignes de log), détecteurs ordonnés par priorité (les motifs les plus spécifiques gagnent les chevauchements), tokens réversibles avec cohérence de casse pour les noms, et un « sweep des valeurs connues » qui re-masque une valeur déjà vue même si un détecteur la rate plus loin.
 
 Catégories couvertes par le moteur Community :
 - **Réseau** : IPv4 (interne vs publique), IPv6 (approx.), MAC, hostnames internes (`.local`, `.corp`...).
@@ -74,7 +74,7 @@ Catégories couvertes par le moteur Community :
 
 Un `scan_coverage` indépendant (aucune logique partagée avec le moteur) mesure honnêtement la couverture, et `tools/fuzz_anon.py` génère des PII synthétiques aléatoires pour mesurer le taux de fuite (0 % sur les catégories déterministes, cf. l'onglet admin « Benchmark »).
 
-**Édition Enterprise (licence commerciale) — moteur ML.** Ajoute, derrière la même interface : Microsoft Presidio + spaCy NER (fr/en) pour la détection de **noms / organisations / lieux en texte libre** (sans civilité, en prose), un lexique multilingue de ~500 prénoms utilisé comme ancre de détection, des heuristiques de structure de log (découpage d'identifiants CamelCase, sanctuarisation du User-Agent en Combined Log Format, décodage des query-params avant scan), un « sweep » garantissant « détecté une fois, masqué pour le reste de la conversation », et des dizaines de passes de réduction de faux positifs/négatifs réglées par fuzzing (0 % de fuite mesuré sur 3 340+ valeurs, noms en texte libre inclus — voir tokenveil.eu/benchmark).
+**Édition Enterprise (licence commerciale), moteur ML.** Ajoute, derrière la même interface : Microsoft Presidio + spaCy NER (fr/en) pour la détection de **noms / organisations / lieux en texte libre** (sans civilité, en prose), un lexique multilingue de ~500 prénoms utilisé comme ancre de détection, des heuristiques de structure de log (découpage d'identifiants CamelCase, sanctuarisation du User-Agent en Combined Log Format, décodage des query-params avant scan), un « sweep » garantissant « détecté une fois, masqué pour le reste de la conversation », et des dizaines de passes de réduction de faux positifs/négatifs réglées par fuzzing (0 % de fuite mesuré sur 3 340+ valeurs, noms en texte libre inclus, voir tokenveil.eu/benchmark).
 
 Contact : contact@tokenveil.eu.
 
@@ -125,7 +125,7 @@ Le mapping token↔valeur réelle est chiffré Fernet (clé `ANON_DB_KEY`, **à 
 
 Architecture en 2 parties séparées : le **serveur de licences** (chez toi, vendeur) et le **module client** (`license.py`, embarqué dans chaque instance TokenVeil déployée chez un client).
 
-### 8.1 Serveur de licences (`tokenveil-license-server/`)
+### 8.1 Serveur de licences (composant Enterprise séparé)
 
 Projet Docker à part, port 8700. Ed25519 : clé privée signe, clé publique (seule embarquée côté client) vérifie. Le client ne peut JAMAIS forger une licence.
 
@@ -205,7 +205,22 @@ Interface FR/EN complète (300 clés, parité vérifiée), pensée pour accueill
 - **Reverse proxy** : nécessite `proxy_buffering off` + en-têtes spécifiques pour le streaming SSE du chat (sinon réponses livrées d'un bloc au lieu de progressivement).
 - Voir `INSTALL.md` pour le runbook complet de déploiement client.
 
-## 12. Ce qui n'est PAS encore fait (alpha)
+## 12. Sécurité (durcissement)
+
+Deux middlewares transverses (`middleware.py`) couvrent toutes les routes :
+
+- **En-têtes de sécurité** sur chaque réponse : Content-Security-Policy stricte **sans aucune origine tierce** (toutes les ressources front sont servies localement, aucun CDN, fonctionne en environnement isolé/air-gapped), `X-Frame-Options: DENY` (anti-clickjacking), `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`, et HSTS quand on tourne derrière du TLS (`COOKIE_SECURE`).
+- **Limitation de débit** anti-abus : fenêtre glissante par utilisateur / session / IP, plafonds distincts selon la sensibilité de la route, *fail-open* (une panne du limiteur ne bloque jamais un accès légitime), assets statiques et `/healthz` exemptés.
+
+Authentification et stockage :
+
+- Mots de passe hachés **PBKDF2-HMAC-SHA256, 600 000 itérations** (recommandation OWASP), sel aléatoire par compte.
+- **Anti-force-brute** sur la connexion : verrouillage temporaire **par compte** et **par IP** (ce dernier contre le password-spraying).
+- **Chiffrement au repos (Fernet)** : mapping de pseudonymisation, identifiants des comptes IA liés, et mot de passe du compte de service LDAP.
+- Conteneur Docker **non-root**, cloisonnement strict entre utilisateurs (réponses `404` génériques pour ne pas révéler l'existence d'une ressource d'autrui).
+
+## 13. Ce qui n'est PAS encore fait (alpha)
 
 - Liste d'allow/deny pour les nouveaux providers (Vertex/Bedrock/OpenAI/Mistral) : actuellement le filtre §5 ne s'applique qu'au moteur d'anonymisation, pas à un éventuel contrôle "quels providers un déploiement autorise".
 - Tests réels contre de vrais comptes GCP/AWS pour Vertex/Bedrock (validés uniquement par gestion d'erreur sur credentials invalides, pas de succès end-to-end vérifié faute de compte cloud disponible).
+- Audit de sécurité tiers / pentest (roadmap avant déploiement à grande échelle).

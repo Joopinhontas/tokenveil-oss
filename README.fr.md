@@ -2,12 +2,18 @@
   <img src="static/brand/logo-mark.svg" width="96" alt="Logo TokenVeil" />
 </p>
 
-<h1 align="center">TokenVeil — Édition Community</h1>
+<h1 align="center">TokenVeil - Édition Community</h1>
 
 <p align="center">
+  <a href="../../actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Joopinhontas/tokenveil-oss/ci.yml?branch=master&label=CI" alt="CI status"></a>
+  <a href="#essayer-en-60-secondes"><img src="https://img.shields.io/badge/taux%20de%20fuite-0%25-brightgreen" alt="Taux de fuite mesuré 0%"></a>
+  <a href="../../releases"><img src="https://img.shields.io/github/v/release/Joopinhontas/tokenveil-oss?include_prereleases&label=release" alt="Dernière release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-ELv2-blue.svg" alt="Licence : Elastic License 2.0"></a>
-  <a href="../../releases"><img src="https://img.shields.io/github/v/release/Joopinhontas/tokenveil-oss?include_prereleases" alt="Dernière release"></a>
-  <a href="Dockerfile"><img src="https://img.shields.io/badge/python-3.12%2B-blue.svg" alt="Python 3.12+"></a>
+  <br>
+  <a href="#essayer-en-60-secondes"><img src="https://img.shields.io/badge/deploy-docker%20compose-2496ED?logo=docker&logoColor=white" alt="Docker"></a>
+  <img src="https://img.shields.io/badge/python-3.12%2B-3776AB?logo=python&logoColor=white" alt="Python 3.12+">
+  <img src="https://img.shields.io/badge/self--hosted-100%25-2b2924" alt="Auto-hébergé">
+  <a href="../../stargazers"><img src="https://img.shields.io/github/stars/Joopinhontas/tokenveil-oss?style=social" alt="Étoiles GitHub"></a>
 </p>
 
 Une interface de chat auto-hébergée pour Claude, Gemini, Vertex AI, Bedrock, OpenAI et Mistral qui **anonymise automatiquement les données sensibles avant qu'elles n'atteignent le LLM** (PII, IP internes, clés API/secrets, IBAN, cartes bancaires, références clients...), et restaure de façon transparente les vraies valeurs dans la réponse affichée. **Les données réelles ne quittent jamais votre infrastructure.**
@@ -60,7 +66,7 @@ TokenVeil se décline en deux éditions qui partagent **exactement le même prod
 | Licence / limite de sièges | Aucune (gratuit, jamais bloqué) | Sous licence |
 | Support & licence | Autonome, ELv2 | Licence commerciale + support |
 
-Le moteur Community est réellement utile et permet d'évaluer tout le produit. Le moteur Enterprise apporte la précision sur les cas réels difficiles (un nom de client noyé dans une stack trace, une organisation en prose). Il se branche derrière la même interface — rien d'autre ne change dans le code.
+Le moteur Community est réellement utile et permet d'évaluer tout le produit. Le moteur Enterprise apporte la précision sur les cas réels difficiles (un nom de client noyé dans une stack trace, une organisation en prose). Il se branche derrière la même interface, rien d'autre ne change dans le code.
 
 **Licence Enterprise / commerciale :** [contact@tokenveil.eu](mailto:contact@tokenveil.eu)
 

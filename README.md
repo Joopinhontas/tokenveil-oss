@@ -2,12 +2,18 @@
   <img src="static/brand/logo-mark.svg" width="96" alt="TokenVeil logo" />
 </p>
 
-<h1 align="center">TokenVeil — Community Edition</h1>
+<h1 align="center">TokenVeil - Community Edition</h1>
 
 <p align="center">
+  <a href="../../actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Joopinhontas/tokenveil-oss/ci.yml?branch=master&label=CI" alt="CI status"></a>
+  <a href="#try-it-in-60-seconds"><img src="https://img.shields.io/badge/leak%20rate-0%25-brightgreen" alt="Measured leak rate 0%"></a>
+  <a href="../../releases"><img src="https://img.shields.io/github/v/release/Joopinhontas/tokenveil-oss?include_prereleases&label=release" alt="Latest release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-ELv2-blue.svg" alt="License: Elastic License 2.0"></a>
-  <a href="../../releases"><img src="https://img.shields.io/github/v/release/Joopinhontas/tokenveil-oss?include_prereleases" alt="Latest release"></a>
-  <a href="Dockerfile"><img src="https://img.shields.io/badge/python-3.12%2B-blue.svg" alt="Python 3.12+"></a>
+  <br>
+  <a href="#try-it-in-60-seconds"><img src="https://img.shields.io/badge/deploy-docker%20compose-2496ED?logo=docker&logoColor=white" alt="Docker"></a>
+  <img src="https://img.shields.io/badge/python-3.12%2B-3776AB?logo=python&logoColor=white" alt="Python 3.12+">
+  <img src="https://img.shields.io/badge/self--hosted-100%25-2b2924" alt="Self-hosted">
+  <a href="../../stargazers"><img src="https://img.shields.io/github/stars/Joopinhontas/tokenveil-oss?style=social" alt="GitHub stars"></a>
 </p>
 
 A self-hosted chat interface for Claude, Gemini, Vertex AI, Bedrock, OpenAI, and Mistral that automatically **anonymizes sensitive data before it reaches the LLM** (PII, internal IPs, API keys/secrets, IBANs, credit cards, customer references...), and transparently restores the real values in the response shown to the user. **The real data never leaves your infrastructure.**
@@ -60,7 +66,7 @@ TokenVeil ships in two editions that share the **exact same product** (UI, auth,
 | Licensing / seat enforcement | None (free, no lockout) | Licensed |
 | Support & license | Self-serve, ELv2 | Commercial license + support |
 
-The Community engine is genuinely useful and lets you evaluate the whole product. The Enterprise engine is where the accuracy on hard, real-world cases (a customer name buried in a stack trace, an org in free prose) comes from. It drops in behind the same interface — nothing else in the codebase changes.
+The Community engine is genuinely useful and lets you evaluate the whole product. The Enterprise engine is where the accuracy on hard, real-world cases (a customer name buried in a stack trace, an org in free prose) comes from. It drops in behind the same interface, and nothing else in the codebase changes.
 
 **Enterprise / commercial license:** [contact@tokenveil.eu](mailto:contact@tokenveil.eu)
 
