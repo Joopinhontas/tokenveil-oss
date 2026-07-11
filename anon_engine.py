@@ -168,8 +168,17 @@ class AnonSession:
             if len(value) < 4 or "\n" in value:
                 continue
             etype = token[1:token.rfind("_")]
-            flags = re.IGNORECASE if etype in _CASE_INSENSITIVE_ENTITIES else 0
-            for m in re.finditer(r"(?<!\w)" + re.escape(value) + r"(?!\w)", line, flags):
+            ci = etype in _CASE_INSENSITIVE_ENTITIES
+            flags = re.IGNORECASE if ci else 0
+            # for case-insensitive entities (names/places), exclude . - / flanks
+            # so a known proper noun ("Paris") is not re-matched as a substring
+            # of a technical identifier ("gw-paris-07", "paris.internal"), which
+            # would break the identifier and its literal reversibility.
+            if ci:
+                pattern = r"(?<![\w./-])" + re.escape(value) + r"(?![\w./-])"
+            else:
+                pattern = r"(?<!\w)" + re.escape(value) + r"(?!\w)"
+            for m in re.finditer(pattern, line, flags):
                 matches.append(_Match(m.start(), m.end(), etype))
         return self._drop_overlaps(matches)
 
