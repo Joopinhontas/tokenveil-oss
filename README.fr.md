@@ -22,7 +22,7 @@ Ce dépôt est l'**édition Community** : entièrement fonctionnelle, code ouver
 
 > 🇬🇧 English version: [README.md](README.md)
 
-> Non affilié à, ni approuvé ni sponsorisé par Anthropic ou Google. « Claude » est une marque d'Anthropic PBC, « Gemini » une marque de Google LLC. Ce projet est un client indépendant qui utilise ces modèles via l'abonnement/accès API propre de chaque utilisateur.
+> Non affilié, ni approuvé ni sponsorisé par les fournisseurs d'IA supportés. Les noms de produits et marques cités appartiennent à leurs détenteurs respectifs. TokenVeil est un client indépendant qui utilise ces modèles via l'abonnement ou l'accès API propre de chaque utilisateur.
 
 ---
 

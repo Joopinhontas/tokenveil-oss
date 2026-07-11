@@ -22,7 +22,7 @@ This repository is the **Community Edition**: fully runnable, source-available, 
 
 > 🇫🇷 Version française : [README.fr.md](README.fr.md)
 
-> Not affiliated with, endorsed by, or sponsored by Anthropic or Google. "Claude" is a trademark of Anthropic PBC, "Gemini" a trademark of Google LLC. This project is an independent client that uses these models through each user's own subscription/API access.
+> Not affiliated with, endorsed by, or sponsored by any of the supported AI providers. All product names and trademarks are the property of their respective owners. TokenVeil is an independent client that uses these models through each user's own subscription or API access.
 
 ---
 

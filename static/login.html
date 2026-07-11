@@ -174,7 +174,7 @@
       <p id="error" hidden></p>
       <button id="submit-btn" type="submit" data-i18n="submit">Se connecter</button>
     </form>
-    <p id="not-affiliated-disclaimer" data-i18n="disclaimer">Non affilié à Anthropic ou Google. "Claude" est une marque d'Anthropic PBC, "Gemini" une marque de Google LLC.</p>
+    <p id="not-affiliated-disclaimer" data-i18n="disclaimer">Non affilié aux fournisseurs d'IA supportés. Les marques citées appartiennent à leurs détenteurs respectifs.</p>
   </div>
 
   <script>
@@ -182,12 +182,12 @@
       fr: {
         sub: "Connecte-toi pour continuer", username: "Identifiant", password: "Mot de passe",
         submit: "Se connecter", connecting: "Connexion…", login_failed: "Connexion impossible.",
-        disclaimer: 'Non affilié à Anthropic ou Google. "Claude" est une marque d\'Anthropic PBC, "Gemini" une marque de Google LLC.',
+        disclaimer: 'Non affilié aux fournisseurs d\'IA supportés. Les marques citées appartiennent à leurs détenteurs respectifs.',
       },
       en: {
         sub: "Sign in to continue", username: "Username", password: "Password",
         submit: "Sign in", connecting: "Signing in…", login_failed: "Could not sign in.",
-        disclaimer: 'Not affiliated with Anthropic or Google. "Claude" is a trademark of Anthropic PBC, "Gemini" a trademark of Google LLC.',
+        disclaimer: 'Not affiliated with any supported AI provider. All trademarks belong to their respective owners.',
       },
     };
     let loginLang = localStorage.getItem("cached_language") || (navigator.language.startsWith("en") ? "en" : "fr");
