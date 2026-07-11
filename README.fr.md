@@ -133,4 +133,11 @@ Code disponible sous [Elastic License 2.0](LICENSE). Vous pouvez lire, auditer, 
 
 ---
 
-*Voir [ARCHITECTURE.md](ARCHITECTURE.md) pour le design complet, et [tokenveil.eu/benchmark](https://tokenveil.eu/benchmark) pour la méthodologie de mesure de l'anonymisation.*
+## Documentation
+
+- [ARCHITECTURE.md](ARCHITECTURE.md) - l'idée et les principes de conception.
+- [INSTALL.md](INSTALL.md) - installer (Docker, quelques minutes).
+- [CONFIG.md](CONFIG.md) - configurer (auth, providers, mots-clés, reverse proxy).
+- [SECURITY.md](SECURITY.md) - sécurité et confidentialité, pour un DSI/RSSI/DPO.
+
+Méthodologie de mesure de l'anonymisation : [tokenveil.eu/benchmark](https://tokenveil.eu/benchmark).

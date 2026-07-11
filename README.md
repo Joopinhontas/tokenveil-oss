@@ -149,4 +149,11 @@ Source-available under the [Elastic License 2.0](LICENSE). You can read, audit, 
 
 ---
 
-*See [ARCHITECTURE.md](ARCHITECTURE.md) for the full design, and [tokenveil.eu/benchmark](https://tokenveil.eu/benchmark) for the anonymization measurement methodology.*
+## Documentation
+
+- [ARCHITECTURE.md](ARCHITECTURE.md) - the idea and design principles.
+- [INSTALL.md](INSTALL.md) - install it (Docker, a couple of minutes).
+- [CONFIG.md](CONFIG.md) - configure it (auth, providers, keywords, reverse proxy).
+- [SECURITY.md](SECURITY.md) - security and privacy principles, for a CISO/DPO.
+
+Anonymization measurement methodology: [tokenveil.eu/benchmark](https://tokenveil.eu/benchmark).
