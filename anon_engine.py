@@ -40,6 +40,24 @@ ENTITIES_OF_INTEREST = [
 # the same entity and should reuse the same token, for a coherent view to the LLM.
 _CASE_INSENSITIVE_ENTITIES = {"PERSON", "ORGANIZATION", "LOCATION"}
 
+# Sensitive JSON keys -> entity type, for key-driven detection (see
+# _keyed_matches). Only explicitly sensitive keys, to keep false positives low.
+_KEYED_PII = {
+    "phone": "PHONE_NUMBER", "phonenumber": "PHONE_NUMBER", "telephone": "PHONE_NUMBER",
+    "tel": "PHONE_NUMBER", "mobile": "PHONE_NUMBER", "mobilenumber": "PHONE_NUMBER",
+    "cellphone": "PHONE_NUMBER", "cellphonenumber": "PHONE_NUMBER", "gsm": "PHONE_NUMBER",
+    "fax": "PHONE_NUMBER",
+    "firstname": "PERSON", "lastname": "PERSON", "prenom": "PERSON", "nom": "PERSON",
+    "surname": "PERSON", "familyname": "PERSON", "givenname": "PERSON",
+    "fullname": "PERSON", "contactname": "PERSON", "maidenname": "PERSON",
+    "email": "EMAIL_ADDRESS", "mail": "EMAIL_ADDRESS", "emailaddress": "EMAIL_ADDRESS",
+    "courriel": "EMAIL_ADDRESS",
+    "iban": "IBAN_CODE",
+    "address": "LOCATION", "adresse": "LOCATION", "displayedaddress": "LOCATION",
+    "streetaddress": "LOCATION", "addressline": "LOCATION",
+}
+_KEYED_PII_RE = re.compile(r'"([A-Za-z_]+)"\s*:\s*"([^"]*)"')
+
 
 def _p(regex, flags=0):
     return re.compile(regex, flags)
@@ -135,6 +153,28 @@ class AnonSession:
         return token
 
     # --- detection ---
+    def _keyed_matches(self, line):
+        # Key-driven detection for structured data (JSON, key-value). In a JSON
+        # blob the value often has no format cue: a phone stored "768863090"
+        # (no leading 0, no +33) looks like any numeric id, an uppercase surname
+        # "ZAID" looks like an acronym. The adjacent key tells us the type, so we
+        # tokenize the value based on its key regardless of the value's format.
+        # Fires only on explicitly sensitive keys, so it does not touch SQL.
+        out = []
+        for m in _KEYED_PII_RE.finditer(line):
+            etype = _KEYED_PII.get(m.group(1).lower().replace("_", ""))
+            if etype is None or etype not in self.active_entities:
+                continue
+            value = m.group(2)
+            if not value or value == "null" or value.startswith("<"):
+                continue
+            if etype == "PHONE_NUMBER" and not any(c.isdigit() for c in value):
+                continue
+            if etype in ("PERSON", "LOCATION") and not any(c.isalpha() for c in value):
+                continue
+            out.append(_Match(m.start(2), m.end(2), etype))
+        return out
+
     def _custom_matches(self, line):
         out = []
         for t in self.custom_terms:
@@ -160,6 +200,7 @@ class AnonSession:
                 if end > start:
                     matches.append(_Match(start, end, entity_type))
         matches += self._custom_matches(line)
+        matches += self._keyed_matches(line)
         # Known-value sweep: re-mask any value already seen this session even if
         # a detector missed it on this line (keeps tokens consistent). Names are
         # swept case-insensitively so "LUC DUPONT" is caught once "Luc Dupont"
