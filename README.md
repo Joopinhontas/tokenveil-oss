@@ -16,6 +16,15 @@
   <a href="../../stargazers"><img src="https://img.shields.io/github/stars/Joopinhontas/tokenveil-oss?style=social" alt="GitHub stars"></a>
 </p>
 
+<p align="center">
+  <a href="https://www.producthunt.com/products/tokenveil?utm_source=badge-featured&amp;utm_medium=badge" target="_blank" rel="noopener noreferrer">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1198027&amp;theme=dark">
+      <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1198027&amp;theme=light" alt="TokenVeil - Featured on Product Hunt" width="250" height="54">
+    </picture>
+  </a>
+</p>
+
 A self-hosted chat interface for Claude, Gemini, Vertex AI, Bedrock, OpenAI, and Mistral that automatically **anonymizes sensitive data before it reaches the LLM** (PII, internal IPs, API keys/secrets, IBANs, credit cards, customer references...), and transparently restores the real values in the response shown to the user. **The real data never leaves your infrastructure.**
 
 This repository is the **Community Edition**: fully runnable, source-available, and free to self-host. Clone it, `docker compose up`, and you have a working private AI proxy in a couple of minutes.
