@@ -1,68 +1,70 @@
-# Sécurité et confidentialité
+# Security and privacy
 
-Ce document décrit les **principes de sécurité** de TokenVeil, à destination d'un DSI, RSSI ou DPO qui évalue le produit. Il présente ce qui est en place et ce qui reste à la charge de l'organisation, sans détailler l'implémentation.
+This document describes the **security principles** of TokenVeil, for a CIO, CISO, or DPO evaluating the product. It states what is in place and what stays the organization's responsibility, without going into implementation detail.
 
----
-
-## 1. Le principe central : la donnée ne sort pas
-
-TokenVeil remplace les données sensibles par des jetons neutres **avant** qu'un message n'atteigne le fournisseur d'IA, et restaure les vraies valeurs **après** la réponse, en local. Concrètement :
-
-- Le fournisseur d'IA ne reçoit que du texte tokenisé, en entrée comme en sortie.
-- La correspondance entre un jeton et sa valeur réelle **ne quitte jamais votre process** et n'est jamais transmise au modèle.
-- Les messages conservés ne contiennent que la version **anonymisée** : la donnée réelle n'est jamais stockée en clair.
-
-Au sens du RGPD, il s'agit d'une **pseudonymisation** appliquée par défaut, côté client. Le fournisseur d'IA ne peut pas ré-identifier les données qu'il reçoit.
-
-## 2. Auto-hébergement et absence de tiers
-
-- Tout s'exécute sur **votre** infrastructure (serveur on-premise ou cloud souverain de votre choix). Aucune donnée n'est hébergée par l'éditeur.
-- **Aucune télémétrie** sur le contenu ou l'usage. Le seul flux réseau sortant éventuel est une vérification de licence, qui ne transporte **aucune donnée personnelle**.
-- L'éditeur n'ajoute **aucun sous-traitant** dans votre chaîne de traitement.
-
-## 3. Chiffrement au repos
-
-Les éléments sensibles stockés sont chiffrés :
-
-- la correspondance d'anonymisation (jeton ↔ valeur réelle) ;
-- les identifiants des comptes d'IA liés par chaque utilisateur.
-
-La clé de chiffrement est propre à votre déploiement et reste sous votre contrôle.
-
-## 4. Authentification et contrôle d'accès
-
-- Comptes locaux avec **mots de passe hachés** selon les recommandations en vigueur, ou intégration à votre **annuaire d'entreprise** (LDAP / Active Directory, édition Enterprise).
-- **Anti-force-brute** sur la connexion, par compte et par adresse.
-- Séparation des rôles administrateur / utilisateur ; cloisonnement strict entre utilisateurs (personne ne voit les conversations d'un autre).
-
-## 5. Durcissement applicatif
-
-- **En-têtes de sécurité HTTP** stricts sur chaque réponse, dont une politique de contenu (CSP) **sans aucune origine tierce** : toutes les ressources sont servies localement, ce qui permet un fonctionnement en environnement isolé (air-gapped) et supprime le risque d'injection via un CDN externe.
-- **Limitation de débit** anti-abus.
-- Exécution du conteneur en **utilisateur non privilégié** (non-root).
-- Chiffrement du canal (**HTTPS/TLS**) à activer côté déploiement dès toute exposition réseau.
-
-## 6. Auditabilité
-
-Un **journal d'audit** enregistre, pour chaque message, la catégorie et le nombre de données masquées, **jamais la valeur réelle**. Il permet de démontrer que l'anonymisation a bien lieu, sans recréer de risque de fuite dans le journal lui-même.
-
-## 7. Qualité de l'anonymisation, mesurée
-
-Le taux de fuite (proportion de données sensibles encore lisibles après traitement) est **mesuré** : jeu de test annoté + fuzzing aléatoire (des milliers de cas générés différemment à chaque exécution). Un vérificateur indépendant recontrôle que rien ne survit dans le texte anonymisé. Méthodologie publique et reproductible : [tokenveil.eu/benchmark](https://tokenveil.eu/benchmark).
-
-**Limite assumée** : aucun système de détection n'est parfait. Un nom propre inconnu dans un contexte ambigu peut théoriquement échapper à la détection. TokenVeil réduit fortement le risque, sans le supprimer contractuellement à 100 %.
-
-## 8. Ce qui reste à votre charge
-
-- La sécurité physique et logique de l'infrastructure qui héberge TokenVeil (elle reste la vôtre).
-- L'activation de HTTPS/TLS et la restriction réseau (firewall/VPN) selon votre exposition.
-- La sauvegarde et la conservation des données selon votre politique.
-- La relation contractuelle et le DPA éventuels avec le fournisseur d'IA que vous choisissez.
-
-## 9. Statut
-
-Alpha. Le mécanisme central est validé et mesuré. Un **audit de sécurité tiers / test d'intrusion** fait partie de la feuille de route avant un déploiement à grande échelle. Nous pouvons répondre à un questionnaire sécurité fournisseur et signer un NDA standard.
+> 🇫🇷 Version française : [SECURITY.fr.md](SECURITY.fr.md)
 
 ---
 
-Contact sécurité / conformité : [contact@tokenveil.eu](mailto:contact@tokenveil.eu)
+## 1. The core principle: the data does not leave
+
+TokenVeil replaces sensitive data with neutral tokens **before** a message reaches the AI provider, and restores the real values **after** the response, locally. In practice:
+
+- The AI provider only receives tokenized text, going in and coming back.
+- The mapping between a token and its real value **never leaves your process** and is never sent to the model.
+- Stored messages contain only the **anonymized** version: the real data is never kept in clear text.
+
+Under the GDPR, this is **pseudonymization** applied by default, on your side. The AI provider cannot re-identify the data it receives.
+
+## 2. Self-hosting and no third party
+
+- Everything runs on **your** infrastructure (on-premises server or the sovereign cloud of your choice). No data is hosted by the vendor.
+- **No content or usage telemetry.** The only possible outbound traffic is a license check, which carries **no personal data**.
+- The vendor adds **no sub-processor** to your processing chain.
+
+## 3. Encryption at rest
+
+The sensitive items that are stored are encrypted:
+
+- the anonymization mapping (token to real value);
+- the credentials of the AI accounts each user links.
+
+The encryption key is specific to your deployment and stays under your control.
+
+## 4. Authentication and access control
+
+- Local accounts with **hashed passwords** following current recommendations, or integration with your **enterprise directory** (LDAP / Active Directory, Enterprise edition).
+- **Brute-force protection** on login, per account and per address.
+- Separation of administrator and user roles; strict isolation between users (nobody sees anyone else's conversations).
+
+## 5. Application hardening
+
+- Strict **HTTP security headers** on every response, including a content security policy (CSP) with **no third-party origin**: all assets are served locally, which allows air-gapped operation and removes the risk of injection through an external CDN.
+- Anti-abuse **rate limiting**.
+- The container runs as a **non-privileged user** (non-root).
+- Channel encryption (**HTTPS/TLS**) to enable on your side as soon as there is any network exposure.
+
+## 6. Auditability
+
+An **audit log** records, for each message, the category and the number of masked items, **never the real value**. It lets you show that anonymization is happening, without recreating a leak risk in the log itself.
+
+## 7. Anonymization quality, measured
+
+The leak rate (the share of sensitive data still readable after processing) is **measured**: an annotated test set plus random fuzzing (thousands of cases generated differently on every run). An independent verifier re-checks that nothing survives in the anonymized text. The methodology is public and reproducible: [tokenveil.eu/benchmark](https://tokenveil.eu/benchmark).
+
+**Owned limit**: no detection system is perfect. A proper name unknown to the engine, in an ambiguous context, can in theory slip through. TokenVeil strongly reduces the risk without contractually eliminating it to 100%.
+
+## 8. What stays your responsibility
+
+- The physical and logical security of the infrastructure that hosts TokenVeil (it stays yours).
+- Turning on HTTPS/TLS and restricting the network (firewall/VPN) based on your exposure.
+- Backups and data retention according to your policy.
+- The contractual relationship and any DPA with the AI provider you choose.
+
+## 9. Status
+
+Alpha. The core mechanism is validated and measured. A **third-party security audit / penetration test** is on the roadmap before any large-scale deployment. We can answer a vendor security questionnaire and sign a standard NDA.
+
+---
+
+Security and compliance contact: [contact@tokenveil.eu](mailto:contact@tokenveil.eu)

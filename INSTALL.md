@@ -1,89 +1,91 @@
-# Installer TokenVeil (édition Community)
+# Install TokenVeil (Community edition)
 
-Déploiement complet via Docker, pensé pour être suivi de bout en bout sans connaissance préalable du projet. Pour régler les options (authentification, providers, mots-clés, reverse proxy...), voir [CONFIG.md](CONFIG.md).
+A full Docker deployment, written to be followed start to finish with no prior knowledge of the project. To tune the options (authentication, providers, keywords, reverse proxy, and so on), see [CONFIG.md](CONFIG.md).
+
+> 🇫🇷 Version française : [INSTALL.fr.md](INSTALL.fr.md)
 
 ---
 
-## 1. Prérequis
+## 1. Requirements
 
-- Un serveur Linux (physique, VM ou cloud) avec **Docker** et **Docker Compose v2**.
-- **1 à 2 Go de RAM** suffisent : le moteur de l'édition Community est léger, aucun modèle à charger.
-- ~1 Go d'espace disque pour l'image.
-- Un port HTTP libre (**8500** par défaut, configurable).
-- Si exposition publique : un nom de domaine et un reverse proxy devant le service (voir [CONFIG.md](CONFIG.md)).
+- A Linux server (bare metal, VM, or cloud) with **Docker** and **Docker Compose v2**.
+- **1 to 2 GB of RAM** is enough: the Community engine is light and loads no models.
+- About 1 GB of disk for the image.
+- One free HTTP port (**8500** by default, configurable).
+- If you expose it publicly: a domain name and a reverse proxy in front of the service (see [CONFIG.md](CONFIG.md)).
 
-Aucune dépendance à installer à la main : tout est embarqué dans l'image Docker.
+Nothing to install by hand: everything ships inside the Docker image.
 
-## 2. Récupérer le projet
+## 2. Get the project
 
 ```bash
 git clone https://github.com/Joopinhontas/tokenveil-oss.git tokenveil
 cd tokenveil
 ```
 
-## 3. Configuration minimale
+## 3. Minimal configuration
 
 ```bash
 cp .env.example .env
 ```
 
-Renseigner au minimum deux valeurs dans `.env` :
+Set at least these two values in `.env`:
 
-| Variable | Rôle | Comment l'obtenir |
+| Variable | Purpose | How to get it |
 |---|---|---|
-| `ANON_DB_KEY` | Clé de chiffrement des données au repos | `python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"` |
-| `WEBAPP_USERS` | Compte(s) de connexion, format `user:motdepasse` | À définir vous-même |
+| `ANON_DB_KEY` | Encryption key for data at rest | `python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"` |
+| `WEBAPP_USERS` | Login account(s), format `user:password` | Set your own |
 
-**Important** : `ANON_DB_KEY` ne doit **jamais** être perdue ni régénérée sur une instance qui contient déjà des données (sinon les conversations existantes ne peuvent plus être désanonymisées). Sauvegardez-la dans un gestionnaire de secrets, pas seulement dans le `.env`.
+**Important**: `ANON_DB_KEY` must **never** be lost or regenerated on an instance that already holds data (otherwise existing conversations can no longer be de-anonymized). Keep it in a secrets manager, not only in the `.env` file.
 
-Toutes les autres options sont détaillées dans [CONFIG.md](CONFIG.md).
+Every other option is covered in [CONFIG.md](CONFIG.md).
 
-## 4. Démarrer
+## 4. Start it
 
 ```bash
 docker compose up -d --build
 ```
 
-Le build est **léger et rapide** (aucun modèle à télécharger). Vérifier que le service répond :
+The build is **light and fast** (no model to download). Check that the service answers:
 
 ```bash
 curl http://localhost:8500/healthz
 # {"status": "ok"}
 ```
 
-## 5. Premier accès
+## 5. First access
 
-- Ouvrir `http://<serveur>:8500/`.
-- Se connecter avec un compte défini dans `WEBAPP_USERS` (le premier devient automatiquement administrateur).
-- Dans **Préférences > Comptes IA**, lier une IA. Le plus rapide pour tester : une **clé API Gemini** gratuite (aistudio.google.com). Claude, OpenAI, Mistral et les clouds d'entreprise sont aussi disponibles.
-- Coller un texte contenant des IP, e-mails, clés API... et observer l'anonymisation avant envoi, puis la restauration dans la réponse.
+- Open `http://<server>:8500/`.
+- Sign in with an account from `WEBAPP_USERS` (the first one automatically becomes an administrator).
+- Under **Preferences > AI accounts**, link an AI. The quickest way to test: a free **Gemini API key** (aistudio.google.com). Claude, OpenAI, Mistral, and the enterprise clouds are available too.
+- Paste some text containing IPs, emails, API keys, and watch the anonymization before sending, then the restoration in the response.
 
-## 6. Sauvegarde et mise à jour
+## 6. Backup and updates
 
-Un seul dossier à sauvegarder : **`./data`** (volume Docker), qui contient la base de données et les comptes IA liés.
+One folder to back up: **`./data`** (Docker volume), which holds the database and the linked AI accounts.
 
 ```bash
 tar -czf tokenveil-backup-$(date +%F).tar.gz data/
 ```
 
-Mise à jour du code :
+To update the code:
 
 ```bash
 git pull
 docker compose up -d --build
 ```
 
-Le dossier `./data` n'est jamais touché par un rebuild : l'historique et les comptes liés survivent.
+A rebuild never touches `./data`: history and linked accounts survive.
 
-## 7. Dépannage rapide
+## 7. Quick troubleshooting
 
-| Symptôme | Cause probable | Solution |
+| Symptom | Likely cause | Fix |
 |---|---|---|
-| `docker compose up` échoue, port déjà utilisé | Port occupé | Changer `ANON_PORT` dans `.env` |
-| Streaming de la réponse pas fluide derrière un proxy | Buffering du reverse proxy | Voir la section reverse proxy de [CONFIG.md](CONFIG.md) |
-| Liaison Claude échoue | Interface CLI Claude indisponible | Utilisez plutôt un provider par clé API (Gemini, OpenAI...) pour démarrer |
-| Un utilisateur ne voit pas l'Administration | Rôle non-admin | Le promouvoir depuis Administration > Utilisateurs |
+| `docker compose up` fails, port already in use | Port taken | Change `ANON_PORT` in `.env` |
+| Response streaming is not smooth behind a proxy | Reverse proxy buffering | See the reverse proxy section of [CONFIG.md](CONFIG.md) |
+| Claude linking fails | Claude CLI unavailable | Start with an API-key provider instead (Gemini, OpenAI, and so on) |
+| A user does not see Administration | Non-admin role | Promote them from Administration > Users |
 
 ---
 
-Pour aller plus loin : [CONFIG.md](CONFIG.md) (configuration), [SECURITY.md](SECURITY.md) (sécurité), [ARCHITECTURE.md](ARCHITECTURE.md) (vue d'ensemble).
+Going further: [CONFIG.md](CONFIG.md) (configuration), [SECURITY.md](SECURITY.md) (security), [ARCHITECTURE.md](ARCHITECTURE.md) (overview).

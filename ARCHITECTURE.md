@@ -1,85 +1,87 @@
-# TokenVeil, vue d'ensemble de l'architecture
+# TokenVeil, architecture overview
 
-Ce document explique **l'idée** et les principes de conception de TokenVeil. Il ne détaille pas l'implémentation interne. Pour installer : [INSTALL.md](INSTALL.md). Pour configurer : [CONFIG.md](CONFIG.md). Pour les aspects sécurité/conformité : [SECURITY.md](SECURITY.md).
+This document explains the **idea** and the design principles behind TokenVeil. It does not cover the internal implementation. To install it: [INSTALL.md](INSTALL.md). To configure it: [CONFIG.md](CONFIG.md). For security and compliance: [SECURITY.md](SECURITY.md).
 
-## En une phrase
+> 🇫🇷 Version française : [ARCHITECTURE.fr.md](ARCHITECTURE.fr.md)
 
-TokenVeil est un proxy auto-hébergé placé entre vos équipes et les modèles d'IA (Claude, Gemini, OpenAI, Mistral et clouds d'entreprise). Il **anonymise les données sensibles avant qu'un message n'atteigne le modèle**, puis restaure les vraies valeurs dans la réponse affichée. La donnée réelle ne quitte jamais votre infrastructure.
+## In one sentence
 
-## Le flux d'un message
+TokenVeil is a self-hosted proxy that sits between your teams and the AI models (Claude, Gemini, OpenAI, Mistral, and the enterprise clouds). It **anonymizes sensitive data before a message reaches the model**, then restores the real values in the response shown to the user. The real data never leaves your infrastructure.
+
+## How a message flows
 
 ```
-Utilisateur (données réelles)
+User (real data)
         │
         ▼
-[1] Authentification (comptes locaux ou LDAP/AD)
+[1] Authentication (local accounts or LDAP/AD)
         │
         ▼
-[2] Anonymisation  →  les données sensibles deviennent des jetons neutres
+[2] Anonymization  →  sensitive data becomes neutral tokens
         │              (<PERSON_1>, <IP_ADDRESS_2>, <API_SECRET_3>...)
         ▼
-[3] Envoi au modèle  →  SEUL le texte tokenisé sort du réseau
+[3] Sent to the model  →  ONLY the tokenized text leaves the network
         │
         ▼
-[4] Réponse du modèle  →  le modèle recopie les jetons tels quels
+[4] Model response  →  the model echoes the tokens as-is
         │
         ▼
-[5] Désanonymisation en mémoire  →  les vraies valeurs sont restaurées
+[5] In-memory de-anonymization  →  the real values are restored
         │
         ▼
-Affichage à l'utilisateur (réponse lisible, données réelles)
+Shown to the user (readable response, real data)
 ```
 
-Points clés :
+What matters here:
 
-- La tokenisation se fait **côté serveur, avant l'appel sortant**. La détokenisation se fait **après la réponse, en mémoire**. Le fournisseur d'IA ne voit que des jetons, en entrée comme en sortie.
-- L'anonymisation est **réversible côté client uniquement** : la correspondance jeton ↔ valeur réelle ne quitte jamais votre process, et n'est jamais transmise au modèle.
-- Les messages conservés ne contiennent **que la version anonymisée**. La donnée réelle n'est jamais stockée en clair.
+- Tokenization happens **server-side, before the outbound call**. De-tokenization happens **after the response, in memory**. The AI provider only ever sees tokens, going out and coming back.
+- Anonymization is **reversible on your side only**: the token-to-real-value mapping never leaves your process, and is never sent to the model.
+- Stored messages contain **only the anonymized version**. The real data is never kept in clear text.
 
-## Le moteur d'anonymisation
+## The anonymization engine
 
-Le moteur détecte les données sensibles et les remplace par des jetons typés (le type est conservé : `<PERSON_1>`, `<IBAN_CODE_2>`), de sorte que le modèle comprend **de quoi on parle** sans jamais voir la vraie valeur. Une même valeur reçoit toujours le même jeton, ce qui préserve les relations pour le modèle.
+The engine detects sensitive data and replaces it with typed tokens (the type is preserved: `<PERSON_1>`, `<IBAN_CODE_2>`), so the model still understands **what it is dealing with** without ever seeing the real value. The same value always gets the same token, which keeps relationships intact for the model.
 
-Catégories couvertes : noms de personnes, e-mails, téléphones, adresses IP (publiques et internes), adresses MAC, IBAN, cartes bancaires, numéros nationaux (dont le NIR français), plaques d'immatriculation, clés API et secrets techniques, montants financiers, identifiants de log, références clients, et **termes métier propres à votre organisation** ajoutés en configuration.
+Categories covered: personal names, emails, phone numbers, IP addresses (public and internal), MAC addresses, IBANs, credit cards, national IDs (including the French NIR), license plates, API keys and technical secrets, financial amounts, log identifiers, customer references, and **business terms specific to your organization** added in configuration.
 
-L'organisation qui déploie peut **désactiver certaines catégories** selon son besoin.
+The organization running the deployment can **turn off some categories** as needed.
 
-### Deux éditions, une seule interface
+### Two editions, one interface
 
-TokenVeil se décline en deux éditions qui partagent **le même produit** (interface, authentification, providers, stockage, déploiement) et ne diffèrent que par le moteur de détection :
+TokenVeil comes in two editions that share **the same product** (interface, authentication, providers, storage, deployment) and differ only in the detection engine:
 
-- **Community** (ce dépôt, gratuit) : moteur déterministe couvrant les catégories à haute confiance ci-dessus. Suffit pour évaluer le produit de bout en bout.
-- **Enterprise** (licence commerciale) : ajoute la détection avancée de noms, organisations et lieux **en texte libre** (NER + apprentissage automatique), plus l'anonymisation de fichiers (documents bureautiques, PDF, OCR) et l'intégration annuaire d'entreprise. Le moteur avancé se branche derrière la même interface.
+- **Community** (this repository, free): a deterministic engine covering the high-confidence categories above. Enough to evaluate the product end to end.
+- **Enterprise** (commercial license): adds advanced detection of names, organizations, and locations **in free text** (NER plus machine learning), along with file anonymization (office documents, PDFs, OCR) and enterprise directory integration. The advanced engine drops in behind the same interface.
 
-La qualité de l'anonymisation est **mesurée** (jeu de test annoté + fuzzing aléatoire) et publiée : voir [tokenveil.eu/benchmark](https://tokenveil.eu/benchmark).
+Anonymization quality is **measured** (an annotated test set plus random fuzzing) and published: see [tokenveil.eu/benchmark](https://tokenveil.eu/benchmark).
 
-## Authentification
+## Authentication
 
-Deux modes, au choix du déploiement :
+Two modes, your choice at deployment:
 
-- **Comptes locaux** : gérés dans l'application (mots de passe hachés). Suffit pour un test ou une petite équipe.
-- **LDAP / Active Directory** (Enterprise) : les employés s'authentifient via l'annuaire existant de l'entreprise, avec restriction par groupe et quotas de sièges.
+- **Local accounts**: managed inside the application (hashed passwords). Enough for a trial or a small team.
+- **LDAP / Active Directory** (Enterprise): employees authenticate through the company's existing directory, with group restriction and seat quotas.
 
-## Données et confidentialité
+## Data and privacy
 
-- Tout tourne sur **votre** infrastructure (serveur on-premise ou cloud souverain). Rien n'est hébergé par l'éditeur.
-- Les éléments sensibles au repos (correspondance d'anonymisation, identifiants des comptes IA liés) sont **chiffrés**.
-- **Aucune télémétrie** sur le contenu : le seul flux sortant éventuel est une vérification de licence qui ne transporte aucune donnée personnelle.
+- Everything runs on **your** infrastructure (on-premises server or sovereign cloud). Nothing is hosted by the vendor.
+- Sensitive data at rest (the anonymization mapping, the credentials of linked AI accounts) is **encrypted**.
+- **No content telemetry**: the only outbound traffic, if any, is a license check that carries no personal data.
 
-Le détail des mesures de sécurité est dans [SECURITY.md](SECURITY.md).
+The security measures are detailed in [SECURITY.md](SECURITY.md).
 
-## Providers d'IA supportés
+## Supported AI providers
 
-Claude (via abonnement Pro/Max ou clé API), Gemini, OpenAI, Mistral, ainsi que les déploiements cloud d'entreprise : Vertex AI (Google Cloud), Amazon Bedrock, Azure OpenAI, GitHub Models. L'utilisateur choisit son modèle dans l'interface ; la liste des modèles disponibles se met à jour automatiquement.
+Claude (through a Pro/Max subscription or an API key), Gemini, OpenAI, Mistral, plus the enterprise cloud deployments: Vertex AI (Google Cloud), Amazon Bedrock, Azure OpenAI, GitHub Models. The user picks the model in the interface, and the list of available models updates on its own.
 
-## Déploiement
+## Deployment
 
-Conteneur Docker unique, `docker compose up`. Le frontend est servi tel quel (aucune étape de build). Un seul dossier de données à sauvegarder (base de données + configuration). Voir [INSTALL.md](INSTALL.md).
+A single Docker container, `docker compose up`. The frontend is served as-is (no build step). One data folder to back up (database plus configuration). See [INSTALL.md](INSTALL.md).
 
-## Licence
+## License
 
-Le code de cette édition Community est disponible sous **Elastic License 2.0** (lecture, audit, auto-hébergement, modification autorisés ; interdiction d'en faire un service hébergé pour des tiers). Les fonctionnalités **Enterprise** (moteur ML, fichiers, LDAP/AD, multi-tenant) et le déploiement commercial nécessitent une **licence commerciale** : [contact@tokenveil.eu](mailto:contact@tokenveil.eu).
+The code of this Community edition is available under the **Elastic License 2.0** (you may read, audit, self-host, and modify it; you may not turn it into a hosted service for third parties). The **Enterprise** features (ML engine, files, LDAP/AD, multi-tenant) and commercial deployment require a **commercial license**: [contact@tokenveil.eu](mailto:contact@tokenveil.eu).
 
-## Statut
+## Status
 
-Alpha. Le mécanisme central est validé de bout en bout et mesuré. Un audit de sécurité tiers fait partie de la feuille de route avant un déploiement à grande échelle.
+Alpha. The core mechanism is validated end to end and measured. A third-party security audit is on the roadmap before any large-scale deployment.
