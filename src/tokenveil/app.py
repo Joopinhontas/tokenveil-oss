@@ -3,6 +3,7 @@ des données sensibles avant envoi à Claude, et désanonymisation à l'affichag
 Les messages stockés en base sont les versions anonymisées ; le mapping
 token<->valeur réelle est chiffré au repos (voir db.py)."""
 import asyncio
+from tokenveil import PROJECT_ROOT
 import json
 import os
 import re
@@ -14,16 +15,16 @@ from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-import auth
-import claude_account
-import gemini_account
-import vertex_account
-import bedrock_account
-import openai_account
-import mistral_account
-import db
-import license as license_mod
-from anon_engine import AnonSession, scan_coverage
+from tokenveil import auth
+from tokenveil import claude_account
+from tokenveil import gemini_account
+from tokenveil import vertex_account
+from tokenveil import bedrock_account
+from tokenveil import openai_account
+from tokenveil import mistral_account
+from tokenveil import db
+from tokenveil import license as license_mod
+from tokenveil.anon_engine import AnonSession, scan_coverage
 
 load_dotenv()
 
@@ -46,7 +47,7 @@ COMMUNITY_EDITION = os.environ.get("TOKENVEIL_EDITION", "community").strip().low
 # Cross-cutting middlewares (see middleware.py): security headers on every
 # response (CSP, anti-clickjacking, HSTS when behind TLS) + an anti-abuse rate
 # limiter. Mounted early so they cover every route, static files included.
-from middleware import RateLimitMiddleware, SecurityHeadersMiddleware
+from tokenveil.middleware import RateLimitMiddleware, SecurityHeadersMiddleware
 
 app.add_middleware(RateLimitMiddleware)
 app.add_middleware(SecurityHeadersMiddleware, hsts=COOKIE_SECURE)
@@ -57,7 +58,7 @@ def _warm_up_anon_engine():
     # No-op in the Community edition (the regex engine has no model to warm up).
     # Kept so startup stays identical to the Enterprise edition, whose engine
     # loads spaCy models here.
-    import anon_engine
+    from tokenveil import anon_engine
     anon_engine.get_analyzer()
 
 
@@ -498,7 +499,7 @@ def api_download_scan_script(_: str = Depends(require_admin)):
     """Script autonome à exécuter sur le serveur à protéger (pas celui de la
     webapp) pour lister les candidats à l'auto-détection — voir tools/scan_infra.py.
     Réservé aux admins, comme le reste de l'onglet Auto-détection."""
-    path = os.path.join(os.path.dirname(__file__), "tools", "scan_infra.py")
+    path = os.path.join(PROJECT_ROOT, "tools", "scan_infra.py")
     return FileResponse(path, media_type="text/x-python", filename="scan_infra.py")
 
 
@@ -684,7 +685,7 @@ def api_admin_uninstall_license(_: str = Depends(require_admin)):
 
 @app.get("/api/admin/entity-settings")
 def api_admin_get_entity_settings(_: str = Depends(require_admin)):
-    from anon_engine import ENTITIES_OF_INTEREST
+    from tokenveil.anon_engine import ENTITIES_OF_INTEREST
     return {
         "available": ENTITIES_OF_INTEREST,
         "disabled": db.get_disabled_entities(),
@@ -693,7 +694,7 @@ def api_admin_get_entity_settings(_: str = Depends(require_admin)):
 
 @app.post("/api/admin/entity-settings")
 def api_admin_set_entity_settings(payload: EntitySettingsPayload, _: str = Depends(require_admin)):
-    from anon_engine import ENTITIES_OF_INTEREST
+    from tokenveil.anon_engine import ENTITIES_OF_INTEREST
     unknown = set(payload.disabled) - set(ENTITIES_OF_INTEREST)
     if unknown:
         raise HTTPException(status_code=400, detail=f"Catégorie(s) inconnue(s) : {', '.join(unknown)}")
@@ -1064,4 +1065,4 @@ def api_send_message_stream(conversation_id: int, payload: NewMessage, username:
     return StreamingResponse(event_stream(), media_type="text/event-stream")
 
 
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+app.mount("/", StaticFiles(directory=os.path.join(PROJECT_ROOT, "static"), html=True), name="static")

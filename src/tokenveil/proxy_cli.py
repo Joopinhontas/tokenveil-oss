@@ -12,7 +12,7 @@ import sys
 
 import anthropic
 from dotenv import load_dotenv
-from anon_engine import AnonSession
+from tokenveil.anon_engine import AnonSession
 
 load_dotenv()
 

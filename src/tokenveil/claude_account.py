@@ -8,6 +8,7 @@ extraire l'URL d'autorisation et lui réinjecter le code que l'utilisateur colle
 dans la webapp.
 """
 import json
+from tokenveil import PROJECT_ROOT
 import os
 import pty
 import re
@@ -21,7 +22,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 CONFIG_BASE = os.environ.get(
-    "CLAUDE_ACCOUNTS_DIR", os.path.join(os.path.dirname(__file__), "data", "claude-accounts")
+    "CLAUDE_ACCOUNTS_DIR", os.path.join(PROJECT_ROOT, "data", "claude-accounts")
 )
 os.makedirs(CONFIG_BASE, exist_ok=True)
 

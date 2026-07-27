@@ -19,6 +19,7 @@ réinjecté dans le prompt à chaque appel plutôt que de compter sur une
 continuité serveur.
 """
 import os
+from tokenveil import PROJECT_ROOT
 import re
 
 from cryptography.fernet import Fernet
@@ -29,7 +30,7 @@ from google.genai import types as genai_types
 load_dotenv()
 
 CONFIG_BASE = os.environ.get(
-    "GEMINI_ACCOUNTS_DIR", os.path.join(os.path.dirname(__file__), "data", "gemini-accounts")
+    "GEMINI_ACCOUNTS_DIR", os.path.join(PROJECT_ROOT, "data", "gemini-accounts")
 )
 os.makedirs(CONFIG_BASE, exist_ok=True)
 

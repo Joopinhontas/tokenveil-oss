@@ -230,8 +230,8 @@ def seats_used() -> int | None:
     ou repli sur le groupe global LDAP_REQUIRE_GROUP_DN si aucun tenant
     n'est défini. None si injoignable/pas configuré : l'appelant ne doit
     pas bloquer sur une valeur inconnue."""
-    import auth
-    import db
+    from tokenveil import auth
+    from tokenveil import db
     if auth.get_auth_backend() == "ldap":
         tenants = db.list_ldap_tenants()
         if tenants:

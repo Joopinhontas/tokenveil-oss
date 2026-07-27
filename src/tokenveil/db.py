@@ -2,6 +2,7 @@
 chaque conversation est chiffré au repos (Fernet) ; les messages stockés sont
 les versions anonymisées (tokens), jamais les données brutes."""
 import hashlib
+from tokenveil import PROJECT_ROOT
 import hmac
 import json
 import os
@@ -15,7 +16,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_PATH = os.environ.get("ANON_DB_PATH", os.path.join(os.path.dirname(__file__), "data", "conversations.db"))
+DB_PATH = os.environ.get("ANON_DB_PATH", os.path.join(PROJECT_ROOT, "data", "conversations.db"))
 os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
 _fernet = Fernet(os.environ["ANON_DB_KEY"].encode())

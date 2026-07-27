@@ -21,7 +21,8 @@ jobs:
       - name: Smoke-import the engine
         run: |
           python - <<'PY'
-          from anon_engine import AnonSession, scan_coverage, ENTITIES_OF_INTEREST
+          import sys; sys.path.insert(0, "src")
+          from tokenveil.anon_engine import AnonSession, scan_coverage, ENTITIES_OF_INTEREST
           s = AnonSession(language="fr")
           anon = s.anonymize("contact luc@corp.com from 10.0.0.5 apikey=sk-live-0123456789abcdefghij")
           assert "luc@corp.com" not in anon and "10.0.0.5" not in anon

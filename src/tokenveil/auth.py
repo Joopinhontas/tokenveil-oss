@@ -21,7 +21,7 @@ from ldap3 import ALL, Connection, Server
 from ldap3.core.exceptions import LDAPException
 from ldap3.utils.conv import escape_filter_chars
 
-import db
+from tokenveil import db
 
 LDAP_SETTING_KEYS = [
     "LDAP_SERVER", "LDAP_BASE_DN", "LDAP_SEARCH_FILTER", "LDAP_BIND_DN",
@@ -258,7 +258,7 @@ def get_user_tenant(username: str) -> dict | None:
     ou si l'utilisateur n'appartient à aucun groupe de tenant. Un
     utilisateur dans plusieurs groupes de tenant est rattaché au premier
     trouvé (ordre alphabétique par nom, voir db.list_ldap_tenants)."""
-    import db
+    from tokenveil import db
     tenants = db.list_ldap_tenants()
     if not tenants:
         return None

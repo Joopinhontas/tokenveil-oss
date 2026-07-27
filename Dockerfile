@@ -17,6 +17,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+# Code first-party dans src/tokenveil/ (package). src/ sur le PYTHONPATH.
+ENV PYTHONPATH=/app/src
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -36,4 +39,4 @@ EXPOSE 8500
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:8500/healthz || exit 1
 
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8500"]
+CMD ["uvicorn", "tokenveil.app:app", "--host", "0.0.0.0", "--port", "8500"]

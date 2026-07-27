@@ -22,7 +22,9 @@ import random
 import sys
 
 sys.path.insert(0, ".")
-from anon_engine import AnonSession
+import os, sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
+from tokenveil.anon_engine import AnonSession
 
 DECOY_WORDS = [
     "buffer", "cluster", "thread", "queue", "shard", "broker", "replica",
