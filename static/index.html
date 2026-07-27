@@ -1285,6 +1285,12 @@
   @media (prefers-reduced-motion: reduce) {
     .stream-cursor { animation: none; opacity: 0.7; }
   }
+  .stream-tail { white-space: pre-wrap; }
+  .stream-word { animation: stream-word-in 240ms ease-out both; }
+  @keyframes stream-word-in { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .stream-word { animation: none; }
+  }
   .typing-dots { display: inline-flex; gap: 4px; padding: 4px 0; }
   .typing-dots span {
     width: 6px; height: 6px; border-radius: 50%;
@@ -3723,6 +3729,8 @@ async function sendMessage() {
     return box.scrollHeight - box.scrollTop - box.clientHeight < 80;
   }
 
+  let streamAnimTimer = null;
+
   try {
     const res = await fetch(`/api/conversations/${currentConvId}/messages/stream`, {
       method: "POST",
@@ -3739,44 +3747,66 @@ async function sendMessage() {
     let started = false;
     let finalPayload = null;
 
-    // révélation caractère par caractère, découplée de la taille réelle des
-    // chunks réseau (Claude/Gemini envoient parfois une phrase entière d'un
-    // coup). La vitesse est LISSÉE (interpolation vers une cible fonction du
-    // backlog, bornée) : jamais de saut d'un bloc entier quand un gros chunk
-    // arrive, jamais de traîne quand le backlog gonfle. Un curseur pulse au
-    // point d'écriture pendant le stream (retiré au rendu final).
+    // --- Révélation façon Gemini : groupes de mots en fondu ---
+    // Le texte n'est plus "tapé" caractère par caractère (repaint binaire à
+    // chaque frame : l'oeil subit chaque apparition) : il arrive par petits
+    // groupes de mots qui FONDENT (opacity, 240 ms), cadencés toutes les
+    // ~70 ms. Le markdown stable n'est re-rendu qu'au "repli" (toutes les
+    // ~600 ms ou 240 caractères), plus jamais à chaque frame — plus doux
+    // pour l'oeil ET beaucoup moins de parsing markdown (CPU).
     let targetText = "";
-    let revealedLength = 0;
-    let animRunning = false;
-    let revealSpeed = 6; // caractères/frame, lissé
+    let revealed = 0;    // caractères déjà affichés (stable + fondu)
+    let stableLen = 0;   // caractères déjà rendus en markdown définitif
+    let lastFold = 0;
+    const tailWrap = document.createElement("span");
+    tailWrap.className = "stream-tail";
     const streamCursor = document.createElement("span");
     streamCursor.className = "stream-cursor";
 
-    function placeCursor() {
+    function attachTail() {
       let host = bodyEl;
       while (host.lastElementChild && !["PRE", "TABLE", "UL", "OL"].includes(host.lastElementChild.tagName)) {
         host = host.lastElementChild;
       }
-      host.appendChild(streamCursor);
+      host.appendChild(tailWrap);
+      tailWrap.appendChild(streamCursor);
     }
-
-    function tick() {
-      if (revealedLength < targetText.length) {
-        const backlog = targetText.length - revealedLength;
-        const stickToBottom = isNearBottom();
-        const targetSpeed = Math.min(200, Math.max(5, backlog / 25));
-        revealSpeed += (targetSpeed - revealSpeed) * 0.25;
-        revealedLength = Math.min(targetText.length, revealedLength + Math.ceil(revealSpeed));
-        bodyEl.innerHTML = renderMarkdown(targetText.slice(0, revealedLength));
-        placeCursor();
-        if (stickToBottom) box.scrollTop = box.scrollHeight;
-        requestAnimationFrame(tick);
-      } else {
-        animRunning = false;
+    function renderStable() {
+      bodyEl.innerHTML = renderMarkdown(targetText.slice(0, stableLen));
+      tailWrap.textContent = "";
+      attachTail();
+    }
+    function step() {
+      if (revealed < targetText.length) {
+        const backlog = targetText.length - revealed;
+        // groupe proportionnel au retard, borné, coupé en fin de mot pour que
+        // le fondu porte sur des mots entiers (jamais un mot coupé qui saute).
+        let end = Math.min(targetText.length, revealed + Math.min(400, Math.max(10, Math.round(backlog / 6))));
+        if (end < targetText.length) {
+          const sp = targetText.lastIndexOf(" ", end);
+          if (sp > revealed) end = sp + 1;
+        }
+        const word = document.createElement("span");
+        word.className = "stream-word";
+        word.textContent = targetText.slice(revealed, end);
+        revealed = end;
+        const stick = isNearBottom();
+        tailWrap.insertBefore(word, streamCursor);
+        if (stick) box.scrollTop = box.scrollHeight;
+      }
+      if (revealed > stableLen && (revealed - stableLen > 240 || performance.now() - lastFold > 600)) {
+        stableLen = revealed;
+        const stick = isNearBottom();
+        renderStable();
+        lastFold = performance.now();
+        if (stick) box.scrollTop = box.scrollHeight;
       }
     }
     function ensureAnim() {
-      if (!animRunning) { animRunning = true; requestAnimationFrame(tick); }
+      if (!streamAnimTimer) {
+        lastFold = performance.now();
+        streamAnimTimer = setInterval(step, 70);
+      }
     }
 
     while (true) {
@@ -3790,14 +3820,15 @@ async function sendMessage() {
         const payload = JSON.parse(line.slice(6));
         if (payload.error) throw new Error(payload.error);
         if (payload.done) { finalPayload = payload; continue; }
-        if (!started) { bodyEl.innerHTML = ""; started = true; }
+        if (!started) { renderStable(); started = true; }
         targetText = payload.text;
         ensureAnim();
       }
     }
 
     // laisse l'animation terminer de révéler ce qui reste avant le rendu final
-    while (revealedLength < targetText.length) await new Promise((r) => setTimeout(r, 16));
+    while (revealed < targetText.length) await new Promise((r) => setTimeout(r, 40));
+    if (streamAnimTimer) { clearInterval(streamAnimTimer); streamAnimTimer = null; }
     streamCursor.remove();
 
     if (finalPayload) {
@@ -3813,6 +3844,7 @@ async function sendMessage() {
   } catch (err) {
     thinkingRow.querySelector(".body").innerHTML = `${t("error_prefix")} : ${escapeHtml(err.message)}`;
   } finally {
+    if (streamAnimTimer) clearInterval(streamAnimTimer);
     const stayBottom = isNearBottom();
     loadConversations();
     if (stayBottom) box.scrollTop = box.scrollHeight;
