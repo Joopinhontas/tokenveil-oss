@@ -3734,7 +3734,7 @@ async function sendMessage() {
       if (revealedLength < targetText.length) {
         const backlog = targetText.length - revealedLength;
         const stickToBottom = isNearBottom();
-        revealedLength = Math.min(targetText.length, revealedLength + Math.max(2, Math.ceil(backlog / 12)));
+        revealedLength = Math.min(targetText.length, revealedLength + Math.max(6, Math.ceil(backlog / 5)));
         bodyEl.innerHTML = renderMarkdown(targetText.slice(0, revealedLength));
         if (stickToBottom) box.scrollTop = box.scrollHeight;
         requestAnimationFrame(tick);

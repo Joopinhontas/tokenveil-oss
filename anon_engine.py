@@ -58,6 +58,10 @@ _KEYED_PII = {
 }
 _KEYED_PII_RE = re.compile(r'"([A-Za-z_]+)"\s*:\s*"([^"]*)"')
 
+# Exact shape of an intact token (<PERSON_1>, <IBAN_CODE_2>...): used by the
+# single-pass deanonymize.
+_TOKEN_SHAPE_RE = re.compile(r"<[A-Z][A-Z0-9_]*_\d+>")
+
 
 def _p(regex, flags=0):
     return re.compile(regex, flags)
@@ -250,10 +254,14 @@ class AnonSession:
         return out
 
     def deanonymize(self, text):
-        out = text
-        for token in sorted(self.token_to_value, key=len, reverse=True):
-            out = out.replace(token, self.token_to_value[token])
-        return out
+        # Single regex pass + dict lookup instead of one text.replace() per
+        # known token: O(text) instead of O(tokens x text). The SSE stream
+        # deanonymizes the accumulated text on EVERY delta, so with a large
+        # mapping (log-heavy conversations) the old loop made streaming
+        # visibly sluggish. The pattern matches a complete token, so the
+        # longest-first anti-collision sort is no longer needed.
+        return _TOKEN_SHAPE_RE.sub(
+            lambda m: self.token_to_value.get(m.group(0), m.group(0)), text)
 
     def mapping_report(self):
         return "\n".join(f"{tok} -> {val}" for tok, val in self.token_to_value.items())
