@@ -7,6 +7,22 @@ and the project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- Repo tidy-up: the first-party modules move from the root into a `src/tokenveil`
+  package (imports become `from tokenveil import ...`, runtime paths re-anchored
+  to the project root, Dockerfile/CI updated). Behavior unchanged; 0 leak / 0
+  over-redaction on fuzz.
+
+### Fixed
+- Anonymization recall on structured logs: 15-digit Amex cards detected, card
+  values masked by key (cc/card/pan), and a person name under an ambiguous
+  "name" key masked when it looks like an anthroponym.
+
+### Docs
+- Full English documentation alongside French: every doc is bilingual (English at
+  the base name, French at `X.fr.md`). Covers ARCHITECTURE, INSTALL, CONFIG,
+  SECURITY.
+
 ## [0.3.0] - 2026-07-27
 
 ### Added
