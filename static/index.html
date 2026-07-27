@@ -1268,6 +1268,23 @@
   .body strong { font-weight: 600; }
   .body hr { border: none; border-top: 1px solid var(--border-strong); margin: 16px 0; }
 
+  .stream-cursor {
+    display: inline-block;
+    width: 7px;
+    height: 1.05em;
+    margin-left: 2px;
+    border-radius: 2px;
+    background: var(--accent);
+    vertical-align: text-bottom;
+    animation: stream-cursor-pulse 0.9s ease-in-out infinite;
+  }
+  @keyframes stream-cursor-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.25; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stream-cursor { animation: none; opacity: 0.7; }
+  }
   .typing-dots { display: inline-flex; gap: 4px; padding: 4px 0; }
   .typing-dots span {
     width: 6px; height: 6px; border-radius: 50%;
@@ -3724,18 +3741,34 @@ async function sendMessage() {
 
     // révélation caractère par caractère, découplée de la taille réelle des
     // chunks réseau (Claude/Gemini envoient parfois une phrase entière d'un
-    // coup) : un fil d'animation lit dans `targetText` à vitesse constante
-    // pour un rendu fluide façon Gemini, au lieu d'un "à-coup" par paquet.
+    // coup). La vitesse est LISSÉE (interpolation vers une cible fonction du
+    // backlog, bornée) : jamais de saut d'un bloc entier quand un gros chunk
+    // arrive, jamais de traîne quand le backlog gonfle. Un curseur pulse au
+    // point d'écriture pendant le stream (retiré au rendu final).
     let targetText = "";
     let revealedLength = 0;
     let animRunning = false;
+    let revealSpeed = 6; // caractères/frame, lissé
+    const streamCursor = document.createElement("span");
+    streamCursor.className = "stream-cursor";
+
+    function placeCursor() {
+      let host = bodyEl;
+      while (host.lastElementChild && !["PRE", "TABLE", "UL", "OL"].includes(host.lastElementChild.tagName)) {
+        host = host.lastElementChild;
+      }
+      host.appendChild(streamCursor);
+    }
 
     function tick() {
       if (revealedLength < targetText.length) {
         const backlog = targetText.length - revealedLength;
         const stickToBottom = isNearBottom();
-        revealedLength = Math.min(targetText.length, revealedLength + Math.max(6, Math.ceil(backlog / 5)));
+        const targetSpeed = Math.min(200, Math.max(5, backlog / 25));
+        revealSpeed += (targetSpeed - revealSpeed) * 0.25;
+        revealedLength = Math.min(targetText.length, revealedLength + Math.ceil(revealSpeed));
         bodyEl.innerHTML = renderMarkdown(targetText.slice(0, revealedLength));
+        placeCursor();
         if (stickToBottom) box.scrollTop = box.scrollHeight;
         requestAnimationFrame(tick);
       } else {
@@ -3765,6 +3798,7 @@ async function sendMessage() {
 
     // laisse l'animation terminer de révéler ce qui reste avant le rendu final
     while (revealedLength < targetText.length) await new Promise((r) => setTimeout(r, 16));
+    streamCursor.remove();
 
     if (finalPayload) {
       bodyEl.innerHTML = renderMarkdown(finalPayload.text);
