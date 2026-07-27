@@ -49,13 +49,19 @@ _KEYED_PII = {
     "fax": "PHONE_NUMBER",
     "firstname": "PERSON", "lastname": "PERSON", "prenom": "PERSON", "nom": "PERSON",
     "surname": "PERSON", "familyname": "PERSON", "givenname": "PERSON",
-    "fullname": "PERSON", "contactname": "PERSON", "maidenname": "PERSON",
+    "maidenname": "PERSON",
+    "cc": "CREDIT_CARD", "card": "CREDIT_CARD", "cardnumber": "CREDIT_CARD",
+    "creditcard": "CREDIT_CARD", "pan": "CREDIT_CARD",
     "email": "EMAIL_ADDRESS", "mail": "EMAIL_ADDRESS", "emailaddress": "EMAIL_ADDRESS",
     "courriel": "EMAIL_ADDRESS",
     "iban": "IBAN_CODE",
     "address": "LOCATION", "adresse": "LOCATION", "displayedaddress": "LOCATION",
     "streetaddress": "LOCATION", "addressline": "LOCATION",
 }
+# Ambiguous "name" keys: only mask as PERSON when the value has an anthroponym
+# shape (2-3 all-capitalized words), which excludes places and product labels.
+_KEYED_NAME_AMBIGUOUS = {"name", "fullname", "contactname", "displayname", "customername"}
+_ANTHROPONYM_RE = re.compile(r"^[A-ZÀ-Ÿ][A-Za-zÀ-ÿ'’-]+(?: [A-ZÀ-Ÿ][A-Za-zÀ-ÿ'’-]+){1,2}$")
 _KEYED_PII_RE = re.compile(r'"([A-Za-z_]+)"\s*:\s*"([^"]*)"')
 
 # Exact shape of an intact token (<PERSON_1>, <IBAN_CODE_2>...): used by the
@@ -87,7 +93,7 @@ _DETECTORS = [
     ("API_SECRET", _p(r"(?i)[a-z][a-z0-9+.\-]*://[^/\s:]+:([^/\s@]+)@[\w.\-]+"), 1),
     # Financial / identity structured data.
     ("IBAN_CODE", _p(r"\b[A-Z]{2}\d{2}(?:[ ]?[A-Z0-9]{4}){2,7}(?:[ ]?[A-Z0-9]{1,3})?\b"), 0),
-    ("CREDIT_CARD", _p(r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{1,7}\b"), 0),
+    ("CREDIT_CARD", _p(r"\b(?:\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}|3[47]\d{2}[- ]?\d{6}[- ]?\d{5})\b"), 0),
     ("EMAIL_ADDRESS", _p(r"\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b"), 0),
     # Network identifiers. Private ranges are tagged separately (internal vs public).
     ("IP_INTERNAL", _p(r"\b(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3})\b"), 0),
@@ -166,7 +172,10 @@ class AnonSession:
         # Fires only on explicitly sensitive keys, so it does not touch SQL.
         out = []
         for m in _KEYED_PII_RE.finditer(line):
-            etype = _KEYED_PII.get(m.group(1).lower().replace("_", ""))
+            key = m.group(1).lower().replace("_", "")
+            etype = _KEYED_PII.get(key)
+            if etype is None and key in _KEYED_NAME_AMBIGUOUS and _ANTHROPONYM_RE.match(m.group(2)):
+                etype = "PERSON"
             if etype is None or etype not in self.active_entities:
                 continue
             value = m.group(2)
