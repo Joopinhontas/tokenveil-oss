@@ -108,7 +108,7 @@ Pendant la frappe, l'UI montre en temps réel ce qui serait envoyé au modèle s
 
 ## Sécurité
 
-Même l'édition Community embarque du durcissement de prod (voir [`middleware.py`](middleware.py)) : Content-Security-Policy stricte sans origine tierce, en-têtes anti-clickjacking, HSTS derrière TLS, et un limiteur de débit anti-abus. Les sessions sont des jetons aléatoires, le brute-force de connexion est limité par compte et par IP.
+Même l'édition Community embarque du durcissement de prod (voir [`middleware.py`](src/tokenveil/middleware.py)) : Content-Security-Policy stricte sans origine tierce, en-têtes anti-clickjacking, HSTS derrière TLS, et un limiteur de débit anti-abus. Les sessions sont des jetons aléatoires, le brute-force de connexion est limité par compte et par IP.
 
 ## Installation
 
@@ -144,9 +144,9 @@ Code disponible sous [Elastic License 2.0](LICENSE). Vous pouvez lire, auditer, 
 
 ## Documentation
 
-- [ARCHITECTURE.md](ARCHITECTURE.fr.md) - l'idée et les principes de conception.
-- [INSTALL.md](INSTALL.fr.md) - installer (Docker, quelques minutes).
-- [CONFIG.md](CONFIG.fr.md) - configurer (auth, providers, mots-clés, reverse proxy).
-- [SECURITY.md](SECURITY.fr.md) - sécurité et confidentialité, pour un DSI/RSSI/DPO.
+- [ARCHITECTURE.md](docs/ARCHITECTURE.fr.md) - l'idée et les principes de conception.
+- [INSTALL.md](docs/INSTALL.fr.md) - installer (Docker, quelques minutes).
+- [CONFIG.md](docs/CONFIG.fr.md) - configurer (auth, providers, mots-clés, reverse proxy).
+- [SECURITY.md](docs/SECURITY.fr.md) - sécurité et confidentialité, pour un DSI/RSSI/DPO.
 
 Méthodologie de mesure de l'anonymisation : [tokenveil.eu/benchmark](https://tokenveil.eu/benchmark).

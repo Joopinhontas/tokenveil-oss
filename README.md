@@ -124,7 +124,7 @@ As the user types, the UI shows in real time exactly what would be sent to the m
 
 ## Security
 
-Even the Community edition ships production hardening (see [`middleware.py`](middleware.py)): a strict Content-Security-Policy with no third-party origins, anti-clickjacking headers, HSTS behind TLS, and an anti-abuse rate limiter. Sessions are random tokens, brute-force login is rate-limited per account and per IP.
+Even the Community edition ships production hardening (see [`middleware.py`](src/tokenveil/middleware.py)): a strict Content-Security-Policy with no third-party origins, anti-clickjacking headers, HSTS behind TLS, and an anti-abuse rate limiter. Sessions are random tokens, brute-force login is rate-limited per account and per IP.
 
 ## Installation
 
@@ -160,9 +160,9 @@ Source-available under the [Elastic License 2.0](LICENSE). You can read, audit, 
 
 ## Documentation
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) - the idea and design principles.
-- [INSTALL.md](INSTALL.md) - install it (Docker, a couple of minutes).
-- [CONFIG.md](CONFIG.md) - configure it (auth, providers, keywords, reverse proxy).
-- [SECURITY.md](SECURITY.md) - security and privacy principles, for a CISO/DPO.
+- [ARCHITECTURE.md](docs/ARCHITECTURE.md) - the idea and design principles.
+- [INSTALL.md](docs/INSTALL.md) - install it (Docker, a couple of minutes).
+- [CONFIG.md](docs/CONFIG.md) - configure it (auth, providers, keywords, reverse proxy).
+- [SECURITY.md](docs/SECURITY.md) - security and privacy principles, for a CISO/DPO.
 
 Anonymization measurement methodology: [tokenveil.eu/benchmark](https://tokenveil.eu/benchmark).
