@@ -9,6 +9,8 @@
   <a href="#essayer-en-60-secondes"><img src="https://img.shields.io/badge/taux%20de%20fuite-0%25-brightgreen" alt="Taux de fuite mesuré 0%"></a>
   <a href="../../releases"><img src="https://img.shields.io/github/v/release/Joopinhontas/tokenveil-oss?include_prereleases&label=release" alt="Dernière release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-ELv2-blue.svg" alt="Licence : Elastic License 2.0"></a>
+  <a href="https://github.com/Joopinhontas/claude-repo-audit"><img src="https://img.shields.io/badge/repo%20grade-C%20(78%2F100)-f2c744" alt="Repo grade C (78/100)"></a>
+  <a href="https://github.com/Joopinhontas/claude-repo-audit"><img src="https://img.shields.io/badge/vibe%20score-34%2F100-8ac926" alt="Vibe Score 34/100"></a>
   <br>
   <a href="#essayer-en-60-secondes"><img src="https://img.shields.io/badge/deploy-docker%20compose-2496ED?logo=docker&logoColor=white" alt="Docker"></a>
   <img src="https://img.shields.io/badge/python-3.12%2B-3776AB?logo=python&logoColor=white" alt="Python 3.12+">
